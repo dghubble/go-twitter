@@ -17,6 +17,7 @@ type Client struct {
 func NewClient(httpClient *http.Client) *Client {
 	base := sling.New().Client(httpClient).Base(twitterApi)
 	return &Client{
+		sling: base,
 		Users: NewUserService(base.New()),
 	}
 }
