@@ -1,6 +1,7 @@
 package twitter
 
 // https://dev.twitter.com/overview/api/entities
+// TODO: symbols, extended_entities
 type Entities struct {
 	Hashtags     []HashtagEntity `json:"hashtags"`
 	Media        []MediaEntity   `json:"media"`

@@ -6,7 +6,6 @@ import (
 )
 
 // https://dev.twitter.com/overview/api/users
-// TODO: add Status
 type User struct {
 	ContributorsEnabled            bool          `json:"contributors_enabled"`
 	CreatedAt                      string        `json:"created_at"`
@@ -43,6 +42,7 @@ type User struct {
 	Protected                      bool          `json:"protected"`
 	ScreenName                     string        `json:"screen_name"`
 	ShowAllInlineMedia             bool          `json:"show_all_inline_media"`
+	Status                         *Tweet        `json:"status"`
 	StatusesCount                  int           `json:"statuses_count"`
 	Timezone                       string        `json:"time_zone"`
 	Url                            string        `json:"url"`
