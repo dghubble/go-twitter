@@ -29,6 +29,17 @@ func TestStatusService_Show(t *testing.T) {
 	}
 }
 
+func TestStatusService_ShowHandlesNilParams(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/show.json", func(w http.ResponseWriter, r *http.Request) {
+		assertParams(t, map[string]string{"id": "589488862814076930"}, r)
+	})
+	client := NewClient(httpClient)
+	client.Statuses.Show(589488862814076930, nil)
+}
+
 func TestStatusService_Lookup(t *testing.T) {
 	httpClient, mux, server := testServer()
 	defer server.Close()
@@ -49,4 +60,15 @@ func TestStatusService_Lookup(t *testing.T) {
 	if !reflect.DeepEqual(expected, tweets) {
 		t.Errorf("Statuses.Lookup expected:\n%+v, got:\n %+v", expected, tweets)
 	}
+}
+
+func TestStatusService_LookupHandlesNilParams(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/lookup.json", func(w http.ResponseWriter, r *http.Request) {
+		assertParams(t, map[string]string{"id": "20,573893817000140800"}, r)
+	})
+	client := NewClient(httpClient)
+	client.Statuses.Lookup([]int64{20, 573893817000140800}, nil)
 }

@@ -107,6 +107,9 @@ type UserSearchParams struct {
 // Requires a user auth context.
 // https://dev.twitter.com/rest/reference/get/users/search
 func (s *UserService) Search(query string, params *UserSearchParams) ([]User, *http.Response, error) {
+	if params == nil {
+		params = &UserSearchParams{}
+	}
 	params.Query = query
 	users := new([]User)
 	resp, err := s.sling.New().Get("search.json").QueryStruct(params).Receive(users)

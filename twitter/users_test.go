@@ -70,7 +70,7 @@ func TestUserService_LookupWithScreenNames(t *testing.T) {
 	}
 }
 
-func TestSearch(t *testing.T) {
+func TestUserService_Search(t *testing.T) {
 	httpClient, mux, server := testServer()
 	defer server.Close()
 
@@ -81,7 +81,7 @@ func TestSearch(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	users, _, err := client.Users.Search("news", &UserSearchParams{Count: 11})
+	users, _, err := client.Users.Search("news", &UserSearchParams{Query: "override me", Count: 11})
 	if err != nil {
 		t.Errorf("Users.Search error %v", err)
 	}
@@ -89,4 +89,15 @@ func TestSearch(t *testing.T) {
 	if !reflect.DeepEqual(expected, users) {
 		t.Errorf("Users.Search expected:\n%+v, got:\n %+v", expected, users)
 	}
+}
+
+func TestUserService_SearchHandlesNilParams(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/users/search.json", func(w http.ResponseWriter, r *http.Request) {
+		assertParams(t, map[string]string{"q": "news"}, r)
+	})
+	client := NewClient(httpClient)
+	client.Users.Search("news", nil)
 }

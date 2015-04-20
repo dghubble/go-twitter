@@ -79,6 +79,9 @@ type StatusShowParams struct {
 // Show returns the requested Tweet.
 // https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid
 func (s *StatusService) Show(id int64, params *StatusShowParams) (*Tweet, *http.Response, error) {
+	if params == nil {
+		params = &StatusShowParams{}
+	}
 	params.Id = id
 	tweet := new(Tweet)
 	resp, err := s.sling.New().Get("show.json").QueryStruct(params).Receive(tweet)
@@ -97,6 +100,9 @@ type StatusLookupParams struct {
 // required ids argument and from params.Id.
 // https://dev.twitter.com/rest/reference/get/statuses/lookup
 func (s *StatusService) Lookup(ids []int64, params *StatusLookupParams) ([]Tweet, *http.Response, error) {
+	if params == nil {
+		params = &StatusLookupParams{}
+	}
 	params.Id = append(params.Id, ids...)
 	tweets := new([]Tweet)
 	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(tweets)
