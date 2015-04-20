@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// User represents a Twitter User.
 // https://dev.twitter.com/overview/api/users
 type User struct {
 	ContributorsEnabled            bool          `json:"contributors_enabled"`
@@ -52,24 +53,26 @@ type User struct {
 	WithholdScope                  string        `json:"withheld_scope"`
 }
 
+// UserService provides methods for accessing Twitter user API endpoints.
 type UserService struct {
 	sling *sling.Sling
 }
 
+// NewUserService returns a new UserService.
 func NewUserService(sling *sling.Sling) *UserService {
 	return &UserService{
 		sling: sling.Path("users/"),
 	}
 }
 
-// https://dev.twitter.com/rest/reference/get/users/show
+// UserShowParams are the parameters for UserService.Show.
 type UserShowParams struct {
 	UserId          int64  `url:"user_id,omitempty"`
 	ScreenName      string `url:"screen_name,omitempty"`
 	IncludeEntities *bool  `url:"include_entities,omitempty"` // whether 'status' should include entities
 }
 
-// Show returns the specified User.
+// Show returns the requested User.
 // https://dev.twitter.com/rest/reference/get/users/show
 func (s *UserService) Show(params *UserShowParams) (*User, *http.Response, error) {
 	user := new(User)
@@ -77,14 +80,14 @@ func (s *UserService) Show(params *UserShowParams) (*User, *http.Response, error
 	return user, resp, err
 }
 
-// https://dev.twitter.com/rest/reference/get/users/lookup
+// UserLookupParams are the parameters for UserService.Lookup.
 type UserLookupParams struct {
-	UserId          []int64  `url:"user_id,omitempty"`
-	ScreenName      []string `url:"screen_name,omitempty"`
+	UserId          []int64  `url:"user_id,omitempty,comma"`
+	ScreenName      []string `url:"screen_name,omitempty,comma"`
 	IncludeEntities *bool    `url:"include_entities,omitempty"` // whether 'status' should include entities
 }
 
-// Lookup returns the specified slice of Users.
+// Lookup returns the requested Users as a slice.
 // https://dev.twitter.com/rest/reference/get/users/lookup
 func (s *UserService) Lookup(params *UserLookupParams) ([]User, *http.Response, error) {
 	users := new([]User)
@@ -92,7 +95,7 @@ func (s *UserService) Lookup(params *UserLookupParams) ([]User, *http.Response, 
 	return *users, resp, err
 }
 
-// https://dev.twitter.com/rest/reference/get/users/search
+// UserSearchParams are the parameters for UserService.Search.
 type UserSearchParams struct {
 	Query           string `url:"q,omitempty"`
 	Page            int    `url:"page,omitempty"` // 1-based page number

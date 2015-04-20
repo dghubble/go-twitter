@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// Tweet represents a Twitter Tweet, previously called a status.
 // https://dev.twitter.com/overview/api/tweets
 // Unused or deprecated fields not provided: Geo, Annotations
 // TODO: Place
@@ -55,16 +56,19 @@ type TweetIdentifier struct {
 	IdStr string `json:"id_str"`
 }
 
+// StatusService provides methods for accessing Twitter status API endpoints.
 type StatusService struct {
 	sling *sling.Sling
 }
 
+// NewStatusService returns a new StatusService.
 func NewStatusService(sling *sling.Sling) *StatusService {
 	return &StatusService{
 		sling: sling.Path("statuses/"),
 	}
 }
 
+// StatusShowParams are the parameters for StatusService.Show
 type StatusShowParams struct {
 	Id               int64 `url:"id,omitempty"`
 	TrimUser         *bool `url:"trim_user,omitempty"`
@@ -72,7 +76,7 @@ type StatusShowParams struct {
 	IncludeEntities  *bool `url:"include_entities,omitempty"`
 }
 
-// Show returns the specified Tweet.
+// Show returns the requested Tweet.
 // https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid
 func (s *StatusService) Show(id int64, params *StatusShowParams) (*Tweet, *http.Response, error) {
 	params.Id = id
@@ -81,16 +85,19 @@ func (s *StatusService) Show(id int64, params *StatusShowParams) (*Tweet, *http.
 	return tweet, resp, err
 }
 
+// StatusLookupParams are the parameters for StatusService.Lookup
 type StatusLookupParams struct {
-	Id              []int64 `json:"id,omitempty"`
-	TrimUser        *bool   `json:"trim_user,omitempty"`
-	IncludeEntities *bool   `json:"include_entities,omitempty"`
-	Map             *bool   `json:"map,omitempty"`
+	Id              []int64 `url:"id,omitempty,comma"`
+	TrimUser        *bool   `url:"trim_user,omitempty"`
+	IncludeEntities *bool   `url:"include_entities,omitempty"`
+	Map             *bool   `url:"map,omitempty"`
 }
 
-// Lookup returns the specified slice of Tweets
+// Lookup returns the requested Tweets as a slice. Combines ids from the
+// required ids argument and from params.Id.
 // https://dev.twitter.com/rest/reference/get/statuses/lookup
-func (s *StatusService) Lookup(params *StatusLookupParams) ([]Tweet, *http.Response, error) {
+func (s *StatusService) Lookup(ids []int64, params *StatusLookupParams) ([]Tweet, *http.Response, error) {
+	params.Id = append(params.Id, ids...)
 	tweets := new([]Tweet)
 	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(tweets)
 	return *tweets, resp, err

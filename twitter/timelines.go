@@ -5,18 +5,20 @@ import (
 	"net/http"
 )
 
+// TimelineService provides methods for accessing Twitter status timeline
+// API endpoints.
 type TimelineService struct {
 	sling *sling.Sling
 }
 
-// NewTimelineService returns a new TimelineService for accessing timeline
-// statuses API endpoints.
+// NewTimelineService returns a new TimelineService.
 func NewTimelineService(sling *sling.Sling) *TimelineService {
 	return &TimelineService{
 		sling: sling.Path("statuses/"),
 	}
 }
 
+// UserTimelineParams are the parameters for TimelineService.UserTimeline.
 type UserTimelineParams struct {
 	UserId             int64  `url:"user_id,omitempty"`
 	ScreenName         string `url:"screen_name,omitempty"`
@@ -29,7 +31,7 @@ type UserTimelineParams struct {
 	IncludeRetweets    *bool  `url:"include_rts,omitempty"`
 }
 
-// UserTimeline returns the user timeline of recent tweets by the specified user.
+// UserTimeline returns recent Tweets from the specified user.
 // https://dev.twitter.com/rest/reference/get/statuses/user_timeline
 func (s *TimelineService) UserTimeline(params *UserTimelineParams) ([]Tweet, *http.Response, error) {
 	tweets := new([]Tweet)
@@ -37,6 +39,7 @@ func (s *TimelineService) UserTimeline(params *UserTimelineParams) ([]Tweet, *ht
 	return *tweets, resp, err
 }
 
+// HomeTimelineParams are the parameters for TimelineService.HomeTimeline.
 type HomeTimelineParams struct {
 	Count              int   `url:"count,omitempty"`
 	SinceId            int64 `url:"since_id,omitempty"`
@@ -47,8 +50,8 @@ type HomeTimelineParams struct {
 	IncludeEntities    *bool `url:"include_entities,omitempty"`
 }
 
-// HomeTimeline returns recent Tweets and retweets from the user and those users
-// they follow.
+// HomeTimeline returns recent Tweets and retweets from the user and those
+// users they follow.
 // Requires a user auth context.
 // https://dev.twitter.com/rest/reference/get/statuses/home_timeline
 func (s *TimelineService) HomeTimeline(params *HomeTimelineParams) ([]Tweet, *http.Response, error) {
@@ -57,6 +60,7 @@ func (s *TimelineService) HomeTimeline(params *HomeTimelineParams) ([]Tweet, *ht
 	return *tweets, resp, err
 }
 
+// MentionTimelineParams are the parameters for TimelineService.MentionTimeline.
 type MentionTimelineParams struct {
 	Count              int   `url:"count,omitempty"`
 	SinceId            int64 `url:"since_id,omitempty"`
@@ -66,7 +70,7 @@ type MentionTimelineParams struct {
 	IncludeEntities    *bool `url:"include_entities,omitempty"`
 }
 
-// MentionTimeline returns the most recent mentions of the authenticated user.
+// MentionTimeline returns recent Tweet mentions of the authenticated user.
 // Requires a user auth context.
 // https://dev.twitter.com/rest/reference/get/statuses/mentions_timeline
 func (s *TimelineService) MentionTimeline(params *MentionTimelineParams) ([]Tweet, *http.Response, error) {
@@ -75,6 +79,8 @@ func (s *TimelineService) MentionTimeline(params *MentionTimelineParams) ([]Twee
 	return *tweets, resp, err
 }
 
+// RetweetsOfMeTimelineParams are the parameters for
+// TimelineService.RetweetsOfMeTimeline.
 type RetweetsOfMeTimelineParams struct {
 	Count               int   `url:"count,omitempty"`
 	SinceId             int64 `url:"since_id,omitempty"`

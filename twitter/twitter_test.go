@@ -57,17 +57,3 @@ func assertParams(t *testing.T, expected map[string]string, req *http.Request) {
 		t.Errorf("expected parameters %v, got %v", expected, req.Form)
 	}
 }
-
-func assertParamsWithDups(t *testing.T, expected map[string][]string, req *http.Request) {
-	req.ParseForm() // populates r.Form url.values (alias map[string][]string)
-	expectedValues := url.Values{}
-	// expected is a map of slices corresponding to expected to r.Form url.Values
-	for key, values := range expected {
-		for _, value := range values {
-			expectedValues.Add(key, value)
-		}
-	}
-	if !reflect.DeepEqual(expectedValues, req.Form) {
-		t.Errorf("expected parameters %v, got %v", expected, req.Form)
-	}
-}

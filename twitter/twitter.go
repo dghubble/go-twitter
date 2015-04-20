@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-const twitterApi = "https://api.twitter.com/1.1/"
+const twitterAPI = "https://api.twitter.com/1.1/"
 
-// API Client communicates with the Twitter API services.
+// Client is a Twitter client for making Twitter API requests.
 type Client struct {
 	sling *sling.Sling
 	// Twitter API Services
@@ -16,8 +16,9 @@ type Client struct {
 	Users     *UserService
 }
 
+// NewClient returns a new Client.
 func NewClient(httpClient *http.Client) *Client {
-	base := sling.New().Client(httpClient).Base(twitterApi)
+	base := sling.New().Client(httpClient).Base(twitterAPI)
 	return &Client{
 		sling:     base,
 		Statuses:  NewStatusService(base.New()),

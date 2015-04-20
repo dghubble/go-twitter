@@ -13,14 +13,14 @@ func TestTimelineService_UserTimeline(t *testing.T) {
 
 	mux.HandleFunc("/1.1/statuses/user_timeline.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
-		assertParams(t, map[string]string{"user_id": "1234", "trim_user": "true", "include_rts": "false"}, r)
+		assertParams(t, map[string]string{"user_id": "113419064", "trim_user": "true", "include_rts": "false"}, r)
 		fmt.Fprintf(w, `[{"text": "Gophercon talks!"}, {"text": "Why gophers are so adorable"}]`)
 	})
 
 	client := NewClient(httpClient)
-	tweets, _, err := client.Timelines.UserTimeline(&UserTimelineParams{UserId: 1234, TrimUser: Bool(true), IncludeRetweets: Bool(false)})
+	tweets, _, err := client.Timelines.UserTimeline(&UserTimelineParams{UserId: 113419064, TrimUser: Bool(true), IncludeRetweets: Bool(false)})
 	if err != nil {
-		t.Errorf("Unexpected Timeline.UserTimeline error %v", err)
+		t.Errorf("Timeline.UserTimeline error %v", err)
 	}
 	expected := []Tweet{Tweet{Text: "Gophercon talks!"}, Tweet{Text: "Why gophers are so adorable"}}
 	if !reflect.DeepEqual(expected, tweets) {
@@ -41,7 +41,7 @@ func TestTimelineService_HomeTimeline(t *testing.T) {
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.HomeTimeline(&HomeTimelineParams{SinceId: 589147592367431680, ExcludeReplies: Bool(false)})
 	if err != nil {
-		t.Errorf("Unexpected Timeline.HomeTimeline error %v", err)
+		t.Errorf("Timeline.HomeTimeline error %v", err)
 	}
 	expected := []Tweet{Tweet{Text: "Live on #Periscope"}, Tweet{Text: "Clickbait journalism"}, Tweet{Text: "Useful announcement"}}
 	if !reflect.DeepEqual(expected, tweets) {
@@ -62,7 +62,7 @@ func TestTimelineService_MentionTimeline(t *testing.T) {
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.MentionTimeline(&MentionTimelineParams{Count: 20, IncludeEntities: Bool(false)})
 	if err != nil {
-		t.Errorf("Unexpected Timeline.MentionTimeline error %v", err)
+		t.Errorf("Timeline.MentionTimeline error %v", err)
 	}
 	expected := []Tweet{Tweet{Text: "@dghubble can I get verified?"}, Tweet{Text: "@dghubble why are gophers so great?"}}
 	if !reflect.DeepEqual(expected, tweets) {
@@ -83,7 +83,7 @@ func TestTimelineService_RetweetsOfMeTimeline(t *testing.T) {
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.RetweetsOfMeTimeline(&RetweetsOfMeTimelineParams{TrimUser: Bool(false), IncludeUserEntities: Bool(false)})
 	if err != nil {
-		t.Errorf("Unexpected Timeline.RetweetsOfMeTimeline error %v", err)
+		t.Errorf("Timeline.RetweetsOfMeTimeline error %v", err)
 	}
 	expected := []Tweet{Tweet{Text: "RT Twitter UK edition"}, Tweet{Text: "RT Triply-replicated Gophers"}}
 	if !reflect.DeepEqual(expected, tweets) {
