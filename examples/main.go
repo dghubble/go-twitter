@@ -15,7 +15,7 @@ func main() {
 	if accessToken == "" {
 		panic("Missing TWITTER_ACCESS_TOKEN environment variable")
 	}
-	ts := NewTokenSource(&oauth2.Token{AccessToken: accessToken})
+	ts := &tokenSource{&oauth2.Token{AccessToken: accessToken}}
 	appAuthClient := oauth2.NewClient(oauth2.NoContext, ts)
 
 	// Twitter
@@ -33,8 +33,8 @@ func main() {
 	fmt.Printf("statuses/show:\n%+v\n", tweet)
 
 	// user timeline
-	statusUserTimelineParams := &twitter.StatusUserTimelineParams{ScreenName: "golang"}
-	tweets, _, _ := client.Statuses.UserTimeline(statusUserTimelineParams)
+	userTimelineParams := &twitter.UserTimelineParams{ScreenName: "golang"}
+	tweets, _, _ := client.Timelines.UserTimeline(userTimelineParams)
 	fmt.Printf("statuses/user_timeline:\n%+v\n", tweets)
 }
 
@@ -42,12 +42,6 @@ func main() {
 
 type tokenSource struct {
 	token *oauth2.Token
-}
-
-func NewTokenSource(token *oauth2.Token) *tokenSource {
-	return &tokenSource{
-		token: token,
-	}
 }
 
 func (t *tokenSource) Token() (*oauth2.Token, error) {

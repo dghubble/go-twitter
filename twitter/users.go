@@ -100,7 +100,8 @@ type UserSearchParams struct {
 	IncludeEntities *bool  `url:"include_entities,omitempty"` // whether 'status' should include entities
 }
 
-// Search queries public user accounts. User auth only.
+// Search queries public user accounts.
+// Requires a user auth context.
 // https://dev.twitter.com/rest/reference/get/users/search
 func (s *UserService) Search(query string, params *UserSearchParams) ([]User, *http.Response, error) {
 	params.Query = query

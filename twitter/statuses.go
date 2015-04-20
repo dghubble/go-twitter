@@ -51,7 +51,7 @@ type Coordinates struct {
 }
 
 type TweetIdentifier struct {
-	Id    int64  `json:id_str`
+	Id    int64  `json:"id"`
 	IdStr string `json:"id_str"`
 }
 
@@ -93,24 +93,5 @@ type StatusLookupParams struct {
 func (s *StatusService) Lookup(params *StatusLookupParams) ([]Tweet, *http.Response, error) {
 	tweets := new([]Tweet)
 	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(tweets)
-	return *tweets, resp, err
-}
-
-type StatusUserTimelineParams struct {
-	UserId             int64  `url:"user_id,omitempty"`
-	ScreenName         string `url:"screen_name,omitempty"`
-	SinceId            int64  `url:"since_id,omitempty"`
-	Count              int    `url:"count,omitempty"`
-	MaxId              int64  `url:"max_id,omitempty"`
-	TrimUser           *bool  `url:"trim_user,omitempty"`
-	ExcludeReplies     *bool  `url:"exclude_replies,omitempty"`
-	ContributorDetails *bool  `url:"contributor_details,omitempty"`
-}
-
-// UserTimeline returns the user timeline of recent tweets for the specified user.
-// https://dev.twitter.com/rest/reference/get/statuses/user_timeline
-func (s *StatusService) UserTimeline(params *StatusUserTimelineParams) ([]Tweet, *http.Response, error) {
-	tweets := new([]Tweet)
-	resp, err := s.sling.New().Get("user_timeline.json").QueryStruct(params).Receive(tweets)
 	return *tweets, resp, err
 }

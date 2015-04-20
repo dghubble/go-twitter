@@ -29,7 +29,7 @@ func TestUserService_Show(t *testing.T) {
 }
 
 func TestUserService_Lookup(t *testing.T) {
-	httpClient, mux, server := testServer() //ver(`[{"name": "Foo"}, {"name": "Bar"}]`)
+	httpClient, mux, server := testServer()
 	defer server.Close()
 
 	mux.HandleFunc("/1.1/users/lookup.json", func(w http.ResponseWriter, r *http.Request) {

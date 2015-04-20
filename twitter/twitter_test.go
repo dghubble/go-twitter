@@ -47,19 +47,19 @@ func assertMethod(t *testing.T, expectedMethod string, req *http.Request) {
 	}
 }
 
-func assertParams(t *testing.T, expected map[string]string, r *http.Request) {
-	r.ParseForm() // populates r.Form url.values (alias map[string][]string)
+func assertParams(t *testing.T, expected map[string]string, req *http.Request) {
+	req.ParseForm() // populates r.Form url.values (alias map[string][]string)
 	expectedValues := url.Values{}
 	for key, value := range expected {
 		expectedValues.Add(key, value)
 	}
-	if !reflect.DeepEqual(expectedValues, r.Form) {
-		t.Errorf("expected parameters %v, got %v", expected, r.Form)
+	if !reflect.DeepEqual(expectedValues, req.Form) {
+		t.Errorf("expected parameters %v, got %v", expected, req.Form)
 	}
 }
 
-func assertParamsWithDups(t *testing.T, expected map[string][]string, r *http.Request) {
-	r.ParseForm() // populates r.Form url.values (alias map[string][]string)
+func assertParamsWithDups(t *testing.T, expected map[string][]string, req *http.Request) {
+	req.ParseForm() // populates r.Form url.values (alias map[string][]string)
 	expectedValues := url.Values{}
 	// expected is a map of slices corresponding to expected to r.Form url.Values
 	for key, values := range expected {
@@ -67,7 +67,7 @@ func assertParamsWithDups(t *testing.T, expected map[string][]string, r *http.Re
 			expectedValues.Add(key, value)
 		}
 	}
-	if !reflect.DeepEqual(expectedValues, r.Form) {
-		t.Errorf("expected parameters %v, got %v", expected, r.Form)
+	if !reflect.DeepEqual(expectedValues, req.Form) {
+		t.Errorf("expected parameters %v, got %v", expected, req.Form)
 	}
 }
