@@ -23,12 +23,15 @@ client := twitter.NewClient(authClient)
 // Home Timeline
 tweets, resp, err := client.Timelines.HomeTimeline(nil)
 
+// Send a Tweet
+tweet, resp, err := client.Statuses.Update("just setting up my twttr", nil)
+
+// Status Show
+tweet, resp, err := client.Statuses.Show(585613041028431872, nil)
+
 // User Show
 params := &twitter.UserShowParams{ScreenName: "dghubble"}
 user, resp, err := client.Users.Show(params)
-
-// Status Show (Tweet show)
-tweet, resp, err := client.Statuses.Show(585613041028431872, nil)
 ```
 
 ## Authentication

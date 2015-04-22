@@ -108,3 +108,29 @@ func (s *StatusService) Lookup(ids []int64, params *StatusLookupParams) ([]Tweet
 	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(tweets)
 	return *tweets, resp, err
 }
+
+// UpdateStatusParams are the parameters for StatusService.Update
+type StatusUpdateParams struct {
+	Status             string   `url:"status,omitempty"`
+	InReplyToStatusId  int64    `url:"in_reply_to_status_id,omitempty"`
+	PossiblySensitive  *bool    `url:"possibly_sensitive,omitempty"`
+	Lat                *float64 `url:"lat,omitempty"`
+	Long               *float64 `url:"long,omitempty"`
+	PlaceId            string   `url:"place_id,omitempty"`
+	DisplayCoordinates *bool    `url:"display_coordinates,omitempty"`
+	TrimUser           *bool    `url:"trim_user,omitempty"`
+	MediaIds           []int64  `url:"media_ids,omitempty,comma"`
+}
+
+// Update updates the user's status, also known as Tweeting.
+// Requires a user auth context.
+// https://dev.twitter.com/rest/reference/post/statuses/update
+func (s *StatusService) Update(status string, params *StatusUpdateParams) (*Tweet, *http.Response, error) {
+	if params == nil {
+		params = &StatusUpdateParams{}
+	}
+	params.Status = status
+	tweet := new(Tweet)
+	resp, err := s.sling.New().Post("update.json").BodyStruct(params).Receive(tweet)
+	return tweet, resp, err
+}

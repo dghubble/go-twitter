@@ -47,13 +47,27 @@ func assertMethod(t *testing.T, expectedMethod string, req *http.Request) {
 	}
 }
 
-func assertParams(t *testing.T, expected map[string]string, req *http.Request) {
-	req.ParseForm() // populates r.Form url.values (alias map[string][]string)
+// assertQuery tests that the Request has the expected url query key/val pairs
+func assertQuery(t *testing.T, expected map[string]string, req *http.Request) {
+	queryValues := req.URL.Query()
 	expectedValues := url.Values{}
 	for key, value := range expected {
 		expectedValues.Add(key, value)
 	}
-	if !reflect.DeepEqual(expectedValues, req.Form) {
+	if !reflect.DeepEqual(expectedValues, queryValues) {
+		t.Errorf("expected parameters %v, got %v", expected, req.Form)
+	}
+}
+
+// assertPostForm tests that the Request has the expected key values pairs url
+// encoded in its Body
+func assertPostForm(t *testing.T, expected map[string]string, req *http.Request) {
+	req.ParseForm() // parses request Body to put url.Values in r.Form/r.PostForm
+	expectedValues := url.Values{}
+	for key, value := range expected {
+		expectedValues.Add(key, value)
+	}
+	if !reflect.DeepEqual(expectedValues, req.PostForm) {
 		t.Errorf("expected parameters %v, got %v", expected, req.Form)
 	}
 }

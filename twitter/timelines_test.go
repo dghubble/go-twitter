@@ -13,7 +13,7 @@ func TestTimelineService_UserTimeline(t *testing.T) {
 
 	mux.HandleFunc("/1.1/statuses/user_timeline.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
-		assertParams(t, map[string]string{"user_id": "113419064", "trim_user": "true", "include_rts": "false"}, r)
+		assertQuery(t, map[string]string{"user_id": "113419064", "trim_user": "true", "include_rts": "false"}, r)
 		fmt.Fprintf(w, `[{"text": "Gophercon talks!"}, {"text": "Why gophers are so adorable"}]`)
 	})
 
@@ -34,7 +34,7 @@ func TestTimelineService_HomeTimeline(t *testing.T) {
 
 	mux.HandleFunc("/1.1/statuses/home_timeline.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
-		assertParams(t, map[string]string{"since_id": "589147592367431680", "exclude_replies": "false"}, r)
+		assertQuery(t, map[string]string{"since_id": "589147592367431680", "exclude_replies": "false"}, r)
 		fmt.Fprintf(w, `[{"text": "Live on #Periscope"}, {"text": "Clickbait journalism"}, {"text": "Useful announcement"}]`)
 	})
 
@@ -55,7 +55,7 @@ func TestTimelineService_MentionTimeline(t *testing.T) {
 
 	mux.HandleFunc("/1.1/statuses/mentions_timeline.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
-		assertParams(t, map[string]string{"count": "20", "include_entities": "false"}, r)
+		assertQuery(t, map[string]string{"count": "20", "include_entities": "false"}, r)
 		fmt.Fprintf(w, `[{"text": "@dghubble can I get verified?"}, {"text": "@dghubble why are gophers so great?"}]`)
 	})
 
@@ -76,7 +76,7 @@ func TestTimelineService_RetweetsOfMeTimeline(t *testing.T) {
 
 	mux.HandleFunc("/1.1/statuses/retweets_of_me.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
-		assertParams(t, map[string]string{"trim_user": "false", "include_user_entities": "false"}, r)
+		assertQuery(t, map[string]string{"trim_user": "false", "include_user_entities": "false"}, r)
 		fmt.Fprintf(w, `[{"text": "RT Twitter UK edition"}, {"text": "RT Triply-replicated Gophers"}]`)
 	})
 

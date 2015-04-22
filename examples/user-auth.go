@@ -40,4 +40,8 @@ func main() {
 	retweetTimelineParams := &twitter.RetweetsOfMeTimelineParams{Count: 2}
 	tweets, _, _ = client.Timelines.RetweetsOfMeTimeline(retweetTimelineParams)
 	fmt.Printf("User's 'RETWEETS OF ME' TIMELINE:\n%+v\n", tweets)
+
+	// Update (POST!) Tweet (uncomment to run)
+	// tweet, _, _ := client.Statuses.Update("just setting up my twttr", nil)
+	// fmt.Printf("Posted Tweet\n%v\n", tweet)
 }
