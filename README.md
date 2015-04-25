@@ -1,10 +1,11 @@
 
 
 # go-twitter [![Build Status](https://travis-ci.org/dghubble/go-twitter.png)](https://travis-ci.org/dghubble/go-twitter) [![Coverage](http://gocover.io/_badge/github.com/dghubble/go-twitter/twitter)](http://gocover.io/github.com/dghubble/go-twitter/twitter) [![GoDoc](http://godoc.org/github.com/dghubble/go-twitter?status.png)](http://godoc.org/github.com/dghubble/go-twitter)
+<img align="right" src="http://storage.googleapis.com/dghubble/gopher-on-bird.png">
 
 go-twitter is an (in progress) Go client library for the [Twitter API](https://dev.twitter.com/rest/public).
 
-## Features
+### Features
 
 * Package `twitter` provides Twitter API services:
     * StatusService
