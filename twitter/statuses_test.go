@@ -104,3 +104,50 @@ func TestStatusService_UpdateHandlesNilParams(t *testing.T) {
 	client := NewClient(httpClient)
 	client.Statuses.Update("very informative tweet", nil)
 }
+
+func TestStatusService_Retweet(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/retweet/20.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "POST", r)
+		assertQuery(t, map[string]string{}, r)
+		assertPostForm(t, map[string]string{"id": "20", "trim_user": "true"}, r)
+		fmt.Fprintf(w, `{"id": 581980947630202020, "text": "RT @jack: just setting up my twttr", "retweeted_status": {"id": 20, "text": "just setting up my twttr"}}`)
+	})
+
+	client := NewClient(httpClient)
+	params := &StatusRetweetParams{TrimUser: Bool(true)}
+	tweet, _, err := client.Statuses.Retweet(20, params)
+	if err != nil {
+		t.Errorf("Statuses.Retweet error %v", err)
+	}
+	expected := &Tweet{Id: 581980947630202020, Text: "RT @jack: just setting up my twttr", RetweetedStatus: &Tweet{Id: 20, Text: "just setting up my twttr"}}
+	if !reflect.DeepEqual(expected, tweet) {
+		t.Errorf("Statuses.Retweet expected:\n%+v, got:\n %+v", expected, tweet)
+	}
+}
+
+func TestStatusService_Destroy(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/destroy/40.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "POST", r)
+		assertQuery(t, map[string]string{}, r)
+		assertPostForm(t, map[string]string{"id": "40", "trim_user": "true"}, r)
+		fmt.Fprintf(w, `{"id": 40, "text": "wishing I had another sammich"}`)
+	})
+
+	client := NewClient(httpClient)
+	params := &StatusDestroyParams{TrimUser: Bool(true)}
+	tweet, _, err := client.Statuses.Destroy(40, params)
+	if err != nil {
+		t.Errorf("Statuses.Destroy error %v", err)
+	}
+	// feed Biz Stone a sammich, he deletes sammich Tweet
+	expected := &Tweet{Id: 40, Text: "wishing I had another sammich"}
+	if !reflect.DeepEqual(expected, tweet) {
+		t.Errorf("Statuses.Destroy expected:\n%+v, got:\n %+v", expected, tweet)
+	}
+}

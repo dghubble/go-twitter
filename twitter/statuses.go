@@ -1,6 +1,7 @@
 package twitter
 
 import (
+	"fmt"
 	"github.com/dghubble/sling"
 	"net/http"
 )
@@ -132,5 +133,46 @@ func (s *StatusService) Update(status string, params *StatusUpdateParams) (*Twee
 	params.Status = status
 	tweet := new(Tweet)
 	resp, err := s.sling.New().Post("update.json").BodyStruct(params).Receive(tweet)
+	return tweet, resp, err
+}
+
+// StatusRetweetParams are the parameters for StatusService.Retweet
+type StatusRetweetParams struct {
+	Id       int64 `url:"id,omitempty"`
+	TrimUser *bool `url:"trim_user,omitempty"`
+}
+
+// Retweet retweets the Tweet with the given id and returns the original Tweet
+// with embedded retweet details.
+// Requires a user auth context.
+// https://dev.twitter.com/rest/reference/post/statuses/retweet/%3Aid
+func (s *StatusService) Retweet(id int64, params *StatusRetweetParams) (*Tweet, *http.Response, error) {
+	if params == nil {
+		params = &StatusRetweetParams{}
+	}
+	params.Id = id
+	tweet := new(Tweet)
+	path := fmt.Sprintf("retweet/%d.json", params.Id)
+	resp, err := s.sling.New().Post(path).BodyStruct(params).Receive(tweet)
+	return tweet, resp, err
+}
+
+// StatusDestroyParams are the parameters for StatusService.Destroy
+type StatusDestroyParams struct {
+	Id       int64 `url:"id,omitempty"`
+	TrimUser *bool `url:"trim_user,omitempty"`
+}
+
+// Destroy deletes the Tweet with the given id and returns it if successful.
+// Requires a user auth context.
+// https://dev.twitter.com/rest/reference/post/statuses/destroy/%3Aid
+func (s *StatusService) Destroy(id int64, params *StatusDestroyParams) (*Tweet, *http.Response, error) {
+	if params == nil {
+		params = &StatusDestroyParams{}
+	}
+	params.Id = id
+	tweet := new(Tweet)
+	path := fmt.Sprintf("destroy/%d.json", params.Id)
+	resp, err := s.sling.New().Post(path).BodyStruct(params).Receive(tweet)
 	return tweet, resp, err
 }
