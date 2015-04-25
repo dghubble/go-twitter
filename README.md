@@ -1,8 +1,8 @@
 
 
-# go-twitter [![Build Status](https://travis-ci.org/dghubble/go-twitter.png)](https://travis-ci.org/dghubble/go-twitter) [![GoDoc](http://godoc.org/github.com/dghubble/go-twitter?status.png)](http://godoc.org/github.com/dghubble/go-twitter)
+# go-twitter [![Build Status](https://travis-ci.org/dghubble/go-twitter.png)](https://travis-ci.org/dghubble/go-twitter) [![Coverage](http://gocover.io/_badge/github.com/dghubble/go-twitter/twitter)](http://gocover.io/github.com/dghubble/go-twitter/twitter) [![GoDoc](http://godoc.org/github.com/dghubble/go-twitter?status.png)](http://godoc.org/github.com/dghubble/go-twitter)
 
-go-twitter is an (IN PROGRESS) Go client library for the [Twitter API](https://dev.twitter.com/rest/public).
+go-twitter is an (in progress) Go client library for the [Twitter API](https://dev.twitter.com/rest/public).
 
 ## Features
 
@@ -41,13 +41,13 @@ params := &twitter.UserShowParams{ScreenName: "dghubble"}
 user, resp, err := client.Users.Show(params)
 ```
 
-Required parameters are passed as positional arguments. Optional parameters are passed via a typed params struct for each endpoint, which provides type safety, handles encoding, and accomodates future changes.
+Required parameters are passed as positional arguments. Optional parameters are passed via a typed params struct for each endpoint.
 
 Method names match the Twitter API endpoint names, except timeline-type endpoints are provided by `TimelineService` rather than `StatusService`.
 
 ## Authentication
 
-By design, the `twitter` package client is decoupled from authentication concerns. Twitter "user auth" and "app auth" endpoints require [OAuth1](https://tools.ietf.org/html/rfc5849) and [OAuth2](https://tools.ietf.org/html/rfc6749), respectively. Use the [dghubble/oauth1](https://github.com/dghubble/oauth1) and [golang/oauth2](https://github.com/golang/oauth2/) libraries to obtain an `http.Client`, which transparently handles authorizing requests, and pass it to `twitter` `NewClient`.
+By design, the `twitter` package client is decoupled from authentication concerns. Twitter "user auth" and "app auth" endpoints require [OAuth1](https://tools.ietf.org/html/rfc5849) and [OAuth2](https://tools.ietf.org/html/rfc6749), respectively. Use the [dghubble/oauth1](https://github.com/dghubble/oauth1) and [golang/oauth2](https://github.com/golang/oauth2/) libraries to obtain an `http.Client`, which transparently handles authorizing requests.
 
 For example, make requests as a consumer on behalf of a user who has granted access, with OAuth1 "user auth":
 
@@ -87,3 +87,7 @@ client := twitter.NewClient(authClient)
 ```
 
 Now use your `twitter` client to make requests.
+
+## License
+
+[MIT License](LICENSE)

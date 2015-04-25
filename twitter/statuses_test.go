@@ -79,12 +79,12 @@ func TestStatusService_Update(t *testing.T) {
 	mux.HandleFunc("/1.1/statuses/update.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "POST", r)
 		assertQuery(t, map[string]string{}, r)
-		assertPostForm(t, map[string]string{"status": "very informative tweet", "media_ids": "123456789,987654321"}, r)
+		assertPostForm(t, map[string]string{"status": "very informative tweet", "media_ids": "123456789,987654321", "lat": "37.826706", "long": "-122.42219"}, r)
 		fmt.Fprintf(w, `{"id": 581980947630845953, "text": "very informative tweet"}`)
 	})
 
 	client := NewClient(httpClient)
-	params := &StatusUpdateParams{MediaIds: []int64{123456789, 987654321}}
+	params := &StatusUpdateParams{MediaIds: []int64{123456789, 987654321}, Lat: Float(37.826706), Long: Float(-122.422190)}
 	tweet, _, err := client.Statuses.Update("very informative tweet", params)
 	if err != nil {
 		t.Errorf("Statuses.Update error %v", err)
@@ -128,6 +128,18 @@ func TestStatusService_Retweet(t *testing.T) {
 	}
 }
 
+func TestStatusService_RetweetHandlesNilParams(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/retweet/20.json", func(w http.ResponseWriter, r *http.Request) {
+		assertPostForm(t, map[string]string{"id": "20"}, r)
+	})
+
+	client := NewClient(httpClient)
+	client.Statuses.Retweet(20, nil)
+}
+
 func TestStatusService_Destroy(t *testing.T) {
 	httpClient, mux, server := testServer()
 	defer server.Close()
@@ -150,4 +162,16 @@ func TestStatusService_Destroy(t *testing.T) {
 	if !reflect.DeepEqual(expected, tweet) {
 		t.Errorf("Statuses.Destroy expected:\n%+v, got:\n %+v", expected, tweet)
 	}
+}
+
+func TestStatusService_DestroyHandlesNilParams(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/destroy/40.json", func(w http.ResponseWriter, r *http.Request) {
+		assertPostForm(t, map[string]string{"id": "40"}, r)
+	})
+
+	client := NewClient(httpClient)
+	client.Statuses.Destroy(40, nil)
 }

@@ -8,6 +8,22 @@ import (
 	"testing"
 )
 
+func TestNewClient(t *testing.T) {
+	client := NewClient(nil)
+	if client.sling.HttpClient != http.DefaultClient {
+		t.Errorf("expected default client %v, got %v", http.DefaultClient, client.sling.HttpClient)
+	}
+	if client.Statuses.sling == client.sling {
+		t.Errorf("Must pass StatusService a derived sling copy.")
+	}
+	if client.Timelines.sling == client.sling {
+		t.Errorf("Must pass TimelineService a derived sling copy.")
+	}
+	if client.Users.sling == client.sling {
+		t.Errorf("Must pass UserService a derived sling copy.")
+	}
+}
+
 // testing utils
 
 // testServer returns an http Client, ServeMux, and Server. The client proxies
