@@ -18,7 +18,7 @@ func TestTimelineService_UserTimeline(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	tweets, _, err := client.Timelines.UserTimeline(&UserTimelineParams{UserId: 113419064, TrimUser: Bool(true), IncludeRetweets: Bool(false)})
+	tweets, _, err := client.Timelines.UserTimeline(&UserTimelineParams{UserID: 113419064, TrimUser: Bool(true), IncludeRetweets: Bool(false)})
 	if err != nil {
 		t.Errorf("Timeline.UserTimeline error %v", err)
 	}
@@ -39,7 +39,7 @@ func TestTimelineService_HomeTimeline(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	tweets, _, err := client.Timelines.HomeTimeline(&HomeTimelineParams{SinceId: 589147592367431680, ExcludeReplies: Bool(false)})
+	tweets, _, err := client.Timelines.HomeTimeline(&HomeTimelineParams{SinceID: 589147592367431680, ExcludeReplies: Bool(false)})
 	if err != nil {
 		t.Errorf("Timeline.HomeTimeline error %v", err)
 	}

@@ -39,7 +39,7 @@ func TestUserService_LookupWithIds(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	users, _, err := client.Users.Lookup(&UserLookupParams{UserId: []int64{113419064, 623265148}})
+	users, _, err := client.Users.Lookup(&UserLookupParams{UserID: []int64{113419064, 623265148}})
 	if err != nil {
 		t.Errorf("Users.Lookup error %v", err)
 	}

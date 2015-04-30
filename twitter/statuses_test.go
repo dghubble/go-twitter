@@ -18,7 +18,7 @@ func TestStatusService_Show(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	params := &StatusShowParams{Id: 5441, IncludeEntities: Bool(false)}
+	params := &StatusShowParams{ID: 5441, IncludeEntities: Bool(false)}
 	tweets, _, err := client.Statuses.Show(589488862814076930, params)
 	if err != nil {
 		t.Errorf("Statuses.Show error %v", err)
@@ -51,12 +51,12 @@ func TestStatusService_Lookup(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	params := &StatusLookupParams{Id: []int64{20}, TrimUser: Bool(true)}
+	params := &StatusLookupParams{ID: []int64{20}, TrimUser: Bool(true)}
 	tweets, _, err := client.Statuses.Lookup([]int64{573893817000140800}, params)
 	if err != nil {
 		t.Errorf("Statuses.Lookup error %v", err)
 	}
-	expected := []Tweet{Tweet{Id: 20, Text: "just setting up my twttr"}, Tweet{Id: 573893817000140800, Text: "Don't get lost #PaxEast2015"}}
+	expected := []Tweet{Tweet{ID: 20, Text: "just setting up my twttr"}, Tweet{ID: 573893817000140800, Text: "Don't get lost #PaxEast2015"}}
 	if !reflect.DeepEqual(expected, tweets) {
 		t.Errorf("Statuses.Lookup expected:\n%+v, got:\n %+v", expected, tweets)
 	}
@@ -89,7 +89,7 @@ func TestStatusService_Update(t *testing.T) {
 	if err != nil {
 		t.Errorf("Statuses.Update error %v", err)
 	}
-	expected := &Tweet{Id: 581980947630845953, Text: "very informative tweet"}
+	expected := &Tweet{ID: 581980947630845953, Text: "very informative tweet"}
 	if !reflect.DeepEqual(expected, tweet) {
 		t.Errorf("Statuses.Update expected:\n%+v, got:\n %+v", expected, tweet)
 	}
@@ -122,7 +122,7 @@ func TestStatusService_Retweet(t *testing.T) {
 	if err != nil {
 		t.Errorf("Statuses.Retweet error %v", err)
 	}
-	expected := &Tweet{Id: 581980947630202020, Text: "RT @jack: just setting up my twttr", RetweetedStatus: &Tweet{Id: 20, Text: "just setting up my twttr"}}
+	expected := &Tweet{ID: 581980947630202020, Text: "RT @jack: just setting up my twttr", RetweetedStatus: &Tweet{ID: 20, Text: "just setting up my twttr"}}
 	if !reflect.DeepEqual(expected, tweet) {
 		t.Errorf("Statuses.Retweet expected:\n%+v, got:\n %+v", expected, tweet)
 	}
@@ -158,7 +158,7 @@ func TestStatusService_Destroy(t *testing.T) {
 		t.Errorf("Statuses.Destroy error %v", err)
 	}
 	// feed Biz Stone a sammich, he deletes sammich Tweet
-	expected := &Tweet{Id: 40, Text: "wishing I had another sammich"}
+	expected := &Tweet{ID: 40, Text: "wishing I had another sammich"}
 	if !reflect.DeepEqual(expected, tweet) {
 		t.Errorf("Statuses.Destroy expected:\n%+v, got:\n %+v", expected, tweet)
 	}

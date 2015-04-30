@@ -20,11 +20,11 @@ func NewTimelineService(sling *sling.Sling) *TimelineService {
 
 // UserTimelineParams are the parameters for TimelineService.UserTimeline.
 type UserTimelineParams struct {
-	UserId             int64  `url:"user_id,omitempty"`
+	UserID             int64  `url:"user_id,omitempty"`
 	ScreenName         string `url:"screen_name,omitempty"`
 	Count              int    `url:"count,omitempty"`
-	SinceId            int64  `url:"since_id,omitempty"`
-	MaxId              int64  `url:"max_id,omitempty"`
+	SinceID            int64  `url:"since_id,omitempty"`
+	MaxID              int64  `url:"max_id,omitempty"`
 	TrimUser           *bool  `url:"trim_user,omitempty"`
 	ExcludeReplies     *bool  `url:"exclude_replies,omitempty"`
 	ContributorDetails *bool  `url:"contributor_details,omitempty"`
@@ -42,8 +42,8 @@ func (s *TimelineService) UserTimeline(params *UserTimelineParams) ([]Tweet, *ht
 // HomeTimelineParams are the parameters for TimelineService.HomeTimeline.
 type HomeTimelineParams struct {
 	Count              int   `url:"count,omitempty"`
-	SinceId            int64 `url:"since_id,omitempty"`
-	MaxId              int64 `url:"max_id,omitempty"`
+	SinceID            int64 `url:"since_id,omitempty"`
+	MaxID              int64 `url:"max_id,omitempty"`
 	TrimUser           *bool `url:"trim_user,omitempty"`
 	ExcludeReplies     *bool `url:"exclude_replies,omitempty"`
 	ContributorDetails *bool `url:"contributor_details,omitempty"`
@@ -63,8 +63,8 @@ func (s *TimelineService) HomeTimeline(params *HomeTimelineParams) ([]Tweet, *ht
 // MentionTimelineParams are the parameters for TimelineService.MentionTimeline.
 type MentionTimelineParams struct {
 	Count              int   `url:"count,omitempty"`
-	SinceId            int64 `url:"since_id,omitempty"`
-	MaxId              int64 `url:"max_id,omitempty"`
+	SinceID            int64 `url:"since_id,omitempty"`
+	MaxID              int64 `url:"max_id,omitempty"`
 	TrimUser           *bool `url:"trim_user,omitempty"`
 	ContributorDetails *bool `url:"contributor_details,omitempty"`
 	IncludeEntities    *bool `url:"include_entities,omitempty"`
@@ -83,8 +83,8 @@ func (s *TimelineService) MentionTimeline(params *MentionTimelineParams) ([]Twee
 // TimelineService.RetweetsOfMeTimeline.
 type RetweetsOfMeTimelineParams struct {
 	Count               int   `url:"count,omitempty"`
-	SinceId             int64 `url:"since_id,omitempty"`
-	MaxId               int64 `url:"max_id,omitempty"`
+	SinceID             int64 `url:"since_id,omitempty"`
+	MaxID               int64 `url:"max_id,omitempty"`
 	TrimUser            *bool `url:"trim_user,omitempty"`
 	IncludeEntities     *bool `url:"include_entities,omitempty"`
 	IncludeUserEntities *bool `url:"include_user_entities"`

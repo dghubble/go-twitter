@@ -20,8 +20,8 @@ type User struct {
 	FollowersCount                 int           `json:"followers_count"`
 	FriendsCount                   int           `json:"friends_count"`
 	GeoEnabled                     bool          `json:"geo_enabled"`
-	Id                             int64         `json:"id"`
-	IdStr                          string        `json:"id_str"`
+	ID                             int64         `json:"id"`
+	IDStr                          string        `json:"id_str"`
 	IsTranslator                   bool          `json:"id_translator"`
 	Lang                           string        `json:"lang"`
 	ListedCount                    int           `json:"listed_count"`
@@ -29,12 +29,12 @@ type User struct {
 	Name                           string        `json:"name"`
 	Notifications                  bool          `json:"notifications"`
 	ProfileBackgroundColor         string        `json:"profile_background_color"`
-	ProfileBackgroundImageUrl      string        `json:"profile_background_image_url"`
-	ProfileBackgroundImageUrlHttps string        `json:"profile_background_image_url_https"`
+	ProfileBackgroundImageURL      string        `json:"profile_background_image_url"`
+	ProfileBackgroundImageURLHttps string        `json:"profile_background_image_url_https"`
 	ProfileBackgroundTile          bool          `json:"profile_background_tile"`
-	ProfileBannerUrl               string        `json:"profile_banner_url"`
-	ProfileImageUrl                string        `json:"profile_image_url"`
-	ProfileImageUrlHttps           string        `json:"profile_image_url_https"`
+	ProfileBannerURL               string        `json:"profile_banner_url"`
+	ProfileImageURL                string        `json:"profile_image_url"`
+	ProfileImageURLHttps           string        `json:"profile_image_url_https"`
 	ProfileLinkColor               string        `json:"profile_link_color"`
 	ProfileSidebarBorderColor      string        `json:"profile_sidebar_border_color"`
 	ProfileSidebarFillColor        string        `json:"profile_sidebar_fill_color"`
@@ -46,7 +46,7 @@ type User struct {
 	Status                         *Tweet        `json:"status"`
 	StatusesCount                  int           `json:"statuses_count"`
 	Timezone                       string        `json:"time_zone"`
-	Url                            string        `json:"url"`
+	URL                            string        `json:"url"`
 	UtcOffset                      int           `json:"utc_offset"`
 	Verified                       bool          `json:"verified"`
 	WithheldInCountries            string        `json:"withheld_in_countries"`
@@ -67,7 +67,7 @@ func NewUserService(sling *sling.Sling) *UserService {
 
 // UserShowParams are the parameters for UserService.Show.
 type UserShowParams struct {
-	UserId          int64  `url:"user_id,omitempty"`
+	UserID          int64  `url:"user_id,omitempty"`
 	ScreenName      string `url:"screen_name,omitempty"`
 	IncludeEntities *bool  `url:"include_entities,omitempty"` // whether 'status' should include entities
 }
@@ -82,7 +82,7 @@ func (s *UserService) Show(params *UserShowParams) (*User, *http.Response, error
 
 // UserLookupParams are the parameters for UserService.Lookup.
 type UserLookupParams struct {
-	UserId          []int64  `url:"user_id,omitempty,comma"`
+	UserID          []int64  `url:"user_id,omitempty,comma"`
 	ScreenName      []string `url:"screen_name,omitempty,comma"`
 	IncludeEntities *bool    `url:"include_entities,omitempty"` // whether 'status' should include entities
 }

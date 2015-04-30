@@ -19,13 +19,13 @@ type Tweet struct {
 	FavoriteCount        int               `json:"favorite_count"`
 	Favorited            bool              `json:"favorited"`
 	FilterLevel          string            `json:"filter_level"`
-	Id                   int64             `json:"id"`
-	IdStr                string            `json:"id_str"`
+	ID                   int64             `json:"id"`
+	IDStr                string            `json:"id_str"`
 	InReplyToScreenName  string            `json:"in_reply_to_screen_name"`
-	InReplyToStatusId    int64             `json:"in_reply_to_status_id"`
-	InReplyToStatusIdStr string            `json:"in_reply_to_status_id_str"`
-	InReplyToUserId      int64             `json:"in_reply_to_user_id"`
-	InReplyToUserIdStr   string            `json:"in_reply_to_user_id_str"`
+	InReplyToStatusID    int64             `json:"in_reply_to_status_id"`
+	InReplyToStatusIDStr string            `json:"in_reply_to_status_id_str"`
+	InReplyToUserID      int64             `json:"in_reply_to_user_id"`
+	InReplyToUserIDStr   string            `json:"in_reply_to_user_id_str"`
 	Lang                 string            `json:"lang"`
 	PossiblySensitive    bool              `json:"possibly_sensitive"`
 	RetweetCount         int               `json:"retweet_count"`
@@ -41,20 +41,23 @@ type Tweet struct {
 	WithheldScope        string            `json:"withheld_scope"`
 }
 
+// Contributor represents a brief summary of a User identifiers.
 type Contributor struct {
-	Id         int64  `json:"id"`
-	IdStr      string `json:"id_str"`
+	ID         int64  `json:"id"`
+	IDStr      string `json:"id_str"`
 	ScreenName string `json:"screen_name"`
 }
 
+// Coordinates are pairs of longitude and latitude locations.
 type Coordinates struct {
 	Coordinates [2]float64 `json:"coordinates"`
 	Type        string     `json:"type"`
 }
 
+// TweetIdentifier represents the id by which a Tweet can be identified.
 type TweetIdentifier struct {
-	Id    int64  `json:"id"`
-	IdStr string `json:"id_str"`
+	ID    int64  `json:"id"`
+	IDStr string `json:"id_str"`
 }
 
 // StatusService provides methods for accessing Twitter status API endpoints.
@@ -71,7 +74,7 @@ func NewStatusService(sling *sling.Sling) *StatusService {
 
 // StatusShowParams are the parameters for StatusService.Show
 type StatusShowParams struct {
-	Id               int64 `url:"id,omitempty"`
+	ID               int64 `url:"id,omitempty"`
 	TrimUser         *bool `url:"trim_user,omitempty"`
 	IncludeMyRetweet *bool `url:"include_my_retweet,omitempty"`
 	IncludeEntities  *bool `url:"include_entities,omitempty"`
@@ -83,7 +86,7 @@ func (s *StatusService) Show(id int64, params *StatusShowParams) (*Tweet, *http.
 	if params == nil {
 		params = &StatusShowParams{}
 	}
-	params.Id = id
+	params.ID = id
 	tweet := new(Tweet)
 	resp, err := s.sling.New().Get("show.json").QueryStruct(params).Receive(tweet)
 	return tweet, resp, err
@@ -91,7 +94,7 @@ func (s *StatusService) Show(id int64, params *StatusShowParams) (*Tweet, *http.
 
 // StatusLookupParams are the parameters for StatusService.Lookup
 type StatusLookupParams struct {
-	Id              []int64 `url:"id,omitempty,comma"`
+	ID              []int64 `url:"id,omitempty,comma"`
 	TrimUser        *bool   `url:"trim_user,omitempty"`
 	IncludeEntities *bool   `url:"include_entities,omitempty"`
 	Map             *bool   `url:"map,omitempty"`
@@ -104,20 +107,20 @@ func (s *StatusService) Lookup(ids []int64, params *StatusLookupParams) ([]Tweet
 	if params == nil {
 		params = &StatusLookupParams{}
 	}
-	params.Id = append(params.Id, ids...)
+	params.ID = append(params.ID, ids...)
 	tweets := new([]Tweet)
 	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(tweets)
 	return *tweets, resp, err
 }
 
-// UpdateStatusParams are the parameters for StatusService.Update
+// StatusUpdateParams are the parameters for StatusService.Update
 type StatusUpdateParams struct {
 	Status             string   `url:"status,omitempty"`
-	InReplyToStatusId  int64    `url:"in_reply_to_status_id,omitempty"`
+	InReplyToStatusID  int64    `url:"in_reply_to_status_id,omitempty"`
 	PossiblySensitive  *bool    `url:"possibly_sensitive,omitempty"`
 	Lat                *float64 `url:"lat,omitempty"`
 	Long               *float64 `url:"long,omitempty"`
-	PlaceId            string   `url:"place_id,omitempty"`
+	PlaceID            string   `url:"place_id,omitempty"`
 	DisplayCoordinates *bool    `url:"display_coordinates,omitempty"`
 	TrimUser           *bool    `url:"trim_user,omitempty"`
 	MediaIds           []int64  `url:"media_ids,omitempty,comma"`
@@ -138,7 +141,7 @@ func (s *StatusService) Update(status string, params *StatusUpdateParams) (*Twee
 
 // StatusRetweetParams are the parameters for StatusService.Retweet
 type StatusRetweetParams struct {
-	Id       int64 `url:"id,omitempty"`
+	ID       int64 `url:"id,omitempty"`
 	TrimUser *bool `url:"trim_user,omitempty"`
 }
 
@@ -150,16 +153,16 @@ func (s *StatusService) Retweet(id int64, params *StatusRetweetParams) (*Tweet, 
 	if params == nil {
 		params = &StatusRetweetParams{}
 	}
-	params.Id = id
+	params.ID = id
 	tweet := new(Tweet)
-	path := fmt.Sprintf("retweet/%d.json", params.Id)
+	path := fmt.Sprintf("retweet/%d.json", params.ID)
 	resp, err := s.sling.New().Post(path).BodyStruct(params).Receive(tweet)
 	return tweet, resp, err
 }
 
 // StatusDestroyParams are the parameters for StatusService.Destroy
 type StatusDestroyParams struct {
-	Id       int64 `url:"id,omitempty"`
+	ID       int64 `url:"id,omitempty"`
 	TrimUser *bool `url:"trim_user,omitempty"`
 }
 
@@ -170,9 +173,9 @@ func (s *StatusService) Destroy(id int64, params *StatusDestroyParams) (*Tweet, 
 	if params == nil {
 		params = &StatusDestroyParams{}
 	}
-	params.Id = id
+	params.ID = id
 	tweet := new(Tweet)
-	path := fmt.Sprintf("destroy/%d.json", params.Id)
+	path := fmt.Sprintf("destroy/%d.json", params.ID)
 	resp, err := s.sling.New().Post(path).BodyStruct(params).Receive(tweet)
 	return tweet, resp, err
 }
