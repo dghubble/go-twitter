@@ -20,7 +20,7 @@ func TestUserService_Show(t *testing.T) {
 	client := NewClient(httpClient)
 	user, _, err := client.Users.Show(&UserShowParams{ScreenName: "xkcdComic"})
 	if err != nil {
-		t.Errorf("Users.Show error %v", err)
+		t.Errorf("Users.Show error %+v", err)
 	}
 	expected := &User{Name: "XKCD Comic", FavouritesCount: 2}
 	if !reflect.DeepEqual(expected, user) {

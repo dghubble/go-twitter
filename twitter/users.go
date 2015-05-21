@@ -76,8 +76,9 @@ type UserShowParams struct {
 // https://dev.twitter.com/rest/reference/get/users/show
 func (s *UserService) Show(params *UserShowParams) (*User, *http.Response, error) {
 	user := new(User)
-	resp, err := s.sling.New().Get("show.json").QueryStruct(params).Receive(user)
-	return user, resp, err
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("show.json").QueryStruct(params).Receive(user, apiError)
+	return user, resp, relevantError(err, *apiError)
 }
 
 // UserLookupParams are the parameters for UserService.Lookup.
@@ -91,8 +92,9 @@ type UserLookupParams struct {
 // https://dev.twitter.com/rest/reference/get/users/lookup
 func (s *UserService) Lookup(params *UserLookupParams) ([]User, *http.Response, error) {
 	users := new([]User)
-	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(users)
-	return *users, resp, err
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(users, apiError)
+	return *users, resp, relevantError(err, *apiError)
 }
 
 // UserSearchParams are the parameters for UserService.Search.
@@ -112,6 +114,7 @@ func (s *UserService) Search(query string, params *UserSearchParams) ([]User, *h
 	}
 	params.Query = query
 	users := new([]User)
-	resp, err := s.sling.New().Get("search.json").QueryStruct(params).Receive(users)
-	return *users, resp, err
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("search.json").QueryStruct(params).Receive(users, apiError)
+	return *users, resp, relevantError(err, *apiError)
 }

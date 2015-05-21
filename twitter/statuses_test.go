@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -103,6 +104,37 @@ func TestStatusService_UpdateHandlesNilParams(t *testing.T) {
 	})
 	client := NewClient(httpClient)
 	client.Statuses.Update("very informative tweet", nil)
+}
+
+func TestStatusService_APIError(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+	mux.HandleFunc("/1.1/statuses/update.json", func(w http.ResponseWriter, r *http.Request) {
+		assertPostForm(t, map[string]string{"status": "very informative tweet"}, r)
+		w.WriteHeader(403)
+		fmt.Fprintf(w, `{"errors": [{"message": "Status is a duplicate", "code": 187}]}`)
+	})
+
+	client := NewClient(httpClient)
+	_, _, err := client.Statuses.Update("very informative tweet", nil)
+	expected := APIError{
+		Errors: []ErrorDetail{
+			ErrorDetail{Message: "Status is a duplicate", Code: 187},
+		},
+	}
+	if !reflect.DeepEqual(expected, err) {
+		t.Errorf("Statuses.Update error expected: \n%+v, got: \n %+v", expected, err)
+	}
+}
+
+func TestStatusService_HTTPError(t *testing.T) {
+	httpClient, _, server := testServer()
+	server.Close()
+	client := NewClient(httpClient)
+	_, _, err := client.Statuses.Update("very informative tweet", nil)
+	if err == nil || !strings.Contains(err.Error(), "connection refused") {
+		t.Errorf("Statuses.Update error expected connection refused, got: \n %+v", err)
+	}
 }
 
 func TestStatusService_Retweet(t *testing.T) {

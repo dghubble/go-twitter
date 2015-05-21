@@ -10,9 +10,6 @@ import (
 
 func TestNewClient(t *testing.T) {
 	client := NewClient(nil)
-	if client.sling.HttpClient != http.DefaultClient {
-		t.Errorf("expected default client %v, got %v", http.DefaultClient, client.sling.HttpClient)
-	}
 	if client.Statuses.sling == client.sling {
 		t.Errorf("Must pass StatusService a derived sling copy.")
 	}

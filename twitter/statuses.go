@@ -88,8 +88,9 @@ func (s *StatusService) Show(id int64, params *StatusShowParams) (*Tweet, *http.
 	}
 	params.ID = id
 	tweet := new(Tweet)
-	resp, err := s.sling.New().Get("show.json").QueryStruct(params).Receive(tweet)
-	return tweet, resp, err
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("show.json").QueryStruct(params).Receive(tweet, apiError)
+	return tweet, resp, relevantError(err, *apiError)
 }
 
 // StatusLookupParams are the parameters for StatusService.Lookup
@@ -109,8 +110,9 @@ func (s *StatusService) Lookup(ids []int64, params *StatusLookupParams) ([]Tweet
 	}
 	params.ID = append(params.ID, ids...)
 	tweets := new([]Tweet)
-	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(tweets)
-	return *tweets, resp, err
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(tweets, apiError)
+	return *tweets, resp, relevantError(err, *apiError)
 }
 
 // StatusUpdateParams are the parameters for StatusService.Update
@@ -135,8 +137,9 @@ func (s *StatusService) Update(status string, params *StatusUpdateParams) (*Twee
 	}
 	params.Status = status
 	tweet := new(Tweet)
-	resp, err := s.sling.New().Post("update.json").BodyStruct(params).Receive(tweet)
-	return tweet, resp, err
+	apiError := new(APIError)
+	resp, err := s.sling.New().Post("update.json").BodyForm(params).Receive(tweet, apiError)
+	return tweet, resp, relevantError(err, *apiError)
 }
 
 // StatusRetweetParams are the parameters for StatusService.Retweet
@@ -155,9 +158,10 @@ func (s *StatusService) Retweet(id int64, params *StatusRetweetParams) (*Tweet, 
 	}
 	params.ID = id
 	tweet := new(Tweet)
+	apiError := new(APIError)
 	path := fmt.Sprintf("retweet/%d.json", params.ID)
-	resp, err := s.sling.New().Post(path).BodyStruct(params).Receive(tweet)
-	return tweet, resp, err
+	resp, err := s.sling.New().Post(path).BodyForm(params).Receive(tweet, apiError)
+	return tweet, resp, relevantError(err, *apiError)
 }
 
 // StatusDestroyParams are the parameters for StatusService.Destroy
@@ -175,7 +179,8 @@ func (s *StatusService) Destroy(id int64, params *StatusDestroyParams) (*Tweet, 
 	}
 	params.ID = id
 	tweet := new(Tweet)
+	apiError := new(APIError)
 	path := fmt.Sprintf("destroy/%d.json", params.ID)
-	resp, err := s.sling.New().Post(path).BodyStruct(params).Receive(tweet)
-	return tweet, resp, err
+	resp, err := s.sling.New().Post(path).BodyForm(params).Receive(tweet, apiError)
+	return tweet, resp, relevantError(err, *apiError)
 }

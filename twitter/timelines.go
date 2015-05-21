@@ -35,8 +35,9 @@ type UserTimelineParams struct {
 // https://dev.twitter.com/rest/reference/get/statuses/user_timeline
 func (s *TimelineService) UserTimeline(params *UserTimelineParams) ([]Tweet, *http.Response, error) {
 	tweets := new([]Tweet)
-	resp, err := s.sling.New().Get("user_timeline.json").QueryStruct(params).Receive(tweets)
-	return *tweets, resp, err
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("user_timeline.json").QueryStruct(params).Receive(tweets, apiError)
+	return *tweets, resp, relevantError(err, *apiError)
 }
 
 // HomeTimelineParams are the parameters for TimelineService.HomeTimeline.
@@ -56,8 +57,9 @@ type HomeTimelineParams struct {
 // https://dev.twitter.com/rest/reference/get/statuses/home_timeline
 func (s *TimelineService) HomeTimeline(params *HomeTimelineParams) ([]Tweet, *http.Response, error) {
 	tweets := new([]Tweet)
-	resp, err := s.sling.New().Get("home_timeline.json").QueryStruct(params).Receive(tweets)
-	return *tweets, resp, err
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("home_timeline.json").QueryStruct(params).Receive(tweets, apiError)
+	return *tweets, resp, relevantError(err, *apiError)
 }
 
 // MentionTimelineParams are the parameters for TimelineService.MentionTimeline.
@@ -75,8 +77,9 @@ type MentionTimelineParams struct {
 // https://dev.twitter.com/rest/reference/get/statuses/mentions_timeline
 func (s *TimelineService) MentionTimeline(params *MentionTimelineParams) ([]Tweet, *http.Response, error) {
 	tweets := new([]Tweet)
-	resp, err := s.sling.New().Get("mentions_timeline.json").QueryStruct(params).Receive(tweets)
-	return *tweets, resp, err
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("mentions_timeline.json").QueryStruct(params).Receive(tweets, apiError)
+	return *tweets, resp, relevantError(err, *apiError)
 }
 
 // RetweetsOfMeTimelineParams are the parameters for
@@ -96,6 +99,7 @@ type RetweetsOfMeTimelineParams struct {
 // https://dev.twitter.com/rest/reference/get/statuses/retweets_of_me
 func (s *TimelineService) RetweetsOfMeTimeline(params *RetweetsOfMeTimelineParams) ([]Tweet, *http.Response, error) {
 	tweets := new([]Tweet)
-	resp, err := s.sling.New().Get("retweets_of_me.json").QueryStruct(params).Receive(tweets)
-	return *tweets, resp, err
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("retweets_of_me.json").QueryStruct(params).Receive(tweets, apiError)
+	return *tweets, resp, relevantError(err, *apiError)
 }
