@@ -14,9 +14,11 @@ func main() {
 	if accessToken == "" {
 		panic("Missing TWITTER_APP_ACCESS_TOKEN environment variable")
 	}
-	ts := &tokenSource{&oauth2.Token{AccessToken: accessToken}}
+
+	config := &oauth2.Config{}
+	token := &oauth2.Token{AccessToken: accessToken}
 	// OAuth2 http.Client will automatically authorize Requests
-	httpClient := oauth2.NewClient(oauth2.NoContext, ts)
+	httpClient := config.Client(oauth2.NoContext, token)
 
 	// twitter client
 	client := twitter.NewClient(httpClient)
@@ -45,14 +47,4 @@ func main() {
 	userTimelineParams := &twitter.UserTimelineParams{ScreenName: "golang", Count: 2}
 	tweets, _, _ = client.Timelines.UserTimeline(userTimelineParams)
 	fmt.Printf("USER TIMELINE:\n%+v\n", tweets)
-}
-
-// golang/oauth2
-
-type tokenSource struct {
-	token *oauth2.Token
-}
-
-func (t *tokenSource) Token() (*oauth2.Token, error) {
-	return t.token, nil
 }

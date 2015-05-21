@@ -53,7 +53,7 @@ By design, the `twitter` package client is decoupled from authentication concern
 For example, make requests as a consumer on behalf of a user who has granted access, with OAuth1 "user auth":
 
 ```go
-// OAuth1 (user auth)
+// OAuth1
 import "github.com/dghubble/oauth1"
 
 config := oauth1.NewConfig(consumerKey, consumerSecret)
@@ -65,23 +65,16 @@ httpClient := config.Client(token)
 client := twitter.NewClient(authClient)
 ```
 
-If no user context is needed, make requests as your consumer application with OAuth2 "app auth":
+If no user context is needed, make requests as your application with app-auth (OAuth2):
 
 ```go
-// OAuth2 (app auth)
+// OAuth2
 import "golang.org/x/oauth2"
 
-type tokenSource struct {
-    token *oauth2.Token
-}
-
-func (t *tokenSource) Token() (*oauth2.Token, error) {
-    return t.token, nil
-}
-
-ts := &tokenSource{&oauth2.Token{AccessToken: accessToken}}
+config := &oauth2.Config{}
+token := &oauth2.Token{AccessToken: accessToken}
 // OAuth2 http.Client will automatically authorize Requests
-httpClient := oauth2.NewClient(oauth2.NoContext, ts)
+httpClient := config.Client(oauth2.NoContext, token)
 
 // twitter client
 client := twitter.NewClient(authClient)
