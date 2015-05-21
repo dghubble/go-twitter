@@ -11,6 +11,7 @@ const twitterAPI = "https://api.twitter.com/1.1/"
 type Client struct {
 	sling *sling.Sling
 	// Twitter API Services
+	Accounts  *AccountService
 	Statuses  *StatusService
 	Timelines *TimelineService
 	Users     *UserService
@@ -21,6 +22,7 @@ func NewClient(httpClient *http.Client) *Client {
 	base := sling.New().Client(httpClient).Base(twitterAPI)
 	return &Client{
 		sling:     base,
+		Accounts:  NewAccountService(base.New()),
 		Statuses:  NewStatusService(base.New()),
 		Timelines: NewTimelineService(base.New()),
 		Users:     NewUserService(base.New()),

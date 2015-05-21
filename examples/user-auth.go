@@ -26,6 +26,11 @@ func main() {
 	// twitter client
 	client := twitter.NewClient(httpClient)
 
+	// Verify Credentials
+	verifyParams := &twitter.AccountVerifyParams{SkipStatus: twitter.Bool(true)}
+	user, _, _ := client.Accounts.VerifyCredentials(verifyParams)
+	fmt.Printf("User's ACCOUNT:\n%+v\n", user)
+
 	// Home Timeline
 	homeTimelineParams := &twitter.HomeTimelineParams{Count: 2}
 	tweets, _, _ := client.Timelines.HomeTimeline(homeTimelineParams)
