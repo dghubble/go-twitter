@@ -15,6 +15,7 @@ func TestStatusService_Show(t *testing.T) {
 	mux.HandleFunc("/1.1/statuses/show.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"id": "589488862814076930", "include_entities": "false"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"user": {"screen_name": "dghubble"}, "text": ".@audreyr use a DONTREADME file if you really want people to read it :P"}`)
 	})
 
@@ -48,6 +49,7 @@ func TestStatusService_Lookup(t *testing.T) {
 	mux.HandleFunc("/1.1/statuses/lookup.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"id": "20,573893817000140800", "trim_user": "true"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `[{"id": 20, "text": "just setting up my twttr"}, {"id": 573893817000140800, "text": "Don't get lost #PaxEast2015"}]`)
 	})
 
@@ -81,6 +83,7 @@ func TestStatusService_Update(t *testing.T) {
 		assertMethod(t, "POST", r)
 		assertQuery(t, map[string]string{}, r)
 		assertPostForm(t, map[string]string{"status": "very informative tweet", "media_ids": "123456789,987654321", "lat": "37.826706", "long": "-122.42219"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"id": 581980947630845953, "text": "very informative tweet"}`)
 	})
 
@@ -111,6 +114,7 @@ func TestStatusService_APIError(t *testing.T) {
 	defer server.Close()
 	mux.HandleFunc("/1.1/statuses/update.json", func(w http.ResponseWriter, r *http.Request) {
 		assertPostForm(t, map[string]string{"status": "very informative tweet"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(403)
 		fmt.Fprintf(w, `{"errors": [{"message": "Status is a duplicate", "code": 187}]}`)
 	})
@@ -145,6 +149,7 @@ func TestStatusService_Retweet(t *testing.T) {
 		assertMethod(t, "POST", r)
 		assertQuery(t, map[string]string{}, r)
 		assertPostForm(t, map[string]string{"id": "20", "trim_user": "true"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"id": 581980947630202020, "text": "RT @jack: just setting up my twttr", "retweeted_status": {"id": 20, "text": "just setting up my twttr"}}`)
 	})
 
@@ -180,6 +185,7 @@ func TestStatusService_Destroy(t *testing.T) {
 		assertMethod(t, "POST", r)
 		assertQuery(t, map[string]string{}, r)
 		assertPostForm(t, map[string]string{"id": "40", "trim_user": "true"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"id": 40, "text": "wishing I had another sammich"}`)
 	})
 

@@ -14,6 +14,7 @@ func TestUserService_Show(t *testing.T) {
 	mux.HandleFunc("/1.1/users/show.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"screen_name": "xkcdComic"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"name": "XKCD Comic", "favourites_count": 2}`)
 	})
 
@@ -35,6 +36,7 @@ func TestUserService_LookupWithIds(t *testing.T) {
 	mux.HandleFunc("/1.1/users/lookup.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"user_id": "113419064,623265148"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `[{"screen_name": "golang"}, {"screen_name": "dghubble"}]`)
 	})
 
@@ -56,6 +58,7 @@ func TestUserService_LookupWithScreenNames(t *testing.T) {
 	mux.HandleFunc("/1.1/users/lookup.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"screen_name": "foo,bar"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `[{"name": "Foo"}, {"name": "Bar"}]`)
 	})
 
@@ -77,6 +80,7 @@ func TestUserService_Search(t *testing.T) {
 	mux.HandleFunc("/1.1/users/search.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"count": "11", "q": "news"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `[{"name": "BBC"}, {"name": "BBC Breaking News"}]`)
 	})
 

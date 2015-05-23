@@ -14,6 +14,7 @@ func TestAccountService_VerifyCredentials(t *testing.T) {
 	mux.HandleFunc("/1.1/account/verify_credentials.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"include_entities": "false", "include_email": "true"}, r)
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"name": "Dalton Hubble", "id": 623265148}`)
 	})
 
