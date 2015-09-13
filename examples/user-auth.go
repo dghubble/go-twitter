@@ -21,7 +21,7 @@ func main() {
 	config := oauth1.NewConfig(consumerKey, consumerSecret)
 	token := oauth1.NewToken(accessToken, accessTokenSecret)
 	// OAuth1 http.Client will automatically authorize Requests
-	httpClient := config.Client(token)
+	httpClient := config.Client(oauth1.NoContext, token)
 
 	// twitter client
 	client := twitter.NewClient(httpClient)
