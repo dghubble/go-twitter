@@ -3,8 +3,9 @@ package twitter
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUserService_Show(t *testing.T) {
@@ -20,13 +21,9 @@ func TestUserService_Show(t *testing.T) {
 
 	client := NewClient(httpClient)
 	user, _, err := client.Users.Show(&UserShowParams{ScreenName: "xkcdComic"})
-	if err != nil {
-		t.Errorf("Users.Show error %+v", err)
-	}
 	expected := &User{Name: "XKCD Comic", FavouritesCount: 2}
-	if !reflect.DeepEqual(expected, user) {
-		t.Errorf("Users.Show expected:\n%+v, got:\n %+v", expected, user)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, user)
 }
 
 func TestUserService_LookupWithIds(t *testing.T) {
@@ -42,13 +39,9 @@ func TestUserService_LookupWithIds(t *testing.T) {
 
 	client := NewClient(httpClient)
 	users, _, err := client.Users.Lookup(&UserLookupParams{UserID: []int64{113419064, 623265148}})
-	if err != nil {
-		t.Errorf("Users.Lookup error %v", err)
-	}
 	expected := []User{User{ScreenName: "golang"}, User{ScreenName: "dghubble"}}
-	if !reflect.DeepEqual(expected, users) {
-		t.Errorf("Users.Lookup expected:\n%+v, got:\n %+v", expected, users)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, users)
 }
 
 func TestUserService_LookupWithScreenNames(t *testing.T) {
@@ -64,13 +57,9 @@ func TestUserService_LookupWithScreenNames(t *testing.T) {
 
 	client := NewClient(httpClient)
 	users, _, err := client.Users.Lookup(&UserLookupParams{ScreenName: []string{"foo", "bar"}})
-	if err != nil {
-		t.Errorf("Users.Lookup error %v", err)
-	}
 	expected := []User{User{Name: "Foo"}, User{Name: "Bar"}}
-	if !reflect.DeepEqual(expected, users) {
-		t.Errorf("Users.Lookup expected:\n%+v, got:\n %+v", expected, users)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, users)
 }
 
 func TestUserService_Search(t *testing.T) {
@@ -86,13 +75,9 @@ func TestUserService_Search(t *testing.T) {
 
 	client := NewClient(httpClient)
 	users, _, err := client.Users.Search("news", &UserSearchParams{Query: "override me", Count: 11})
-	if err != nil {
-		t.Errorf("Users.Search error %v", err)
-	}
 	expected := []User{User{Name: "BBC"}, User{Name: "BBC Breaking News"}}
-	if !reflect.DeepEqual(expected, users) {
-		t.Errorf("Users.Search expected:\n%+v, got:\n %+v", expected, users)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, users)
 }
 
 func TestUserService_SearchHandlesNilParams(t *testing.T) {

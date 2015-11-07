@@ -3,8 +3,9 @@ package twitter
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAccountService_VerifyCredentials(t *testing.T) {
@@ -20,11 +21,7 @@ func TestAccountService_VerifyCredentials(t *testing.T) {
 
 	client := NewClient(httpClient)
 	user, _, err := client.Accounts.VerifyCredentials(&AccountVerifyParams{IncludeEntities: Bool(false), IncludeEmail: Bool(true)})
-	if err != nil {
-		t.Errorf("Accounts.VerifyCredentials error %+v", err)
-	}
 	expected := &User{Name: "Dalton Hubble", ID: 623265148}
-	if !reflect.DeepEqual(expected, user) {
-		t.Errorf("Accounts.VerifyCredentials expected:\n%+v, got:\n %+v", expected, user)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, user)
 }

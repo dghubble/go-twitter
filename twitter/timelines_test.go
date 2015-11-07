@@ -3,8 +3,9 @@ package twitter
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTimelineService_UserTimeline(t *testing.T) {
@@ -20,13 +21,9 @@ func TestTimelineService_UserTimeline(t *testing.T) {
 
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.UserTimeline(&UserTimelineParams{UserID: 113419064, TrimUser: Bool(true), IncludeRetweets: Bool(false)})
-	if err != nil {
-		t.Errorf("Timeline.UserTimeline error %v", err)
-	}
 	expected := []Tweet{Tweet{Text: "Gophercon talks!"}, Tweet{Text: "Why gophers are so adorable"}}
-	if !reflect.DeepEqual(expected, tweets) {
-		t.Errorf("Timeline.UserTimeline expected:\n%+v, got:\n %+v", expected, tweets)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweets)
 }
 
 func TestTimelineService_HomeTimeline(t *testing.T) {
@@ -42,13 +39,9 @@ func TestTimelineService_HomeTimeline(t *testing.T) {
 
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.HomeTimeline(&HomeTimelineParams{SinceID: 589147592367431680, ExcludeReplies: Bool(false)})
-	if err != nil {
-		t.Errorf("Timeline.HomeTimeline error %v", err)
-	}
 	expected := []Tweet{Tweet{Text: "Live on #Periscope"}, Tweet{Text: "Clickbait journalism"}, Tweet{Text: "Useful announcement"}}
-	if !reflect.DeepEqual(expected, tweets) {
-		t.Errorf("Timeline.HomeTimeline expected:\n%+v, got:\n %+v", expected, tweets)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweets)
 }
 
 func TestTimelineService_MentionTimeline(t *testing.T) {
@@ -64,13 +57,9 @@ func TestTimelineService_MentionTimeline(t *testing.T) {
 
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.MentionTimeline(&MentionTimelineParams{Count: 20, IncludeEntities: Bool(false)})
-	if err != nil {
-		t.Errorf("Timeline.MentionTimeline error %v", err)
-	}
 	expected := []Tweet{Tweet{Text: "@dghubble can I get verified?"}, Tweet{Text: "@dghubble why are gophers so great?"}}
-	if !reflect.DeepEqual(expected, tweets) {
-		t.Errorf("Timeline.MentionTimeline expected:\n%+v, got:\n %+v", expected, tweets)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweets)
 }
 
 func TestTimelineService_RetweetsOfMeTimeline(t *testing.T) {
@@ -86,11 +75,7 @@ func TestTimelineService_RetweetsOfMeTimeline(t *testing.T) {
 
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.RetweetsOfMeTimeline(&RetweetsOfMeTimelineParams{TrimUser: Bool(false), IncludeUserEntities: Bool(false)})
-	if err != nil {
-		t.Errorf("Timeline.RetweetsOfMeTimeline error %v", err)
-	}
 	expected := []Tweet{Tweet{Text: "RT Twitter UK edition"}, Tweet{Text: "RT Triply-replicated Gophers"}}
-	if !reflect.DeepEqual(expected, tweets) {
-		t.Errorf("Timeline.RetweetsOfMeTimeline expected:\n%+v, got:\n %+v", expected, tweets)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweets)
 }

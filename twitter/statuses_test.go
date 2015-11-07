@@ -3,9 +3,10 @@ package twitter
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestStatusService_Show(t *testing.T) {
@@ -21,14 +22,10 @@ func TestStatusService_Show(t *testing.T) {
 
 	client := NewClient(httpClient)
 	params := &StatusShowParams{ID: 5441, IncludeEntities: Bool(false)}
-	tweets, _, err := client.Statuses.Show(589488862814076930, params)
-	if err != nil {
-		t.Errorf("Statuses.Show error %v", err)
-	}
+	tweet, _, err := client.Statuses.Show(589488862814076930, params)
 	expected := &Tweet{User: &User{ScreenName: "dghubble"}, Text: ".@audreyr use a DONTREADME file if you really want people to read it :P"}
-	if !reflect.DeepEqual(expected, tweets) {
-		t.Errorf("Statuses.Show expected:\n%+v, got:\n %+v", expected, tweets)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweet)
 }
 
 func TestStatusService_ShowHandlesNilParams(t *testing.T) {
@@ -56,13 +53,9 @@ func TestStatusService_Lookup(t *testing.T) {
 	client := NewClient(httpClient)
 	params := &StatusLookupParams{ID: []int64{20}, TrimUser: Bool(true)}
 	tweets, _, err := client.Statuses.Lookup([]int64{573893817000140800}, params)
-	if err != nil {
-		t.Errorf("Statuses.Lookup error %v", err)
-	}
 	expected := []Tweet{Tweet{ID: 20, Text: "just setting up my twttr"}, Tweet{ID: 573893817000140800, Text: "Don't get lost #PaxEast2015"}}
-	if !reflect.DeepEqual(expected, tweets) {
-		t.Errorf("Statuses.Lookup expected:\n%+v, got:\n %+v", expected, tweets)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweets)
 }
 
 func TestStatusService_LookupHandlesNilParams(t *testing.T) {
@@ -90,13 +83,9 @@ func TestStatusService_Update(t *testing.T) {
 	client := NewClient(httpClient)
 	params := &StatusUpdateParams{MediaIds: []int64{123456789, 987654321}, Lat: Float(37.826706), Long: Float(-122.422190)}
 	tweet, _, err := client.Statuses.Update("very informative tweet", params)
-	if err != nil {
-		t.Errorf("Statuses.Update error %v", err)
-	}
 	expected := &Tweet{ID: 581980947630845953, Text: "very informative tweet"}
-	if !reflect.DeepEqual(expected, tweet) {
-		t.Errorf("Statuses.Update expected:\n%+v, got:\n %+v", expected, tweet)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweet)
 }
 
 func TestStatusService_UpdateHandlesNilParams(t *testing.T) {
@@ -126,8 +115,8 @@ func TestStatusService_APIError(t *testing.T) {
 			ErrorDetail{Message: "Status is a duplicate", Code: 187},
 		},
 	}
-	if !reflect.DeepEqual(expected, err) {
-		t.Errorf("Statuses.Update error expected: \n%+v, got: \n %+v", expected, err)
+	if assert.Error(t, err) {
+		assert.Equal(t, expected, err)
 	}
 }
 
@@ -156,13 +145,9 @@ func TestStatusService_Retweet(t *testing.T) {
 	client := NewClient(httpClient)
 	params := &StatusRetweetParams{TrimUser: Bool(true)}
 	tweet, _, err := client.Statuses.Retweet(20, params)
-	if err != nil {
-		t.Errorf("Statuses.Retweet error %v", err)
-	}
 	expected := &Tweet{ID: 581980947630202020, Text: "RT @jack: just setting up my twttr", RetweetedStatus: &Tweet{ID: 20, Text: "just setting up my twttr"}}
-	if !reflect.DeepEqual(expected, tweet) {
-		t.Errorf("Statuses.Retweet expected:\n%+v, got:\n %+v", expected, tweet)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweet)
 }
 
 func TestStatusService_RetweetHandlesNilParams(t *testing.T) {
@@ -192,14 +177,10 @@ func TestStatusService_Destroy(t *testing.T) {
 	client := NewClient(httpClient)
 	params := &StatusDestroyParams{TrimUser: Bool(true)}
 	tweet, _, err := client.Statuses.Destroy(40, params)
-	if err != nil {
-		t.Errorf("Statuses.Destroy error %v", err)
-	}
 	// feed Biz Stone a sammich, he deletes sammich Tweet
 	expected := &Tweet{ID: 40, Text: "wishing I had another sammich"}
-	if !reflect.DeepEqual(expected, tweet) {
-		t.Errorf("Statuses.Destroy expected:\n%+v, got:\n %+v", expected, tweet)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweet)
 }
 
 func TestStatusService_DestroyHandlesNilParams(t *testing.T) {
