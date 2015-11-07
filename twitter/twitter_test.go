@@ -4,22 +4,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"reflect"
 	"testing"
-)
 
-func TestNewClient(t *testing.T) {
-	client := NewClient(nil)
-	if client.Statuses.sling == client.sling {
-		t.Errorf("Must pass StatusService a derived sling copy.")
-	}
-	if client.Timelines.sling == client.sling {
-		t.Errorf("Must pass TimelineService a derived sling copy.")
-	}
-	if client.Users.sling == client.sling {
-		t.Errorf("Must pass UserService a derived sling copy.")
-	}
-}
+	"github.com/stretchr/testify/assert"
+)
 
 // testing utils
 
@@ -55,9 +43,7 @@ func (t *RewriteTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 }
 
 func assertMethod(t *testing.T, expectedMethod string, req *http.Request) {
-	if actualMethod := req.Method; actualMethod != expectedMethod {
-		t.Errorf("expected method %s, got %s", expectedMethod, actualMethod)
-	}
+	assert.Equal(t, expectedMethod, req.Method)
 }
 
 // assertQuery tests that the Request has the expected url query key/val pairs
@@ -67,9 +53,7 @@ func assertQuery(t *testing.T, expected map[string]string, req *http.Request) {
 	for key, value := range expected {
 		expectedValues.Add(key, value)
 	}
-	if !reflect.DeepEqual(expectedValues, queryValues) {
-		t.Errorf("expected parameters %v, got %v", expected, req.Form)
-	}
+	assert.Equal(t, expectedValues, queryValues)
 }
 
 // assertPostForm tests that the Request has the expected key values pairs url
@@ -80,7 +64,5 @@ func assertPostForm(t *testing.T, expected map[string]string, req *http.Request)
 	for key, value := range expected {
 		expectedValues.Add(key, value)
 	}
-	if !reflect.DeepEqual(expectedValues, req.PostForm) {
-		t.Errorf("expected parameters %v, got %v", expected, req.Form)
-	}
+	assert.Equal(t, expectedValues, req.Form)
 }

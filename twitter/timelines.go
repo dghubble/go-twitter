@@ -1,8 +1,9 @@
 package twitter
 
 import (
-	"github.com/dghubble/sling"
 	"net/http"
+
+	"github.com/dghubble/sling"
 )
 
 // TimelineService provides methods for accessing Twitter status timeline

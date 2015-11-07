@@ -1,8 +1,9 @@
 package twitter
 
 import (
-	"github.com/dghubble/sling"
 	"net/http"
+
+	"github.com/dghubble/sling"
 )
 
 const twitterAPI = "https://api.twitter.com/1.1/"
@@ -15,6 +16,7 @@ type Client struct {
 	Statuses  *StatusService
 	Timelines *TimelineService
 	Users     *UserService
+	Followers *FollowerService
 }
 
 // NewClient returns a new Client.
@@ -26,6 +28,7 @@ func NewClient(httpClient *http.Client) *Client {
 		Statuses:  NewStatusService(base.New()),
 		Timelines: NewTimelineService(base.New()),
 		Users:     NewUserService(base.New()),
+		Followers: NewFollowerService(base.New()),
 	}
 }
 

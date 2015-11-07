@@ -1,8 +1,9 @@
 package twitter
 
 import (
-	"github.com/dghubble/sling"
 	"net/http"
+
+	"github.com/dghubble/sling"
 )
 
 // User represents a Twitter User.

@@ -2,8 +2,9 @@ package twitter
 
 import (
 	"fmt"
-	"github.com/dghubble/sling"
 	"net/http"
+
+	"github.com/dghubble/sling"
 )
 
 // Tweet represents a Twitter Tweet, previously called a status.

@@ -11,6 +11,7 @@ go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/
     * StatusService
     * TimelineService
     * UserService
+    * FollowerService
 
 ## Install
 
