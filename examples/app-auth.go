@@ -1,26 +1,32 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
+	"os"
+
+	"github.com/coreos/pkg/flagutil"
 	"github.com/dghubble/go-twitter/twitter"
 	"golang.org/x/oauth2"
-	"os"
 )
 
-// Main makes App Auth (OAuth2) requests as a consumer on behalf of itself.
 func main() {
-	// read credentials from environment variables
-	accessToken := os.Getenv("TWITTER_APP_ACCESS_TOKEN")
-	if accessToken == "" {
-		panic("Missing TWITTER_APP_ACCESS_TOKEN environment variable")
+	flags := flag.NewFlagSet("app-auth", flag.ExitOnError)
+	accessToken := flags.String("app-access-token", "", "Twitter Application Access Token")
+	flags.Parse(os.Args[1:])
+	flagutil.SetFlagsFromEnv(flags, "TWITTER")
+
+	if *accessToken == "" {
+		log.Fatal("Application Access Token required")
 	}
 
 	config := &oauth2.Config{}
-	token := &oauth2.Token{AccessToken: accessToken}
+	token := &oauth2.Token{AccessToken: *accessToken}
 	// OAuth2 http.Client will automatically authorize Requests
 	httpClient := config.Client(oauth2.NoContext, token)
 
-	// twitter client
+	// Twitter client
 	client := twitter.NewClient(httpClient)
 
 	// user show

@@ -7,7 +7,7 @@ go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/
 
 ### Features
 
-* Package `twitter` provides Twitter API services:
+* Twitter API services:
     * StatusService
     * TimelineService
     * UserService
@@ -23,14 +23,14 @@ Read [GoDoc](https://godoc.org/github.com/dghubble/go-twitter/twitter)
 
 ## Usage
 
-The `twitter` package provides Twitter API services through a `Client`.
+The `twitter` package provides a `Client` for accessing the Twitter API. Here are some example requests.
 
 ```go
-// twitter client
-client := twitter.NewClient(authClient)
+// Twitter client
+client := twitter.NewClient(httpClient)
 
 // Home Timeline
-tweets, resp, err := client.Timelines.HomeTimeline(nil)
+tweets, resp, err := client.Timelines.HomeTimeline(&HomeTimelineParams{})
 
 // Send a Tweet
 tweet, resp, err := client.Statuses.Update("just setting up my twttr", nil)
@@ -41,19 +41,25 @@ tweet, resp, err := client.Statuses.Show(585613041028431872, nil)
 // User Show
 params := &twitter.UserShowParams{ScreenName: "dghubble"}
 user, resp, err := client.Users.Show(params)
+
+// Followers
+followers, resp, err := client.Followers.List(&FollowerListParams{})
 ```
 
-Pass required parameters as positional arguments and optional parameters in the typed params struct for each method.
+Required parameters are passed as positional arguments. Optional parameters are passed in a typed params struct (or pass nil).
 
 ## Authentication
 
-By design, the `twitter` package is decoupled from authentication concerns. Twitter user auth and app auth endpoints require [OAuth1](https://tools.ietf.org/html/rfc5849) and [OAuth2](https://tools.ietf.org/html/rfc6749), respectively. Use the [dghubble/oauth1](https://github.com/dghubble/oauth1) and [golang/oauth2](https://github.com/golang/oauth2/) libraries to obtain an `http.Client`, which transparently handles authorizing requests.
+By design, the Twitter Client accepts any `http.Client` so user auth (OAuth1) or application auth (OAuth2) requests can be made by using the appropriate authenticated client. Use the [dghubble/oauth1](https://github.com/dghubble/oauth1) and [golang/oauth2](https://github.com/golang/oauth2/) packages to obtain an `http.Client` which transparently authorizes requests.
 
-For example, make requests as a consumer on behalf of a user who has granted access, with OAuth1:
+For example, make requests as a consumer application on behalf of a user who has granted access, with OAuth1.
 
 ```go
 // OAuth1
-import "github.com/dghubble/oauth1"
+import (
+    "github.com/dghubble/go-twitter/twitter"
+    "github.com/dghubble/oauth1"
+)
 
 config := oauth1.NewConfig("consumerKey", "consumerSecret")
 token := oauth1.NewToken("accessToken", "accessSecret")
@@ -61,14 +67,17 @@ token := oauth1.NewToken("accessToken", "accessSecret")
 httpClient := config.Client(oauth1.NoContext, token)
 
 // twitter client
-client := twitter.NewClient(authClient)
+client := twitter.NewClient(httpClient)
 ```
 
-If no user auth context is needed, make requests as your application with application auth (app-auth):
+If no user auth context is needed, make requests as your application with application auth.
 
 ```go
 // OAuth2
-import "golang.org/x/oauth2"
+import (
+    "github.com/dghubble/go-twitter/twitter"
+    "golang.org/x/oauth2"
+)
 
 config := &oauth2.Config{}
 token := &oauth2.Token{AccessToken: accessToken}
@@ -76,8 +85,10 @@ token := &oauth2.Token{AccessToken: accessToken}
 httpClient := config.Client(oauth2.NoContext, token)
 
 // twitter client
-client := twitter.NewClient(authClient)
+client := twitter.NewClient(httpClient)
 ```
+
+To implement Login with Twitter for web or mobile, see the gologin [package](https://github.com/dghubble/gologin) and [examples](https://github.com/dghubble/gologin/tree/master/examples/twitter).
 
 ## Contributing
 
