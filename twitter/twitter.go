@@ -24,11 +24,11 @@ func NewClient(httpClient *http.Client) *Client {
 	base := sling.New().Client(httpClient).Base(twitterAPI)
 	return &Client{
 		sling:     base,
-		Accounts:  NewAccountService(base.New()),
-		Statuses:  NewStatusService(base.New()),
-		Timelines: NewTimelineService(base.New()),
-		Users:     NewUserService(base.New()),
-		Followers: NewFollowerService(base.New()),
+		Accounts:  newAccountService(base.New()),
+		Statuses:  newStatusService(base.New()),
+		Timelines: newTimelineService(base.New()),
+		Users:     newUserService(base.New()),
+		Followers: newFollowerService(base.New()),
 	}
 }
 

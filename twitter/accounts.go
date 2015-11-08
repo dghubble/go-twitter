@@ -11,8 +11,8 @@ type AccountService struct {
 	sling *sling.Sling
 }
 
-// NewAccountService returns a new AccountService.
-func NewAccountService(sling *sling.Sling) *AccountService {
+// newAccountService returns a new AccountService.
+func newAccountService(sling *sling.Sling) *AccountService {
 	return &AccountService{
 		sling: sling.Path("account/"),
 	}

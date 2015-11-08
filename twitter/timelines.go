@@ -12,8 +12,8 @@ type TimelineService struct {
 	sling *sling.Sling
 }
 
-// NewTimelineService returns a new TimelineService.
-func NewTimelineService(sling *sling.Sling) *TimelineService {
+// newTimelineService returns a new TimelineService.
+func newTimelineService(sling *sling.Sling) *TimelineService {
 	return &TimelineService{
 		sling: sling.Path("statuses/"),
 	}

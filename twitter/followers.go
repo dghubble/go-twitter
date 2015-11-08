@@ -29,8 +29,8 @@ type FollowerService struct {
 	sling *sling.Sling
 }
 
-// NewFollowerService returns a new FollowerService.
-func NewFollowerService(sling *sling.Sling) *FollowerService {
+// newFollowerService returns a new FollowerService.
+func newFollowerService(sling *sling.Sling) *FollowerService {
 	return &FollowerService{
 		sling: sling.Path("followers/"),
 	}

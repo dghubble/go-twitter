@@ -66,8 +66,8 @@ type StatusService struct {
 	sling *sling.Sling
 }
 
-// NewStatusService returns a new StatusService.
-func NewStatusService(sling *sling.Sling) *StatusService {
+// newStatusService returns a new StatusService.
+func newStatusService(sling *sling.Sling) *StatusService {
 	return &StatusService{
 		sling: sling.Path("statuses/"),
 	}

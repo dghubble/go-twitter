@@ -59,8 +59,8 @@ type UserService struct {
 	sling *sling.Sling
 }
 
-// NewUserService returns a new UserService.
-func NewUserService(sling *sling.Sling) *UserService {
+// newUserService returns a new UserService.
+func newUserService(sling *sling.Sling) *UserService {
 	return &UserService{
 		sling: sling.Path("users/"),
 	}
