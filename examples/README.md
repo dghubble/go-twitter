@@ -32,3 +32,11 @@ Setup an OAuth2 `http.Client` with the Twitter application access token.
 To make requests as an application, create a `twitter` `Client` and get public Tweets or timelines or other public content.
 
     go run app-auth.go
+
+## Streaming API
+
+A user access token (OAuth1) is required for Streaming API requests. See above.
+
+    go run streaming.go
+
+Hit CTRL-C to stop streaming. Uncomment different examples in code to try different streams.

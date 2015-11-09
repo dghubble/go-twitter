@@ -3,15 +3,20 @@
 # go-twitter [![Build Status](https://travis-ci.org/dghubble/go-twitter.png)](https://travis-ci.org/dghubble/go-twitter) [![Coverage](http://gocover.io/_badge/github.com/dghubble/go-twitter/twitter)](http://gocover.io/github.com/dghubble/go-twitter/twitter) [![GoDoc](http://godoc.org/github.com/dghubble/go-twitter?status.png)](http://godoc.org/github.com/dghubble/go-twitter)
 <img align="right" src="http://storage.googleapis.com/dghubble/gopher-on-bird.png">
 
-go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/rest/public).
+go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/rest/public). Check the [Usage](#usage) section or try the [examples](/examples) to see how to access the Twitter API.
 
 ### Features
 
-* Twitter API services:
+* Twitter REST API:
     * StatusService
     * TimelineService
     * UserService
     * FollowerService
+* Twitter Streaming API (beta)
+    * Public Streams
+    * User Streams
+    * Site Streams
+    * Firehose Streams
 
 ## Install
 
@@ -23,14 +28,20 @@ Read [GoDoc](https://godoc.org/github.com/dghubble/go-twitter/twitter)
 
 ## Usage
 
+### REST API
+
 The `twitter` package provides a `Client` for accessing the Twitter API. Here are some example requests.
 
 ```go
+config := oauth1.NewConfig("consumerKey", "consumerSecret")
+token := oauth1.NewToken("accessToken", "accessSecret")
+httpClient := config.Client(oauth1.NoContext, token)
+
 // Twitter client
 client := twitter.NewClient(httpClient)
 
 // Home Timeline
-tweets, resp, err := client.Timelines.HomeTimeline(&HomeTimelineParams{})
+tweets, resp, err := client.Timelines.HomeTimeline(&twitter.HomeTimelineParams{})
 
 // Send a Tweet
 tweet, resp, err := client.Statuses.Update("just setting up my twttr", nil)
@@ -43,14 +54,157 @@ params := &twitter.UserShowParams{ScreenName: "dghubble"}
 user, resp, err := client.Users.Show(params)
 
 // Followers
-followers, resp, err := client.Followers.List(&FollowerListParams{})
+followers, resp, err := client.Followers.List(&twitter.FollowerListParams{})
 ```
 
-Required parameters are passed as positional arguments. Optional parameters are passed in a typed params struct (or pass nil).
+Authentication is handled by the `http.Client` passed to `NewClient` to handle user auth (OAuth1) or application auth (OAuth2). See the [Authentication](#Authentication) section.
+
+Required parameters are passed as positional arguments. Optional parameters are passed typed params structs (or nil).
+
+## Streaming API
+
+The Twitter Public, User, Site, and Firehose Streaming APIs can be accessed through the `Client` `StreamService` which provides methods `Filter`, `Sample`, `User`, `Site`, and `Firehose`.
+
+Create a `Client` with an authenticated `http.Client`. All stream endpoints require a user auth context so choose an OAuth1 `http.Client`.
+
+    client := twitter.NewClient(httpClient)
+
+Next, request a managed `Stream` be started.
+
+#### Filter
+
+Filter Streams return Tweets that match one or more filtering predicates such as `Track`, `Follow`, and `Locations`.
+
+```go
+params := &twitter.StreamFilterParams{
+    Track: []string{"kitten"},
+    StallWarnings: twitter.Bool(true),
+}
+stream, err := client.Streams.Filter(params)
+```
+
+#### User
+
+User Streams provide messages specific to the authenticate User and possibly those they follow.
+
+```go
+params := &twitter.StreamUserParams{
+    With:          "followings",
+    StallWarnings: twitter.Bool(true),
+}
+stream, err := client.Streams.User(params)
+```
+
+*Note* To see Direct Message events, your consumer application must ask Users for read/write/DM access to their account.
+
+#### Sample
+
+Sample Streams return a small sample of public Tweets.
+
+```go
+params := &twitter.StreamSampleParams{
+    StallWarnings: twitter.Bool(true),
+}
+stream, err := client.Streams.Sample(params)
+```
+
+#### Site, Firehose
+
+Site and Firehose Streams require your application to have special permissions, but their API works the same way.
+
+### Receiving Messages
+
+Each `Stream` maintains the connection to the Twitter Streaming API endpoint, receives messages, and sends them on the `Stream.Messages` channel.
+
+Go channels support range iterations which allow you to read the messages which are of type `interface{}`.
+
+```go
+for message := range stream.Messages {
+    fmt.Println(message)
+}
+```
+
+If you run this in your main goroutine, it will receive messages forever unless the stream stops. To continue execution, receive messages using a separate goroutine.
+
+### Demux
+
+Receiving messages of type `interface{}` isn't very nice, it means you'll have to type switch and probably filter out message types you don't care about. 
+
+For this, try the experimental `DefaultDemux` which receives messages and type switches them to call a function with typed messages.
+
+For example, say you're interested in Tweets and Direct Messages only.
+
+```go
+demux := twitter.NewDemux()
+demux.Tweet = func(tweet *twitter.Tweet) {
+    fmt.Println(tweet.Text)
+}
+demux.DM = func(dm *twitter.DirectMessage) {
+    fmt.Println(dm.SenderID)
+}
+```
+
+Pass the `Demux` each message or give it the entire `Stream.Message` channel.
+
+```go
+for message := range stream.Messages {
+    demux.Handle(message)
+}
+// or pass the channel
+demux.HandleChan(stream.Messages)
+```
+
+### Stopping
+
+Ok, the world is streaming to you. How to stop it?
+
+First, `Stream` may stop itself if the stream stops and retrying produces unrecoverable errors. When this happens, `Stream` will **always** close the `stream.Messages` channel which means any *for message range* loops will be able to continue.
+
+When you decide you are finished receiving from a `Stream`, call `Stop()` which will closes responses and channels and shutdowns the goroutine **before** returning. This ensures goroutines and resources are cleaned up properly when your program exits.
+
+### Pitfalls
+
+If this were run on the main goroutine, `Stop()` would likely never be reached, control stays in the message loop unless the `Stream` becomes disconnected and cannot retry.
+
+```go
+// program does not terminate :(
+stream, _ := client.Streams.Sample(params)
+for message := range stream.Messages {
+    demux.Handle(message)
+}
+stream.Stop()
+```
+
+In the next example, messages are received on a non-main goroutine, but then `Stop()` is called immediately. The `Stream` is stopped and cleaned up, then the program exits.
+
+```go
+// got no messages :(
+stream, _ := client.Streams.Sample(params)
+go demux.Handle(stream.Messages)
+stream.Stop()
+```
+
+Instead, write a main package that receives messages in a goroutine, but in your main goroutine, wait for CTRL-C to be pressed before stopping.
+
+```go
+stream, err := client.Streams.Sample(params)
+go demux.Handle(stream.Messages)
+
+// Wait for SIGINT and SIGTERM (HIT CTRL-C)
+ch := make(chan os.Signal)
+signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+log.Println(<-ch)
+
+stream.Stop()
+```
 
 ## Authentication
 
-By design, the Twitter Client accepts any `http.Client` so user auth (OAuth1) or application auth (OAuth2) requests can be made by using the appropriate authenticated client. Use the [dghubble/oauth1](https://github.com/dghubble/oauth1) and [golang/oauth2](https://github.com/golang/oauth2/) packages to obtain an `http.Client` which transparently authorizes requests.
+The API client accepts an any `http.Client` capable of making user auth (OAuth1) or application auth (OAuth2) authorized requests. See the [dghubble/oauth1](https://github.com/dghubble/oauth1) and [golang/oauth2](https://github.com/golang/oauth2/) packages which can provide such agnostic clients.
+
+Passing an `http.Client` directly grants you control over the underlying transport, avoids dependencies on particular OAuth1 or OAuth2 packages, and keeps client APIs separate from authentication protocols.
+
+See the [google/go-github](https://github.com/google/go-github) client which takes the same approach.
 
 For example, make requests as a consumer application on behalf of a user who has granted access, with OAuth1.
 
@@ -66,7 +220,7 @@ token := oauth1.NewToken("accessToken", "accessSecret")
 // http.Client will automatically authorize Requests
 httpClient := config.Client(oauth1.NoContext, token)
 
-// twitter client
+// Twitter client
 client := twitter.NewClient(httpClient)
 ```
 
@@ -84,11 +238,16 @@ token := &oauth2.Token{AccessToken: accessToken}
 // http.Client will automatically authorize Requests
 httpClient := config.Client(oauth2.NoContext, token)
 
-// twitter client
+// Twitter client
 client := twitter.NewClient(httpClient)
 ```
 
 To implement Login with Twitter for web or mobile, see the gologin [package](https://github.com/dghubble/gologin) and [examples](https://github.com/dghubble/gologin/tree/master/examples/twitter).
+
+## Roadmap
+
+* Support gzipped streams
+* Auto-stop streams in the event of long stalls
 
 ## Contributing
 
