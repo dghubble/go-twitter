@@ -57,7 +57,7 @@ user, resp, err := client.Users.Show(params)
 followers, resp, err := client.Followers.List(&twitter.FollowerListParams{})
 ```
 
-Authentication is handled by the `http.Client` passed to `NewClient` to handle user auth (OAuth1) or application auth (OAuth2). See the [Authentication](#Authentication) section.
+Authentication is handled by the `http.Client` passed to `NewClient` to handle user auth (OAuth1) or application auth (OAuth2). See the [Authentication](#authentication) section.
 
 Required parameters are passed as positional arguments. Optional parameters are passed typed params structs (or nil).
 
@@ -156,15 +156,13 @@ demux.HandleChan(stream.Messages)
 
 ### Stopping
 
-Ok, the world is streaming to you. How to stop it?
+The `Stream` may stop itself if the stream disconnects and retrying produces unrecoverable errors. When this occurs, `Stream` will close the `stream.Messages` channel, so any *for message range* loops will be able to continue.
 
-First, `Stream` may stop itself if the stream stops and retrying produces unrecoverable errors. When this happens, `Stream` will **always** close the `stream.Messages` channel which means any *for message range* loops will be able to continue.
-
-When you decide you are finished receiving from a `Stream`, call `Stop()` which will closes responses and channels and shutdowns the goroutine **before** returning. This ensures goroutines and resources are cleaned up properly when your program exits.
+When you are finished receiving from a `Stream`, call `Stop()` which closes the connection, channels, and stops the goroutine **before** returning. This ensures resources are properly cleaned up.
 
 ### Pitfalls
 
-If this were run on the main goroutine, `Stop()` would likely never be reached, control stays in the message loop unless the `Stream` becomes disconnected and cannot retry.
+In this example, `Stop()` is unlikely to be reached. Control stays in the message loop unless the `Stream` becomes disconnected and cannot retry.
 
 ```go
 // program does not terminate :(
@@ -175,7 +173,7 @@ for message := range stream.Messages {
 stream.Stop()
 ```
 
-In the next example, messages are received on a non-main goroutine, but then `Stop()` is called immediately. The `Stream` is stopped and cleaned up, then the program exits.
+Here, messages are received on a non-main goroutine, but then `Stop()` is called immediately. The `Stream` is stopped and the program exits.
 
 ```go
 // got no messages :(
@@ -184,7 +182,7 @@ go demux.Handle(stream.Messages)
 stream.Stop()
 ```
 
-Instead, write a main package that receives messages in a goroutine, but in your main goroutine, wait for CTRL-C to be pressed before stopping.
+For main package scripts, one option is to receive messages in a goroutine and wait for CTRL-C to be pressed, then explicitly stop the `Stream`.
 
 ```go
 stream, err := client.Streams.Sample(params)

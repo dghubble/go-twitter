@@ -3,7 +3,6 @@ package twitter
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"sync"
@@ -238,13 +237,9 @@ func (s *Stream) receive(body io.ReadCloser) {
 	scanner.Split(scanLines)
 	for !stopped(s.done) && scanner.Scan() {
 		token := scanner.Bytes()
-		//fmt.Println("s", string(token), len(token))
 		if len(token) == 0 {
 			// empty keep-alive
 			continue
-		}
-		if len(token) == 1 && token[0] == '\n' {
-			fmt.Println("a wild newline has appeared")
 		}
 		select {
 		// send messages, data, or errors
