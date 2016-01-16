@@ -33,7 +33,10 @@ func main() {
 	client := twitter.NewClient(httpClient)
 
 	// Verify Credentials
-	verifyParams := &twitter.AccountVerifyParams{SkipStatus: twitter.Bool(true)}
+	verifyParams := &twitter.AccountVerifyParams{
+		SkipStatus:   twitter.Bool(true),
+		IncludeEmail: twitter.Bool(true),
+	}
 	user, _, _ := client.Accounts.VerifyCredentials(verifyParams)
 	fmt.Printf("User's ACCOUNT:\n%+v\n", user)
 
