@@ -40,6 +40,7 @@ type Tweet struct {
 	WithheldCopyright    bool              `json:"withheld_copyright"`
 	WithheldInCountries  []string          `json:"withheld_in_countries"`
 	WithheldScope        string            `json:"withheld_scope"`
+	ExtendedEntities     *ExtendedEntity   `json:"extended_entities"`
 }
 
 // Contributor represents a brief summary of a User identifiers.
