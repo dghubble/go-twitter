@@ -2,7 +2,7 @@ package twitter
 
 // Entities represent metadata and context info parsed from Twitter components.
 // https://dev.twitter.com/overview/api/entities
-// TODO: symbols, extended_entities
+// TODO: symbols
 type Entities struct {
 	Hashtags     []HashtagEntity `json:"hashtags"`
 	Media        []MediaEntity   `json:"media"`
@@ -51,6 +51,12 @@ type MentionEntity struct {
 type UserEntities struct {
 	URL         Entities `json:"url"`
 	Description Entities `json:"description"`
+}
+
+// Extended entities contain media information
+// https://dev.twitter.com/overview/api/entities-in-twitter-objects#extended_entities
+type ExtendedEntity struct {
+	Media       []MediaEntity `json:"media"`
 }
 
 // Indices represent the start and end offsets within text.
