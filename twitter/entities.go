@@ -53,10 +53,10 @@ type UserEntities struct {
 	Description Entities `json:"description"`
 }
 
-// Extended entities contain media information
+// ExtendedEntity contains media information.
 // https://dev.twitter.com/overview/api/entities-in-twitter-objects#extended_entities
 type ExtendedEntity struct {
-	Media       []MediaEntity `json:"media"`
+	Media []MediaEntity `json:"media"`
 }
 
 // Indices represent the start and end offsets within text.
