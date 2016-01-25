@@ -41,6 +41,9 @@ type Tweet struct {
 	WithheldInCountries  []string          `json:"withheld_in_countries"`
 	WithheldScope        string            `json:"withheld_scope"`
 	ExtendedEntities     *ExtendedEntity   `json:"extended_entities"`
+	QuotedStatusID       int64             `json:"quoted_status_id"`
+	QuotedStatusIDStr    string            `json:"quoted_status_id_str"`
+	QuotedStatus         *Tweet            `json:"quoted_status"`
 }
 
 // Contributor represents a brief summary of a User identifiers.
