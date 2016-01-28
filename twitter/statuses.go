@@ -189,3 +189,37 @@ func (s *StatusService) Destroy(id int64, params *StatusDestroyParams) (*Tweet, 
 	resp, err := s.sling.New().Post(path).BodyForm(params).Receive(tweet, apiError)
 	return tweet, resp, relevantError(err, *apiError)
 }
+
+// OEmbedTweet represents a tweet in oEmbed format
+type OEmbedTweet struct {
+	URL          string `json:"url"`
+	ProviderURL  string `json:"provider_url"`
+	ProviderName string `json:"provider_name"`
+	AuthorName   string `json:"author_name"`
+	Version      string `json:"version"`
+	AuthorURL    string `json:"author_url"`
+	Type         string `json:"type"`
+	HTML         string `json:"html"`
+	Height       int64  `json:"height"`
+	Width        int64  `json:"width"`
+}
+
+// StatusOEmbedParams are the parameters for StatusService.OEmbed
+type StatusOEmbedParams struct {
+	ID       int64 `url:"id,omitempty"`
+	maxWidth int64 `url:"maxwidth,omitempty"`
+}
+
+// oembed shows the tweet with all oEmbed format.
+// Requires a user auth context.
+// https://dev.twitter.com/rest/reference/get/statuses/oembed
+func (s *StatusService) OEmbed(id int64, params *StatusOEmbedParams) (*OEmbedTweet, *http.Response, error) {
+	if params == nil {
+		params = &StatusOEmbedParams{}
+	}
+	params.ID = id
+	oEmbedTweet := new(OEmbedTweet)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("oembed.json").QueryStruct(params).Receive(oEmbedTweet, apiError)
+	return oEmbedTweet, resp, relevantError(err, *apiError)
+}
