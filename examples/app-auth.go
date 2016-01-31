@@ -47,7 +47,12 @@ func main() {
 	// statuses lookup
 	statusLookupParams := &twitter.StatusLookupParams{ID: []int64{20}}
 	tweets, _, _ := client.Statuses.Lookup([]int64{573893817000140800}, statusLookupParams)
-	fmt.Printf("STATUSES LOOKUP:\n%v\n", tweets)
+	fmt.Printf("STATUSES LOOKUP:\n%+v\n", tweets)
+
+	// oEmbed status
+	statusOembedParams := &twitter.StatusOEmbedParams{ID: 691076766878691329, MaxWidth: 500}
+	oembed, _, _ := client.Statuses.OEmbed(statusOembedParams)
+	fmt.Printf("OEMBED TWEET:\n%+v\n", oembed)
 
 	// user timeline
 	userTimelineParams := &twitter.UserTimelineParams{ScreenName: "golang", Count: 2}

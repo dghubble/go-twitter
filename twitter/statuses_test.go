@@ -194,3 +194,31 @@ func TestStatusService_DestroyHandlesNilParams(t *testing.T) {
 	client := NewClient(httpClient)
 	client.Statuses.Destroy(40, nil)
 }
+
+func TestStatusService_OEmbed(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/oembed.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "GET", r)
+		assertQuery(t, map[string]string{"id": "691076766878691329", "maxwidth": "400", "hide_media": "true"}, r)
+		w.Header().Set("Content-Type", "application/json")
+		// abbreviated oEmbed response
+		fmt.Fprintf(w, `{"url": "https://twitter.com/dghubble/statuses/691076766878691329", "width": 400, "html": "<blockquote></blockquote>"}`)
+	})
+
+	client := NewClient(httpClient)
+	params := &StatusOEmbedParams{
+		ID:        691076766878691329,
+		MaxWidth:  400,
+		HideMedia: Bool(true),
+	}
+	oembed, _, err := client.Statuses.OEmbed(params)
+	expected := &OEmbedTweet{
+		URL:   "https://twitter.com/dghubble/statuses/691076766878691329",
+		Width: 400,
+		HTML:  "<blockquote></blockquote>",
+	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, oembed)
+}

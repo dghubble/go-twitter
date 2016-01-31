@@ -202,22 +202,25 @@ type OEmbedTweet struct {
 	HTML         string `json:"html"`
 	Height       int64  `json:"height"`
 	Width        int64  `json:"width"`
+	CacheAge     string `json:"cache_age"`
 }
 
 // StatusOEmbedParams are the parameters for StatusService.OEmbed
 type StatusOEmbedParams struct {
-	ID       int64 `url:"id,omitempty"`
-	maxWidth int64 `url:"maxwidth,omitempty"`
+	ID         int64  `url:"id,omitempty"`
+	URL        string `url:"url,omitempty"`
+	Align      string `url:"align,omitempty"`
+	MaxWidth   int64  `url:"maxwidth,omitempty"`
+	HideMedia  *bool  `url:"hide_media,omitempty"`
+	HideThread *bool  `url:"hide_media,omitempty"`
+	OmitScript *bool  `url:"hide_media,omitempty"`
+	WidgetType string `url:"widget_type,omitempty"`
+	HideTweet  *bool  `url:"hide_tweet,omitempty"`
 }
 
 // OEmbed returns the requested Tweet in oEmbed format.
-// Requires a user auth context.
 // https://dev.twitter.com/rest/reference/get/statuses/oembed
-func (s *StatusService) OEmbed(id int64, params *StatusOEmbedParams) (*OEmbedTweet, *http.Response, error) {
-	if params == nil {
-		params = &StatusOEmbedParams{}
-	}
-	params.ID = id
+func (s *StatusService) OEmbed(params *StatusOEmbedParams) (*OEmbedTweet, *http.Response, error) {
 	oEmbedTweet := new(OEmbedTweet)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Get("oembed.json").QueryStruct(params).Receive(oEmbedTweet, apiError)
