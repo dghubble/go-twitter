@@ -206,8 +206,10 @@ type OEmbedTweet struct {
 
 // StatusOEmbedParams are the parameters for StatusService.OEmbed
 type StatusOEmbedParams struct {
-	ID       int64 `url:"id,omitempty"`
-	maxWidth int64 `url:"maxwidth,omitempty"`
+	ID         int64 `url:"id,omitempty"`
+	MaxWidth   int64 `url:"maxwidth,omitempty"`
+	HideMedia  bool  `url:"hide_media,omitempty"`
+	OmitScript bool  `url:"omit_script,omitempty"`
 }
 
 // oembed shows the tweet with all oEmbed format.
