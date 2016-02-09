@@ -66,6 +66,9 @@ type StreamSampleParams struct {
 // Sample returns a small sample of public stream messages.
 // https://dev.twitter.com/streaming/reference/get/statuses/sample
 func (srv *StreamService) Sample(params *StreamSampleParams) (*Stream, error) {
+	if params == nil {
+		params = &StreamSampleParams{}
+	}
 	req, err := srv.public.New().Get("sample.json").QueryStruct(params).Request()
 	if err != nil {
 		return nil, err
@@ -87,6 +90,9 @@ type StreamUserParams struct {
 // User returns a stream of messages specific to the authenticated User.
 // https://dev.twitter.com/streaming/reference/get/user
 func (srv *StreamService) User(params *StreamUserParams) (*Stream, error) {
+	if params == nil {
+		params = &StreamUserParams{}
+	}
 	req, err := srv.user.New().Get("user.json").QueryStruct(params).Request()
 	if err != nil {
 		return nil, err
@@ -101,7 +107,7 @@ type StreamSiteParams struct {
 	Language      []string `url:"language,omitempty,comma"`
 	Replies       string   `url:"replies,omitempty"`
 	StallWarnings *bool    `url:"stall_warnings,omitempty"`
-	With          string   `json:"with,omitempty"`
+	With          string   `url:"with,omitempty"`
 }
 
 // Site returns messages for a set of users.

@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -24,6 +25,33 @@ func testServer() (*http.Client, *http.ServeMux, *httptest.Server) {
 	}}
 	client := &http.Client{Transport: transport}
 	return client, mux, server
+}
+
+var defaultTestTimeout = time.Second * 1
+
+// assertReceive asserts that a bool message is received on the channel before a specified timeout
+func assertReceive(t *testing.T, c <-chan bool, timeout time.Duration, errorMsg string, params ...interface{}) {
+	select {
+	case <-c:
+		break
+	case <-time.After(timeout):
+		t.Errorf(errorMsg, params...)
+	}
+}
+
+// testHandleStream will create a demux that will handle stream messages and call another channel indicating a message has been handled which will be returned to assert in tests
+func testHandleStream(stream *Stream) <-chan bool {
+	demux := NewSwitchDemux()
+	handled := make(chan bool)
+	demux.All = func(msg interface{}) {
+		handled <- true
+	}
+
+	go func() {
+		demux.HandleChan(stream.Messages)
+	}()
+
+	return handled
 }
 
 // RewriteTransport rewrites https requests to http to avoid TLS cert issues
