@@ -8,19 +8,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testDMID int64 = 240136858829479936
-var testDMIDStr = "240136858829479936"
-var testDMJSON = `{
-    "id": 240136858829479936,
-    "recipient": {
-        "screen_name": "s0c1alm3dia"
-    },
-    "sender": {
-        "screen_name": "theSeanCook"
-    },
-    "text": "booyakasha"
-}`
-var testDM = DirectMessage{ID: testDMID, Recipient: &User{ScreenName: "s0c1alm3dia"}, Sender: &User{ScreenName: "theSeanCook"}, Text: "booyakasha"}
+var (
+	testDM = DirectMessage{
+		ID:        240136858829479936,
+		Recipient: &User{ScreenName: "theSeanCook"},
+		Sender:    &User{ScreenName: "s0c1alm3dia"},
+		Text:      "hello world",
+	}
+	testDMIDStr = "240136858829479936"
+	testDMJSON  = `{"id": 240136858829479936,"recipient": {"screen_name": "theSeanCook"},"sender": {"screen_name": "s0c1alm3dia"},"text": "hello world"}`
+)
 
 func TestDirectMessageService_Show(t *testing.T) {
 	httpClient, mux, server := testServer()
@@ -30,14 +27,13 @@ func TestDirectMessageService_Show(t *testing.T) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"id": testDMIDStr}, r)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, `[`+testDMJSON+`]`)
+		fmt.Fprintf(w, testDMJSON)
 	})
 
 	client := NewClient(httpClient)
-	dms, _, err := client.DirectMessages.Show(testDMID)
-	expected := []DirectMessage{testDM}
+	dms, _, err := client.DirectMessages.Show(testDM.ID)
 	assert.Nil(t, err)
-	assert.Equal(t, expected, dms)
+	assert.Equal(t, &testDM, dms)
 }
 
 func TestDirectMessageService_Get(t *testing.T) {
@@ -54,24 +50,6 @@ func TestDirectMessageService_Get(t *testing.T) {
 	client := NewClient(httpClient)
 	params := &DirectMessageGetParams{SinceID: 589147592367431680, Count: 1}
 	dms, _, err := client.DirectMessages.Get(params)
-	expected := []DirectMessage{testDM}
-	assert.Nil(t, err)
-	assert.Equal(t, expected, dms)
-}
-
-func TestDirectMessageService_GetNilParams(t *testing.T) {
-	httpClient, mux, server := testServer()
-	defer server.Close()
-
-	mux.HandleFunc("/1.1/direct_messages.json", func(w http.ResponseWriter, r *http.Request) {
-		assertMethod(t, "GET", r)
-		assertQuery(t, map[string]string{}, r)
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, `[`+testDMJSON+`]`)
-	})
-
-	client := NewClient(httpClient)
-	dms, _, err := client.DirectMessages.Get(nil)
 	expected := []DirectMessage{testDM}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, dms)
@@ -96,58 +74,22 @@ func TestDirectMessageService_Sent(t *testing.T) {
 	assert.Equal(t, expected, dms)
 }
 
-func TestDirectMessageService_SentNilParams(t *testing.T) {
-	httpClient, mux, server := testServer()
-	defer server.Close()
-
-	mux.HandleFunc("/1.1/direct_messages/sent.json", func(w http.ResponseWriter, r *http.Request) {
-		assertMethod(t, "GET", r)
-		assertQuery(t, map[string]string{}, r)
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, `[`+testDMJSON+`]`)
-	})
-
-	client := NewClient(httpClient)
-	dms, _, err := client.DirectMessages.Sent(nil)
-	expected := []DirectMessage{testDM}
-	assert.Nil(t, err)
-	assert.Equal(t, expected, dms)
-}
-
-func TestDirectMessageService_SendToID(t *testing.T) {
+func TestDirectMessageService_New(t *testing.T) {
 	httpClient, mux, server := testServer()
 	defer server.Close()
 
 	mux.HandleFunc("/1.1/direct_messages/new.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "POST", r)
-		assertPostForm(t, map[string]string{"user_id": "589147592367431680", "text": "booyakasha"}, r)
+		assertPostForm(t, map[string]string{"screen_name": "theseancook", "text": "hello world"}, r)
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, testDMJSON)
 	})
 
 	client := NewClient(httpClient)
-	dm, _, err := client.DirectMessages.SendToID(589147592367431680, "booyakasha")
-	expected := testDM
+	params := &DirectMessageNewParams{ScreenName: "theseancook", Text: "hello world"}
+	dm, _, err := client.DirectMessages.New(params)
 	assert.Nil(t, err)
-	assert.Equal(t, expected, dm)
-}
-
-func TestDirectMessageService_SendToScreenName(t *testing.T) {
-	httpClient, mux, server := testServer()
-	defer server.Close()
-
-	mux.HandleFunc("/1.1/direct_messages/new.json", func(w http.ResponseWriter, r *http.Request) {
-		assertMethod(t, "POST", r)
-		assertPostForm(t, map[string]string{"screen_name": "s0c1alm3dia", "text": "booyakasha"}, r)
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, testDMJSON)
-	})
-
-	client := NewClient(httpClient)
-	dm, _, err := client.DirectMessages.SendToScreenName("s0c1alm3dia", "booyakasha")
-	expected := testDM
-	assert.Nil(t, err)
-	assert.Equal(t, expected, dm)
+	assert.Equal(t, &testDM, dm)
 }
 
 func TestDirectMessageService_Destroy(t *testing.T) {
@@ -162,8 +104,7 @@ func TestDirectMessageService_Destroy(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	dm, _, err := client.DirectMessages.Destroy(testDMID, nil)
-	expected := testDM
+	dm, _, err := client.DirectMessages.Destroy(testDM.ID, nil)
 	assert.Nil(t, err)
-	assert.Equal(t, expected, dm)
+	assert.Equal(t, &testDM, dm)
 }

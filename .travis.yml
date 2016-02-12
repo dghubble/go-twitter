@@ -4,10 +4,9 @@ go:
   - 1.4
   - 1.5
   - tip
-before_install:
+install:
   - go get golang.org/x/tools/cmd/vet
   - go get github.com/golang/lint/golint
-install:
   - go get -v -t ./twitter
 script:
   - go test -v ./twitter

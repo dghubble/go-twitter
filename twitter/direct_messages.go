@@ -1,8 +1,9 @@
 package twitter
 
 import (
-	"github.com/dghubble/sling"
 	"net/http"
+
+	"github.com/dghubble/sling"
 )
 
 // DirectMessage is a direct message to a single recipient.
@@ -20,13 +21,14 @@ type DirectMessage struct {
 	Text                string    `json:"text"`
 }
 
-// DirectMessageService provides methods for accessing Twitter status API endpoints.
+// DirectMessageService provides methods for accessing Twitter direct message
+// API endpoints.
 type DirectMessageService struct {
 	baseSling *sling.Sling
 	sling     *sling.Sling
 }
 
-// newDirectMessageService returns a new StatusService.
+// newDirectMessageService returns a new DirectMessageService.
 func newDirectMessageService(sling *sling.Sling) *DirectMessageService {
 	return &DirectMessageService{
 		baseSling: sling.New(),
@@ -34,19 +36,20 @@ func newDirectMessageService(sling *sling.Sling) *DirectMessageService {
 	}
 }
 
-// DirectMessageShowParams are the parameters for DirectMessageService.Show
-type DirectMessageShowParams struct {
+// directMessageShowParams are the parameters for DirectMessageService.Show
+type directMessageShowParams struct {
 	ID int64 `url:"id,omitempty"`
 }
 
-// Show returns the requested DirectMessage and all response messages.
+// Show returns the requested Direct Message.
+// Requires a user auth context with DM scope.
 // https://dev.twitter.com/rest/reference/get/direct_messages/show
-func (s *DirectMessageService) Show(id int64) ([]DirectMessage, *http.Response, error) {
-	params := &StatusShowParams{ID: id}
-	dms := new([]DirectMessage)
+func (s *DirectMessageService) Show(id int64) (*DirectMessage, *http.Response, error) {
+	params := &directMessageShowParams{ID: id}
+	dm := new(DirectMessage)
 	apiError := new(APIError)
-	resp, err := s.sling.New().Get("show.json").QueryStruct(params).Receive(dms, apiError)
-	return *dms, resp, relevantError(err, *apiError)
+	resp, err := s.sling.New().Get("show.json").QueryStruct(params).Receive(dm, apiError)
+	return dm, resp, relevantError(err, *apiError)
 }
 
 // DirectMessageGetParams are the parameters for DirectMessageService.Get
@@ -58,12 +61,10 @@ type DirectMessageGetParams struct {
 	SkipStatus      *bool `url:"skip_status,omitempty"`
 }
 
-// Get returns the all the direct messages
+// Get returns recent Direct Messages received by the authenticated user.
+// Requires a user auth context with DM scope.
 // https://dev.twitter.com/rest/reference/get/direct_messages
 func (s *DirectMessageService) Get(params *DirectMessageGetParams) ([]DirectMessage, *http.Response, error) {
-	if params == nil {
-		params = &DirectMessageGetParams{}
-	}
 	dms := new([]DirectMessage)
 	apiError := new(APIError)
 	resp, err := s.baseSling.New().Get("direct_messages.json").QueryStruct(params).Receive(dms, apiError)
@@ -79,12 +80,10 @@ type DirectMessageSentParams struct {
 	IncludeEntities *bool `url:"include_entities,omitempty"`
 }
 
-// Sent returns the all the direct messages sent
+// Sent returns recent Direct Messages sent by the authenticated user.
+// Requires a user auth context with DM scope.
 // https://dev.twitter.com/rest/reference/get/direct_messages/sent
 func (s *DirectMessageService) Sent(params *DirectMessageSentParams) ([]DirectMessage, *http.Response, error) {
-	if params == nil {
-		params = &DirectMessageSentParams{}
-	}
 	dms := new([]DirectMessage)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Get("sent.json").QueryStruct(params).Receive(dms, apiError)
@@ -98,23 +97,15 @@ type DirectMessageNewParams struct {
 	Text       string `url:"text"`
 }
 
-// New creates a new direct message
-// https://dev.twitter.com/rest/reference/get/direct_messages/new
-func (s *DirectMessageService) New(params DirectMessageNewParams) (DirectMessage, *http.Response, error) {
+// New sends a new Direct Message to a specified user as the authenticated
+// user.
+// Requires a user auth context with DM scope.
+// https://dev.twitter.com/rest/reference/post/direct_messages/new
+func (s *DirectMessageService) New(params *DirectMessageNewParams) (*DirectMessage, *http.Response, error) {
 	dm := new(DirectMessage)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Post("new.json").BodyForm(params).Receive(dm, apiError)
-	return *dm, resp, relevantError(err, *apiError)
-}
-
-// SendToID sends a direct message by twitter user id
-func (s *DirectMessageService) SendToID(userID int64, text string) (DirectMessage, *http.Response, error) {
-	return s.New(DirectMessageNewParams{UserID: userID, Text: text})
-}
-
-// SendToScreenName sends a message by twitter user id
-func (s *DirectMessageService) SendToScreenName(screenName, text string) (DirectMessage, *http.Response, error) {
-	return s.New(DirectMessageNewParams{ScreenName: screenName, Text: text})
+	return dm, resp, relevantError(err, *apiError)
 }
 
 // DirectMessageDestroyParams are the parameters for DirectMessageService.Destroy
@@ -123,9 +114,11 @@ type DirectMessageDestroyParams struct {
 	IncludeEntities *bool `url:"include_entities,omitempty"`
 }
 
-// Destroy deletes a direct message
-// https://dev.twitter.com/rest/reference/get/direct_messages/new
-func (s *DirectMessageService) Destroy(id int64, params *DirectMessageDestroyParams) (DirectMessage, *http.Response, error) {
+// Destroy deletes the Direct Message with the given id and returns it if
+// successful.
+// Requires a user auth context with DM scope.
+// https://dev.twitter.com/rest/reference/post/direct_messages/destroy
+func (s *DirectMessageService) Destroy(id int64, params *DirectMessageDestroyParams) (*DirectMessage, *http.Response, error) {
 	if params == nil {
 		params = &DirectMessageDestroyParams{}
 	}
@@ -133,5 +126,5 @@ func (s *DirectMessageService) Destroy(id int64, params *DirectMessageDestroyPar
 	dm := new(DirectMessage)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Post("destroy.json").BodyForm(params).Receive(dm, apiError)
-	return *dm, resp, relevantError(err, *apiError)
+	return dm, resp, relevantError(err, *apiError)
 }
