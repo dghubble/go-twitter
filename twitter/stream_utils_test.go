@@ -7,6 +7,39 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestStopped(t *testing.T) {
+	done := make(chan struct{})
+	assert.False(t, stopped(done))
+	close(done)
+	assert.True(t, stopped(done))
+}
+
+func TestSleepOrDone_Sleep(t *testing.T) {
+	wait := time.Nanosecond * 20
+	done := make(chan struct{})
+	completed := make(chan struct{})
+	go func() {
+		sleepOrDone(wait, done)
+		close(completed)
+	}()
+	// wait for goroutine SleepOrDone to sleep
+	assertDone(t, completed, defaultTestTimeout)
+}
+
+func TestSleepOrDone_Done(t *testing.T) {
+	wait := time.Second * 5
+	done := make(chan struct{})
+	completed := make(chan struct{})
+	go func() {
+		sleepOrDone(wait, done)
+		close(completed)
+	}()
+	// close done, interrupting SleepOrDone
+	close(done)
+	// assert that SleepOrDone exited, closing completed
+	assertDone(t, completed, defaultTestTimeout)
+}
+
 func TestScanLines(t *testing.T) {
 	cases := []struct {
 		input   []byte
@@ -28,38 +61,4 @@ func TestScanLines(t *testing.T) {
 		assert.Equal(t, c.advance, advance)
 		assert.Equal(t, c.token, token)
 	}
-}
-
-func TestStopped(t *testing.T) {
-	notStoppedCh := make(chan struct{})
-	isStopped := stopped(notStoppedCh)
-	assert.Equal(t, false, isStopped)
-
-	stoppedCh := make(chan struct{}, 2)
-	stoppedCh <- struct{}{}
-	isStopped = stopped(stoppedCh)
-	assert.Equal(t, true, isStopped)
-}
-
-func TestSleepOrDone(t *testing.T) {
-	doneCh := make(chan struct{}, 2)
-	wait := time.Nanosecond * 20
-	completed := make(chan bool)
-
-	go func() {
-		sleepOrDone(wait, doneCh)
-		completed <- true
-	}()
-
-	assertReceive(t, completed, defaultTestTimeout, "sleepOrDone did not return in %v duration", wait)
-
-	// Wait longer than timeout test because we will be returning sooner because there is a done channel message
-	wait = time.Second * 5
-	doneCh <- struct{}{}
-	go func() {
-		sleepOrDone(wait, doneCh)
-		completed <- true
-	}()
-
-	assertReceive(t, completed, defaultTestTimeout, "sleepOrDone expected to return immediately but timed out")
 }

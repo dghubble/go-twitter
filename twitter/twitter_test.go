@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// testing utils
+var defaultTestTimeout = time.Second * 1
 
 // testServer returns an http Client, ServeMux, and Server. The client proxies
 // requests to the server and handlers can be registered on the mux to handle
@@ -25,33 +25,6 @@ func testServer() (*http.Client, *http.ServeMux, *httptest.Server) {
 	}}
 	client := &http.Client{Transport: transport}
 	return client, mux, server
-}
-
-var defaultTestTimeout = time.Second * 1
-
-// assertReceive asserts that a bool message is received on the channel before a specified timeout
-func assertReceive(t *testing.T, c <-chan bool, timeout time.Duration, errorMsg string, params ...interface{}) {
-	select {
-	case <-c:
-		break
-	case <-time.After(timeout):
-		t.Errorf(errorMsg, params...)
-	}
-}
-
-// testHandleStream will create a demux that will handle stream messages and call another channel indicating a message has been handled which will be returned to assert in tests
-func testHandleStream(stream *Stream) <-chan bool {
-	demux := NewSwitchDemux()
-	handled := make(chan bool)
-	demux.All = func(msg interface{}) {
-		handled <- true
-	}
-
-	go func() {
-		demux.HandleChan(stream.Messages)
-	}()
-
-	return handled
 }
 
 // RewriteTransport rewrites https requests to http to avoid TLS cert issues
@@ -93,4 +66,28 @@ func assertPostForm(t *testing.T, expected map[string]string, req *http.Request)
 		expectedValues.Add(key, value)
 	}
 	assert.Equal(t, expectedValues, req.Form)
+}
+
+// assertDone asserts that the empty struct channel is closed before the given
+// timeout elapses.
+func assertDone(t *testing.T, ch <-chan struct{}, timeout time.Duration) {
+	select {
+	case <-ch:
+		_, more := <-ch
+		assert.False(t, more)
+	case <-time.After(timeout):
+		t.Errorf("expected channel to be closed within timeout %v", timeout)
+	}
+}
+
+// assertClosed asserts that the channel is closed before the given timeout
+// elapses.
+func assertClosed(t *testing.T, ch <-chan interface{}, timeout time.Duration) {
+	select {
+	case <-ch:
+		_, more := <-ch
+		assert.False(t, more)
+	case <-time.After(timeout):
+		t.Errorf("expected channel to be closed within timeout %v", timeout)
+	}
 }

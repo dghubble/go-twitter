@@ -20,3 +20,18 @@ func TestNewAggressiveExponentialBackOff(t *testing.T) {
 	assert.Equal(t, 2.0, b.Multiplier)
 	assert.Equal(t, 16*time.Minute, b.MaxInterval)
 }
+
+// BackoffRecorder is an implementation of backoff.BackOff that records
+// calls to NextBackOff and Reset for later inspection in tests.
+type BackOffRecorder struct {
+	Count int
+}
+
+func (b *BackOffRecorder) NextBackOff() time.Duration {
+	b.Count++
+	return 1 * time.Nanosecond
+}
+
+func (b *BackOffRecorder) Reset() {
+	b.Count = 0
+}
