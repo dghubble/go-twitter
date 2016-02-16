@@ -13,7 +13,7 @@ go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/
     * Users
     * Followers
     * Direct Messages
-* Twitter Streaming API (beta)
+* Twitter Streaming API
     * Public Streams
     * User Streams
     * Site Streams
@@ -131,12 +131,12 @@ If you run this in your main goroutine, it will receive messages forever unless 
 
 Receiving messages of type `interface{}` isn't very nice, it means you'll have to type switch and probably filter out message types you don't care about. 
 
-For this, try the experimental `DefaultDemux` which receives messages and type switches them to call a function with typed messages.
+For this, try a `Demux`, like `SwitchDemux`, which receives messages and type switches them to call functions with typed messages.
 
-For example, say you're interested in Tweets and Direct Messages only.
+For example, say you're only interested in Tweets and Direct Messages.
 
 ```go
-demux := twitter.NewDemux()
+demux := twitter.NewSwitchDemux()
 demux.Tweet = func(tweet *twitter.Tweet) {
     fmt.Println(tweet.Text)
 }
@@ -157,13 +157,13 @@ demux.HandleChan(stream.Messages)
 
 ### Stopping
 
-The `Stream` may stop itself if the stream disconnects and retrying produces unrecoverable errors. When this occurs, `Stream` will close the `stream.Messages` channel, so any *for message range* loops will be able to continue.
+The `Stream` will stop itself if the stream disconnects and retrying produces unrecoverable errors. When this occurs, `Stream` will close the `stream.Messages` channel, so execution will break out of any message *for range* loops.
 
 When you are finished receiving from a `Stream`, call `Stop()` which closes the connection, channels, and stops the goroutine **before** returning. This ensures resources are properly cleaned up.
 
 ### Pitfalls
 
-In this example, `Stop()` is unlikely to be reached. Control stays in the message loop unless the `Stream` becomes disconnected and cannot retry.
+**Bad**: In this example, `Stop()` is unlikely to be reached. Control stays in the message loop unless the `Stream` becomes disconnected and cannot retry.
 
 ```go
 // program does not terminate :(
@@ -174,20 +174,20 @@ for message := range stream.Messages {
 stream.Stop()
 ```
 
-Here, messages are received on a non-main goroutine, but then `Stop()` is called immediately. The `Stream` is stopped and the program exits.
+**Bad**: Here, messages are received on a non-main goroutine, but then `Stop()` is called immediately. The `Stream` is stopped and the program exits.
 
 ```go
 // got no messages :(
 stream, _ := client.Streams.Sample(params)
-go demux.Handle(stream.Messages)
+go demux.HandleChan(stream.Messages)
 stream.Stop()
 ```
 
-For main package scripts, one option is to receive messages in a goroutine and wait for CTRL-C to be pressed, then explicitly stop the `Stream`.
+**Good**: For main package scripts, one option is to receive messages in a goroutine and wait for CTRL-C to be pressed, then explicitly stop the `Stream`.
 
 ```go
 stream, err := client.Streams.Sample(params)
-go demux.Handle(stream.Messages)
+go demux.HandleChan(stream.Messages)
 
 // Wait for SIGINT and SIGTERM (HIT CTRL-C)
 ch := make(chan os.Signal)
