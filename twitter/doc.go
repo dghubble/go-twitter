@@ -35,8 +35,8 @@ has granted access, with OAuth1.
 
 	// OAuth1
 	import (
-  	"github.com/dghubble/go-twitter/twitter"
-  	"github.com/dghubble/oauth1"
+		"github.com/dghubble/go-twitter/twitter"
+		"github.com/dghubble/oauth1"
 	)
 
 	config := oauth1.NewConfig("consumerKey", "consumerSecret")
@@ -52,8 +52,8 @@ application auth.
 
 	// OAuth2
 	import (
-  	"github.com/dghubble/go-twitter/twitter"
-  	"golang.org/x/oauth2"
+		"github.com/dghubble/go-twitter/twitter"
+		"golang.org/x/oauth2"
 	)
 
 	config := &oauth2.Config{}
