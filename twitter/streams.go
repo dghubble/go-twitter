@@ -43,7 +43,7 @@ type StreamFilterParams struct {
 	FilterLevel   string   `url:"filter_level,omitempty"`
 	Follow        []string `url:"follow,omitempty,comma"`
 	Language      []string `url:"language,omitempty,comma"`
-	Locations     []string `url:"location,omitempty,comma"`
+	Locations     []string `url:"locations,omitempty,comma"`
 	StallWarnings *bool    `url:"stall_warnings,omitempty"`
 	Track         []string `url:"track,omitempty,comma"`
 }
@@ -77,7 +77,7 @@ func (srv *StreamService) Sample(params *StreamSampleParams) (*Stream, error) {
 type StreamUserParams struct {
 	FilterLevel   string   `url:"filter_level,omitempty"`
 	Language      []string `url:"language,omitempty,comma"`
-	Locations     []string `url:"location,omitempty,comma"`
+	Locations     []string `url:"locations,omitempty,comma"`
 	Replies       string   `url:"replies,omitempty"`
 	StallWarnings *bool    `url:"stall_warnings,omitempty"`
 	Track         []string `url:"track,omitempty,comma"`
