@@ -35,6 +35,7 @@ type Tweet struct {
 	Source               string                 `json:"source"`
 	Scopes               map[string]interface{} `json:"scopes"`
 	Text                 string                 `json:"text"`
+	Place                *Place                 `json:"place"`
 	Truncated            bool                   `json:"truncated"`
 	User                 *User                  `json:"user"`
 	WithheldCopyright    bool                   `json:"withheld_copyright"`
@@ -44,6 +45,26 @@ type Tweet struct {
 	QuotedStatusID       int64                  `json:"quoted_status_id"`
 	QuotedStatusIDStr    string                 `json:"quoted_status_id_str"`
 	QuotedStatus         *Tweet                 `json:"quoted_status"`
+}
+
+// Place represents a Twitter Place / Location
+type Place struct {
+	Attributes  map[string]string `json:"attributes"`
+	BoundingBox BoundingBox       `json:"bounding_box"`
+	Country     string            `json:"country"`
+	CountryCode string            `json:"country_code"`
+	FullName    string            `json:"full_name"`
+	ID          string            `json:"id"`
+	Name        string            `json:"name"`
+	PlaceType   string            `json:"place_type"`
+	URL         string            `json:"url"`
+}
+
+// BoundingBox represents a Coordinate bound for a place
+type BoundingBox struct {
+	// this is an array of an array of coordinate arrays, it's not great
+	Coordinates [][][2]float64 `json:"coordinates"`
+	Type        string         `json:"type"`
 }
 
 // Contributor represents a brief summary of a User identifiers.
