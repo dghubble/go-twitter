@@ -10,7 +10,6 @@ import (
 // Tweet represents a Twitter Tweet, previously called a status.
 // https://dev.twitter.com/overview/api/tweets
 // Unused or deprecated fields not provided: Geo, Annotations
-// TODO: Place
 type Tweet struct {
 	Contributors         []Contributor          `json:"contributors"`
 	Coordinates          *Coordinates           `json:"coordinates"`
@@ -48,21 +47,24 @@ type Tweet struct {
 }
 
 // Place represents a Twitter Place / Location
+// https://dev.twitter.com/overview/api/places
 type Place struct {
 	Attributes  map[string]string `json:"attributes"`
-	BoundingBox BoundingBox       `json:"bounding_box"`
+	BoundingBox *BoundingBox      `json:"bounding_box"`
 	Country     string            `json:"country"`
 	CountryCode string            `json:"country_code"`
 	FullName    string            `json:"full_name"`
+	Geometry    *BoundingBox      `json:"geometry"`
 	ID          string            `json:"id"`
 	Name        string            `json:"name"`
 	PlaceType   string            `json:"place_type"`
+	Polylines   []string          `json:"polylines"`
 	URL         string            `json:"url"`
 }
 
-// BoundingBox represents a Coordinate bound for a place
+// BoundingBox represents the bounding coordinates (longitude, latitutde)
+// defining the bounds of a box containing a Place entity.
 type BoundingBox struct {
-	// this is an array of an array of coordinate arrays, it's not great
 	Coordinates [][][2]float64 `json:"coordinates"`
 	Type        string         `json:"type"`
 }
