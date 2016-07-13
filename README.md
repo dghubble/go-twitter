@@ -1,6 +1,6 @@
 
 
-# go-twitter [![Build Status](https://travis-ci.org/dghubble/go-twitter.png)](https://travis-ci.org/dghubble/go-twitter) [![Coverage](https://gocover.io/_badge/github.com/dghubble/go-twitter/twitter)](https://gocover.io/github.com/dghubble/go-twitter/twitter) [![GoDoc](https://godoc.org/github.com/dghubble/go-twitter?status.png)](https://godoc.org/github.com/dghubble/go-twitter)
+# go-twitter [![Build Status](https://travis-ci.org/dghubble/go-twitter.png)](https://travis-ci.org/dghubble/go-twitter) [![GoDoc](https://godoc.org/github.com/dghubble/go-twitter?status.png)](https://godoc.org/github.com/dghubble/go-twitter)
 <img align="right" src="https://storage.googleapis.com/dghubble/gopher-on-bird.png">
 
 go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/rest/public). Check the [usage](#usage) section or try the [examples](/examples) to see how to access the Twitter API.
