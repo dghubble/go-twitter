@@ -1,14 +1,10 @@
 language: go
 sudo: false
 go:
-  - 1.5
   - 1.6
   - tip
 install:
   - go get github.com/golang/lint/golint
   - go get -v -t ./twitter
 script:
-  - go test -v ./twitter
-  - go vet ./...
-  - golint ./...
-  - test -z "$(go fmt ./...)"
+  - ./test
