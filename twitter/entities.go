@@ -25,16 +25,17 @@ type URLEntity struct {
 }
 
 // MediaEntity represents media elements associated with a Tweet.
-// TODO: add Sizes
 type MediaEntity struct {
 	URLEntity
-	ID                int64  `json:"id"`
-	IDStr             string `json:"id_str"`
-	MediaURL          string `json:"media_url"`
-	MediaURLHttps     string `json:"media_url_https"`
-	SourceStatusID    int64  `json:"source_status_id"`
-	SourceStatusIDStr string `json:"source_status_id_str"`
-	Type              string `json:"type"`
+	ID                int64      `json:"id"`
+	IDStr             string     `json:"id_str"`
+	MediaURL          string     `json:"media_url"`
+	MediaURLHttps     string     `json:"media_url_https"`
+	SourceStatusID    int64      `json:"source_status_id"`
+	SourceStatusIDStr string     `json:"source_status_id_str"`
+	Type              string     `json:"type"`
+	Sizes             MediaSizes `json:"sizes"`
+	VideoInfo         VideoInfo  `json:"video_info"`
 }
 
 // MentionEntity represents Twitter user mentions parsed from text.
@@ -70,4 +71,34 @@ func (i Indices) Start() int {
 // End returns the index at which an entity ends, exclusive.
 func (i Indices) End() int {
 	return i[1]
+}
+
+// MediaSizes contain the different size media that are available.
+// https://dev.twitter.com/overview/api/entities#obj-sizes
+type MediaSizes struct {
+	Thumb  MediaSize `json:"thumb"`
+	Large  MediaSize `json:"large"`
+	Medium MediaSize `json:"medium"`
+	Small  MediaSize `json:"small"`
+}
+
+// MediaSize describes the height, width, and resizing method used.
+type MediaSize struct {
+	Width  int    `json:"w"`
+	Height int    `json:"h"`
+	Resize string `json:"resize"`
+}
+
+// VideoInfo is available on video media objects.
+type VideoInfo struct {
+	AspectRatio    [2]int         `json:"aspect_ratio"`
+	DurationMillis int            `json:"duration_millis"`
+	Variants       []VideoVariant `json:"variants"`
+}
+
+// VideoVariant describes one of the available video formats.
+type VideoVariant struct {
+	ContentType string `json:"content_type"`
+	Bitrate     int    `json:"bitrate"`
+	URL         string `json:"url"`
 }
