@@ -192,6 +192,27 @@ func (s *StatusService) Retweet(id int64, params *StatusRetweetParams) (*Tweet, 
 	return tweet, resp, relevantError(err, *apiError)
 }
 
+// StatusRetweetsParams are the parameters for StatusService.Retweets
+type StatusRetweetsParams struct {
+	ID       int64 `url:"id,omitempty"`
+	Count    int   `url:"count,omitempty"`
+	TrimUser *bool `url:"trim_user,omitempty"`
+}
+
+// Retweets returns the most recent retweets of the Tweet with the given id.
+// https://dev.twitter.com/rest/reference/get/statuses/retweets/%3Aid
+func (s *StatusService) Retweets(id int64, params *StatusRetweetsParams) ([]Tweet, *http.Response, error) {
+	if params == nil {
+		params = &StatusRetweetsParams{}
+	}
+	params.ID = id
+	tweets := new([]Tweet)
+	apiError := new(APIError)
+	path := fmt.Sprintf("retweets/%d.json", params.ID)
+	resp, err := s.sling.New().Get(path).QueryStruct(params).Receive(tweets, apiError)
+	return *tweets, resp, relevantError(err, *apiError)
+}
+
 // StatusDestroyParams are the parameters for StatusService.Destroy
 type StatusDestroyParams struct {
 	ID       int64 `url:"id,omitempty"`

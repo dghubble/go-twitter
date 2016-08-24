@@ -162,6 +162,37 @@ func TestStatusService_RetweetHandlesNilParams(t *testing.T) {
 	client.Statuses.Retweet(20, nil)
 }
 
+func TestStatusService_Retweets(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/retweets/20.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "GET", r)
+		assertQuery(t, map[string]string{"id": "20", "count": "2"}, r)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `[{"text": "RT @jack: just setting up my twttr"}, {"text": "RT @jack: just setting up my twttr"}]`)
+	})
+
+	client := NewClient(httpClient)
+	params := &StatusRetweetsParams{Count: 2}
+	retweets, _, err := client.Statuses.Retweets(20, params)
+	expected := []Tweet{Tweet{Text: "RT @jack: just setting up my twttr"}, Tweet{Text: "RT @jack: just setting up my twttr"}}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, retweets)
+}
+
+func TestStatusService_RetweetsHandlesNilParams(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/retweets/20.json", func(w http.ResponseWriter, r *http.Request) {
+		assertQuery(t, map[string]string{"id": "20"}, r)
+	})
+
+	client := NewClient(httpClient)
+	client.Statuses.Retweets(20, nil)
+}
+
 func TestStatusService_Destroy(t *testing.T) {
 	httpClient, mux, server := testServer()
 	defer server.Close()
