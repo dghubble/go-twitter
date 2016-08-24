@@ -8,11 +8,13 @@ go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/
 ### Features
 
 * Twitter REST API:
+    * Accounts
+    * Direct Messages
+    * Favorites
+    * Followers
     * Statuses
     * Timelines
     * Users
-    * Followers
-    * Direct Messages
 * Twitter Streaming API
     * Public Streams
     * User Streams

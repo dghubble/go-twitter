@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
- set -e
+set -e
 
 PKGS=$(go list ./... | grep -v /examples)
 FORMATTABLE="$(ls -d */)"
