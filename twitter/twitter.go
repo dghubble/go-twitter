@@ -16,6 +16,7 @@ type Client struct {
 	Statuses       *StatusService
 	Timelines      *TimelineService
 	Users          *UserService
+	Favorites      *FavoriteService
 	Followers      *FollowerService
 	DirectMessages *DirectMessageService
 	Streams        *StreamService
@@ -30,6 +31,7 @@ func NewClient(httpClient *http.Client) *Client {
 		Statuses:       newStatusService(base.New()),
 		Timelines:      newTimelineService(base.New()),
 		Users:          newUserService(base.New()),
+		Favorites:      newFavoriteService(base.New()),
 		Followers:      newFollowerService(base.New()),
 		DirectMessages: newDirectMessageService(base.New()),
 		Streams:        newStreamService(httpClient, base.New()),
