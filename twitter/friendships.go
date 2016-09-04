@@ -82,13 +82,13 @@ func (s *FriendshipService) Show(params *FriendshipShowParams) (*FriendshipShowR
 	return friendships, resp, relevantError(err, *apiError)
 }
 
-type FriendshipDestroyResult struct {
+type FriendshipGenericResult struct {
 	Name string `json:"name"`
 	Id   int64  `json:"id"`
 }
 
-func (s *FriendshipService) Destroy(params *FriendshipLookupParams) (*FriendshipDestroyResult, *http.Response, error) {
-	friendships := new(FriendshipDestroyResult)
+func (s *FriendshipService) Destroy(params *FriendshipLookupParams) (*FriendshipGenericResult, *http.Response, error) {
+	friendships := new(FriendshipGenericResult)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Post("destroy.json").QueryStruct(params).Receive(friendships, apiError)
 	return friendships, resp, relevantError(err, *apiError)
