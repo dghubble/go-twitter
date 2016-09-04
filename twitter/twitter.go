@@ -21,7 +21,7 @@ type Client struct {
 	Friends        *FriendService
 	DirectMessages *DirectMessageService
 	Streams        *StreamService
-	Friendships	   *FriendshipService
+	Friendships    *FriendshipService
 }
 
 // NewClient returns a new Client.
@@ -38,7 +38,7 @@ func NewClient(httpClient *http.Client) *Client {
 		Friends:        newFriendService(base.New()),
 		DirectMessages: newDirectMessageService(base.New()),
 		Streams:        newStreamService(httpClient, base.New()),
-		Friendships: 	newFriendshipService(base.New()),
+		Friendships:    newFriendshipService(base.New()),
 	}
 }
 
