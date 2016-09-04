@@ -6,29 +6,34 @@ import (
 	"github.com/dghubble/sling"
 )
 
+// FollowerService provides methods for accessing Twitter friendship endpoints.
 type FriendshipService struct {
 	sling *sling.Sling
 }
 
+// Creates a new friendship service
 func newFriendshipService(sling *sling.Sling) *FriendshipService {
 	return &FriendshipService{
 		sling: sling.Path("friendships/"),
 	}
 }
 
+// The relationship status between the authenticated user and the target
 type FriendshipLookupStatus struct {
 	Name        string   `json:"name"`
 	ScreenName  string   `json:"screen_name"`
-	Id          int64    `json:"id"`
-	IdStr       string   `json:"id_str"`
+	ID          int64    `json:"id"`
+	IDStr       string   `json:"id_str"`
 	Connections []string `json:"connections"`
 }
 
+// Basic parameters for friendship requests
 type FriendshipLookupParams struct {
 	UserID     string `url:"user_id,omitempty"`
 	ScreenName string `url:"screen_name,omitempty"`
 }
 
+// Returns the relationships of the authenticating user to target user
 func (s *FriendshipService) Lookup(params *FriendshipLookupParams) (*[]FriendshipLookupStatus, *http.Response, error) {
 	friendships := new([]FriendshipLookupStatus)
 	apiError := new(APIError)
@@ -36,31 +41,35 @@ func (s *FriendshipService) Lookup(params *FriendshipLookupParams) (*[]Friendshi
 	return friendships, resp, relevantError(err, *apiError)
 }
 
+// Result from the Friendship show function
 type FriendshipShowResult struct {
 	Relationship FriendshipRelationship `json:"relationship"`
 }
 
+// The underlying relationship of the show function
 type FriendshipRelationship struct {
 	Target FriendshipRelationshipTarget `json:"target"`
 	Source FriendshipRelationshipSource `json:"source"`
 }
 
+// The target's attributes from the show function
 type FriendshipRelationshipTarget struct {
-	IdStr      string `json:"id_str"`
-	Id         int64  `json:"id"`
+	IDStr      string `json:"id_str"`
+	ID         int64  `json:"id"`
 	ScreenName string `json:"screen_name"`
 	Following  bool   `json:"following"`
 	FollowedBy bool   `json:"followed_by"`
 }
 
+// The source's attributes from the show function
 type FriendshipRelationshipSource struct {
 	CanDM                bool   `json:"can_dm"`
 	Blocking             bool   `json:"blocking"`
 	Muting               bool   `json:"muting"`
-	IdStr                string `json:"id_str"`
+	IDStr                string `json:"id_str"`
 	AllReplies           bool   `json:"all_replies"`
 	WantRetweets         bool   `json:"want_retweets"`
-	Id                   int64  `json:"id"`
+	ID                   int64  `json:"id"`
 	MarkedSpam           bool   `json:"marked_spam"`
 	ScreenName           string `json:"screen_name"`
 	Following            bool   `json:"following"`
@@ -68,13 +77,15 @@ type FriendshipRelationshipSource struct {
 	NotificationsEnabled bool   `json:"notifications_enabled"`
 }
 
+// The parameters given to the show function
 type FriendshipShowParams struct {
 	SourceScreenName string `url:"source_screen_name,omitempty"`
-	SourceId         string `url:"source_id,omitempty"`
+	SourceID         string `url:"source_id,omitempty"`
 	TargetScreenName string `url:"target_screen_name,omitempty"`
-	TargetId         string `url:"target_id,omitempty"`
+	TargetID         string `url:"target_id,omitempty"`
 }
 
+// Returns the relationship between any two specified users
 func (s *FriendshipService) Show(params *FriendshipShowParams) (*FriendshipShowResult, *http.Response, error) {
 	friendships := new(FriendshipShowResult)
 	apiError := new(APIError)
@@ -82,11 +93,13 @@ func (s *FriendshipService) Show(params *FriendshipShowParams) (*FriendshipShowR
 	return friendships, resp, relevantError(err, *apiError)
 }
 
+// Generic return result
 type FriendshipGenericResult struct {
 	Name string `json:"name"`
-	Id   int64  `json:"id"`
+	ID   int64  `json:"id"`
 }
 
+// Unfollow a user
 func (s *FriendshipService) Destroy(params *FriendshipLookupParams) (*FriendshipGenericResult, *http.Response, error) {
 	friendships := new(FriendshipGenericResult)
 	apiError := new(APIError)
@@ -94,6 +107,7 @@ func (s *FriendshipService) Destroy(params *FriendshipLookupParams) (*Friendship
 	return friendships, resp, relevantError(err, *apiError)
 }
 
+// Follow a user
 func (s *FriendshipService) Create(params *FriendshipLookupParams) (*FriendshipGenericResult, *http.Response, error) {
 	friendships := new(FriendshipGenericResult)
 	apiError := new(APIError)
