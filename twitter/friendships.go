@@ -93,3 +93,10 @@ func (s *FriendshipService) Destroy(params *FriendshipLookupParams) (*Friendship
 	resp, err := s.sling.New().Post("destroy.json").QueryStruct(params).Receive(friendships, apiError)
 	return friendships, resp, relevantError(err, *apiError)
 }
+
+func (s *FriendshipService) Create(params *FriendshipLookupParams) (*FriendshipGenericResult, *http.Response, error) {
+	friendships := new(FriendshipGenericResult)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Post("create.json").QueryStruct(params).Receive(friendships, apiError)
+	return friendships, resp, relevantError(err, *apiError)
+}
