@@ -6,7 +6,7 @@ import (
 	"github.com/dghubble/sling"
 )
 
-// FollowerService provides methods for accessing Twitter friendship endpoints.
+// FriendshipService provides methods for accessing Twitter friendship endpoints.
 type FriendshipService struct {
 	sling *sling.Sling
 }
