@@ -93,17 +93,34 @@ func (s *FriendshipService) Show(params *FriendshipShowParams) (*FriendshipShowR
 	return friendships, resp, relevantError(err, *apiError)
 }
 
+<<<<<<< HEAD
 // Destroy unfollows a user
 func (s *FriendshipService) Destroy(params *FriendshipLookupParams) (*User, *http.Response, error) {
 	friendships := new(User)
+=======
+// FriendshipGenericResult is a generic return result
+type FriendshipGenericResult struct {
+	Name string `json:"name"`
+	ID   int64  `json:"id"`
+}
+
+// Destroy unfollows a user
+func (s *FriendshipService) Destroy(params *FriendshipLookupParams) (*FriendshipGenericResult, *http.Response, error) {
+	friendships := new(FriendshipGenericResult)
+>>>>>>> master
 	apiError := new(APIError)
 	resp, err := s.sling.New().Post("destroy.json").QueryStruct(params).Receive(friendships, apiError)
 	return friendships, resp, relevantError(err, *apiError)
 }
 
 // Create follows a user
+<<<<<<< HEAD
 func (s *FriendshipService) Create(params *FriendshipLookupParams) (*User, *http.Response, error) {
 	friendships := new(User)
+=======
+func (s *FriendshipService) Create(params *FriendshipLookupParams) (*FriendshipGenericResult, *http.Response, error) {
+	friendships := new(FriendshipGenericResult)
+>>>>>>> master
 	apiError := new(APIError)
 	resp, err := s.sling.New().Post("create.json").QueryStruct(params).Receive(friendships, apiError)
 	return friendships, resp, relevantError(err, *apiError)
