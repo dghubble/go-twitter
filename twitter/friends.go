@@ -36,7 +36,7 @@ func newFriendService(sling *sling.Sling) *FriendService {
 	}
 }
 
-// FriendIDParams are the parameters for FriendService.Ids
+// FriendIDParams are the parameters for FriendService.IDs
 type FriendIDParams struct {
 	UserID     int64  `url:"user_id,omitempty"`
 	ScreenName string `url:"screen_name,omitempty"`
@@ -44,12 +44,14 @@ type FriendIDParams struct {
 	Count      int    `url:"count,omitempty"`
 }
 
-// IDs returns a cursored collection of user ids following the specified user.
+// IDs returns a cursored collection of user IDs the specified user is following
 // https://dev.twitter.com/rest/reference/get/friends/ids
-func (s *FriendService) IDs(params *FriendIDParams) (*FriendIDs, *http.Response, error) {
+func (s *FriendService) IDs(params *FriendIDParams) (*FriendIDs, *http.Response,
+	error) {
 	ids := new(FriendIDs)
 	apiError := new(APIError)
-	resp, err := s.sling.New().Get("ids.json").QueryStruct(params).Receive(ids, apiError)
+	resp, err := s.sling.New().Get("ids.json").QueryStruct(params).Receive(ids,
+		apiError)
 	return ids, resp, relevantError(err, *apiError)
 }
 
@@ -65,9 +67,11 @@ type FriendListParams struct {
 
 // List returns a cursored collection of Users following the specified user.
 // https://dev.twitter.com/rest/reference/get/friends/list
-func (s *FriendService) List(params *FriendListParams) (*Friends, *http.Response, error) {
+func (s *FriendService) List(params *FriendListParams) (*Friends,
+	*http.Response, error) {
 	friends := new(Friends)
 	apiError := new(APIError)
-	resp, err := s.sling.New().Get("list.json").QueryStruct(params).Receive(friends, apiError)
+	resp, err := s.sling.New().Get("list.json").QueryStruct(params).
+		Receive(friends, apiError)
 	return friends, resp, relevantError(err, *apiError)
 }
