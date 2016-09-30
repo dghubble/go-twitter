@@ -58,4 +58,13 @@ func main() {
 	userTimelineParams := &twitter.UserTimelineParams{ScreenName: "golang", Count: 2}
 	tweets, _, _ = client.Timelines.UserTimeline(userTimelineParams)
 	fmt.Printf("USER TIMELINE:\n%+v\n", tweets)
+
+	// search tweets
+	searchTweetParams := &twitter.SearchTweetParams{
+		Query: "happy birthday",
+		Count: 3,
+	}
+	search, _, _ := client.Search.Tweets(searchTweetParams)
+	fmt.Printf("SEARCH TWEETS:\n%+v\n", search)
+	fmt.Printf("SEARCH METADATA:\n%+v\n", search.SearchMetadata)
 }

@@ -19,6 +19,7 @@ type Client struct {
 	Favorites      *FavoriteService
 	Followers      *FollowerService
 	DirectMessages *DirectMessageService
+	Search         *SearchService
 	Streams        *StreamService
 }
 
@@ -34,6 +35,7 @@ func NewClient(httpClient *http.Client) *Client {
 		Favorites:      newFavoriteService(base.New()),
 		Followers:      newFollowerService(base.New()),
 		DirectMessages: newDirectMessageService(base.New()),
+		Search:         newSearchService(base.New()),
 		Streams:        newStreamService(httpClient, base.New()),
 	}
 }

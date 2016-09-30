@@ -12,6 +12,7 @@ go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/
     * Direct Messages
     * Favorites
     * Followers
+    * Search
     * Statuses
     * Timelines
     * Users
@@ -44,7 +45,9 @@ httpClient := config.Client(oauth1.NoContext, token)
 client := twitter.NewClient(httpClient)
 
 // Home Timeline
-tweets, resp, err := client.Timelines.HomeTimeline(&twitter.HomeTimelineParams{})
+tweets, resp, err := client.Timelines.HomeTimeline(&twitter.HomeTimelineParams{
+    Count: 20,
+})
 
 // Send a Tweet
 tweet, resp, err := client.Statuses.Update("just setting up my twttr", nil)
@@ -52,9 +55,15 @@ tweet, resp, err := client.Statuses.Update("just setting up my twttr", nil)
 // Status Show
 tweet, resp, err := client.Statuses.Show(585613041028431872, nil)
 
+// Search Tweets
+search, resp, err := client.Search.Tweets(&twitter.SearchTweetParams{
+    Query: "gopher",
+})
+
 // User Show
-params := &twitter.UserShowParams{ScreenName: "dghubble"}
-user, resp, err := client.Users.Show(params)
+user, resp, err := client.Users.Show(&twitter.UserShowParams{
+    ScreenName: "dghubble",
+})
 
 // Followers
 followers, resp, err := client.Followers.List(&twitter.FollowerListParams{})
