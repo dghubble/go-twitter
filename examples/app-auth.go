@@ -1,3 +1,6 @@
+// Application authentication example
+// Run with: go run examples/app-auth.go --api-key=XXX --api-secret=XXX
+
 package main
 
 import (
@@ -9,22 +12,32 @@ import (
 	"github.com/coreos/pkg/flagutil"
 	"github.com/dghubble/go-twitter/twitter"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 func main() {
 	flags := flag.NewFlagSet("app-auth", flag.ExitOnError)
-	accessToken := flags.String("app-access-token", "", "Twitter Application Access Token")
+	apiKey := flags.String("api-key", "", "Twitter API Key")
+	apiSecret := flags.String("api-secret", "", "Twitter API Secret")
+
 	flags.Parse(os.Args[1:])
 	flagutil.SetFlagsFromEnv(flags, "TWITTER")
 
-	if *accessToken == "" {
-		log.Fatal("Application Access Token required")
+	if *apiKey == "" {
+		log.Fatal("Twitter API key (--api-key) required")
 	}
 
-	config := &oauth2.Config{}
-	token := &oauth2.Token{AccessToken: *accessToken}
+	if *apiSecret == "" {
+		log.Fatal("Twitter API secret (--api-secret) required")
+	}
+
+	// Build 2 legged oauth config
+	config := &clientcredentials.Config{ClientID: *apiKey,
+		ClientSecret: *apiSecret,
+		TokenURL:     "https://api.twitter.com/oauth2/token"}
+
 	// OAuth2 http.Client will automatically authorize Requests
-	httpClient := config.Client(oauth2.NoContext, token)
+	httpClient := config.Client(oauth2.NoContext)
 
 	// Twitter client
 	client := twitter.NewClient(httpClient)
@@ -66,5 +79,5 @@ func main() {
 	}
 	search, _, _ := client.Search.Tweets(searchTweetParams)
 	fmt.Printf("SEARCH TWEETS:\n%+v\n", search)
-	fmt.Printf("SEARCH METADATA:\n%+v\n", search.SearchMetadata)
+	//fmt.Printf("SEARCH METADATA:\n%+v\n", search.SearchMetadata)
 }
