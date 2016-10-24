@@ -39,3 +39,18 @@ func (s *FavoriteService) List(params *FavoriteListParams) ([]Tweet, *http.Respo
 	resp, err := s.sling.New().Get("list.json").QueryStruct(params).Receive(favorites, apiError)
 	return *favorites, resp, relevantError(err, *apiError)
 }
+
+// FavoriteCreateParams are the parameters for FavoriteService.Create.
+type FavoriteCreateParams struct {
+	ID int64 `url:"id,omitempty"`
+}
+
+// Create favorites a specified tweet.
+// Requires a user auth context.
+// https://dev.twitter.com/rest/reference/post/favorites/create
+func (s *FavoriteService) Create(params *FavoriteCreateParams) (*Tweet, *http.Response, error) {
+	tweet := new(Tweet)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Post("create.json").QueryStruct(params).Receive(tweet, apiError)
+	return tweet, resp, relevantError(err, *apiError)
+}
