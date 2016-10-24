@@ -25,3 +25,22 @@ func TestFavoriteService_List(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expected, tweets)
 }
+
+func TestFavoriteService_Create(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/favorites/create.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "POST", r)
+		assertPostForm(t, map[string]string{"id": "12345"}, r)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"id": 581980947630845953, "text": "very informative tweet"}`)
+	})
+
+	client := NewClient(httpClient)
+	params := &FavoriteCreateParams{ID: 12345}
+	tweet, _, err := client.Favorites.Create(params)
+	assert.Nil(t, err)
+	expected := &Tweet{ID: 581980947630845953, Text: "very informative tweet"}
+	assert.Equal(t, expected, tweet)
+}
