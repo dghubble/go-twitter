@@ -57,7 +57,7 @@ func (s *FollowerService) IDs(params *FollowerIDParams) (*FollowerIDs, *http.Res
 type FollowerListParams struct {
 	UserID              int64  `url:"user_id,omitempty"`
 	ScreenName          string `url:"screen_name,omitempty"`
-	Cursor              int    `url:"cursor,omitempty"`
+	Cursor              int64  `url:"cursor,omitempty"`
 	Count               int    `url:"count,omitempty"`
 	SkipStatus          *bool  `url:"skip_status,omitempty"`
 	IncludeUserEntities *bool  `url:"include_user_entities,omitempty"`
