@@ -11,7 +11,7 @@ import (
 // https://dev.twitter.com/overview/api/tweets
 // Unused or deprecated fields not provided: Geo, Annotations
 type Tweet struct {
-	Contributors         []Contributor          `json:"contributors"`
+	Contributors         []Contributor          `json:"-"`
 	Coordinates          *Coordinates           `json:"coordinates"`
 	CreatedAt            string                 `json:"created_at"`
 	CurrentUserRetweet   *TweetIdentifier       `json:"current_user_retweet"`
