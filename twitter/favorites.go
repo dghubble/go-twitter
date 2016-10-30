@@ -45,12 +45,27 @@ type FavoriteCreateParams struct {
 	ID int64 `url:"id,omitempty"`
 }
 
-// Create favorites a specified tweet.
+// Create favorites the specified tweet.
 // Requires a user auth context.
 // https://dev.twitter.com/rest/reference/post/favorites/create
 func (s *FavoriteService) Create(params *FavoriteCreateParams) (*Tweet, *http.Response, error) {
 	tweet := new(Tweet)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Post("create.json").QueryStruct(params).Receive(tweet, apiError)
+	return tweet, resp, relevantError(err, *apiError)
+}
+
+// FavoriteDestroyParams are the parameters for FavoriteService.Destroy.
+type FavoriteDestroyParams struct {
+	ID int64 `url:"id,omitempty"`
+}
+
+// Destroy un-favorites the specified tweet.
+// Requires a user auth context.
+// https://dev.twitter.com/rest/reference/post/favorites/destroy
+func (s *FavoriteService) Destroy(params *FavoriteDestroyParams) (*Tweet, *http.Response, error) {
+	tweet := new(Tweet)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Post("destroy.json").QueryStruct(params).Receive(tweet, apiError)
 	return tweet, resp, relevantError(err, *apiError)
 }
