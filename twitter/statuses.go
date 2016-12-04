@@ -9,9 +9,8 @@ import (
 
 // Tweet represents a Twitter Tweet, previously called a status.
 // https://dev.twitter.com/overview/api/tweets
-// Unused or deprecated fields not provided: Geo, Annotations
+// Deprecated fields: Contributors, Geo, Annotations
 type Tweet struct {
-	Contributors         []Contributor          `json:"-"`
 	Coordinates          *Coordinates           `json:"coordinates"`
 	CreatedAt            string                 `json:"created_at"`
 	CurrentUserRetweet   *TweetIdentifier       `json:"current_user_retweet"`
@@ -67,13 +66,6 @@ type Place struct {
 type BoundingBox struct {
 	Coordinates [][][2]float64 `json:"coordinates"`
 	Type        string         `json:"type"`
-}
-
-// Contributor represents a brief summary of a User identifiers.
-type Contributor struct {
-	ID         int64  `json:"id"`
-	IDStr      string `json:"id_str"`
-	ScreenName string `json:"screen_name"`
 }
 
 // Coordinates are pairs of longitude and latitude locations.

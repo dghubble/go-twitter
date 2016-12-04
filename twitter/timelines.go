@@ -21,15 +21,14 @@ func newTimelineService(sling *sling.Sling) *TimelineService {
 
 // UserTimelineParams are the parameters for TimelineService.UserTimeline.
 type UserTimelineParams struct {
-	UserID             int64  `url:"user_id,omitempty"`
-	ScreenName         string `url:"screen_name,omitempty"`
-	Count              int    `url:"count,omitempty"`
-	SinceID            int64  `url:"since_id,omitempty"`
-	MaxID              int64  `url:"max_id,omitempty"`
-	TrimUser           *bool  `url:"trim_user,omitempty"`
-	ExcludeReplies     *bool  `url:"exclude_replies,omitempty"`
-	ContributorDetails *bool  `url:"contributor_details,omitempty"`
-	IncludeRetweets    *bool  `url:"include_rts,omitempty"`
+	UserID          int64  `url:"user_id,omitempty"`
+	ScreenName      string `url:"screen_name,omitempty"`
+	Count           int    `url:"count,omitempty"`
+	SinceID         int64  `url:"since_id,omitempty"`
+	MaxID           int64  `url:"max_id,omitempty"`
+	TrimUser        *bool  `url:"trim_user,omitempty"`
+	ExcludeReplies  *bool  `url:"exclude_replies,omitempty"`
+	IncludeRetweets *bool  `url:"include_rts,omitempty"`
 }
 
 // UserTimeline returns recent Tweets from the specified user.
