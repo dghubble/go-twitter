@@ -24,7 +24,7 @@ type User struct {
 	GeoEnabled                     bool          `json:"geo_enabled"`
 	ID                             int64         `json:"id"`
 	IDStr                          string        `json:"id_str"`
-	IsTranslator                   bool          `json:"id_translator"`
+	IsTranslator                   bool          `json:"is_translator"`
 	Lang                           string        `json:"lang"`
 	ListedCount                    int           `json:"listed_count"`
 	Location                       string        `json:"location"`
