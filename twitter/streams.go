@@ -60,7 +60,8 @@ func (srv *StreamService) Filter(params *StreamFilterParams) (*Stream, error) {
 
 // StreamSampleParams are the parameters for StreamService.Sample.
 type StreamSampleParams struct {
-	StallWarnings *bool `url:"stall_warnings,omitempty"`
+	StallWarnings *bool    `url:"stall_warnings,omitempty"`
+	Language      []string `url:"language,omitempty,comma"`
 }
 
 // Sample returns a small sample of public stream messages.
