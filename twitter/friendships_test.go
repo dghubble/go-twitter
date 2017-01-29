@@ -54,7 +54,7 @@ func TestFriendshipService_Show(t *testing.T) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"source_screen_name": "foo", "target_screen_name": "bar"}, r)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, `{ "relationship": { "source": { "can_dm": false, "blocking": true, "muting": null, "id_str": "8649302", "all_replies": null, "want_retweets": null, "id": 8649302, "marked_spam": null, "screen_name": "foo", "following": false, "followed_by": false, "notifications_enabled": null }, "target": { "id_str": "12148", "id": 12148, "screen_name": "bar", "following": false, "followed_by": false } } }`)
+		fmt.Fprintf(w, `{ "relationship": { "source": { "can_dm": false, "blocking": null, "muting": null, "id_str": "8649302", "all_replies": null, "want_retweets": null, "id": 8649302, "marked_spam": null, "screen_name": "foo", "following": false, "followed_by": false, "notifications_enabled": null }, "target": { "id_str": "12148", "id": 12148, "screen_name": "bar", "following": false, "followed_by": false } } }`)
 	})
 
 	client := NewClient(httpClient)
