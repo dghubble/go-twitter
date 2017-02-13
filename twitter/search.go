@@ -52,7 +52,7 @@ type SearchTweetParams struct {
 }
 
 // Tweets returns a collection of Tweets matching a search query.
-// https://api.twitter.com/1.1/search/tweets.json
+// https://dev.twitter.com/rest/reference/get/search/tweets
 func (s *SearchService) Tweets(params *SearchTweetParams) (*Search, *http.Response, error) {
 	search := new(Search)
 	apiError := new(APIError)
