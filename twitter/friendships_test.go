@@ -67,3 +67,57 @@ func TestFriendshipService_Destroy(t *testing.T) {
 	expected := &User{ID: 12345, Name: "Doug Williams"}
 	assert.Equal(t, expected, user)
 }
+
+func TestFriendshipService_Outgoing(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/friendships/outgoing.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "GET", r)
+		assertQuery(t, map[string]string{"cursor": "1516933260114270762"}, r)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"ids":[178082406,3318241001,1318020818,191714329,376703838],"next_cursor":1516837838944119498,"next_cursor_str":"1516837838944119498","previous_cursor":-1516924983503961435,"previous_cursor_str":"-1516924983503961435"}`)
+	})
+	expected := &FriendIDs{
+		IDs:               []int64{178082406, 3318241001, 1318020818, 191714329, 376703838},
+		NextCursor:        1516837838944119498,
+		NextCursorStr:     "1516837838944119498",
+		PreviousCursor:    -1516924983503961435,
+		PreviousCursorStr: "-1516924983503961435",
+	}
+
+	client := NewClient(httpClient)
+	params := &FriendOutgoingIncomingParams{
+		Cursor: 1516933260114270762,
+	}
+	friendIDs, _, err := client.Friendships.Outgoing(params)
+	assert.Nil(t, err)
+	assert.Equal(t, expected, friendIDs)
+}
+
+func TestFriendshipService_Incoming(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/friendships/incoming.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "GET", r)
+		assertQuery(t, map[string]string{"cursor": "1516933260114270762"}, r)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"ids":[178082406,3318241001,1318020818,191714329,376703838],"next_cursor":1516837838944119498,"next_cursor_str":"1516837838944119498","previous_cursor":-1516924983503961435,"previous_cursor_str":"-1516924983503961435"}`)
+	})
+	expected := &FriendIDs{
+		IDs:               []int64{178082406, 3318241001, 1318020818, 191714329, 376703838},
+		NextCursor:        1516837838944119498,
+		NextCursorStr:     "1516837838944119498",
+		PreviousCursor:    -1516924983503961435,
+		PreviousCursorStr: "-1516924983503961435",
+	}
+
+	client := NewClient(httpClient)
+	params := &FriendOutgoingIncomingParams{
+		Cursor: 1516933260114270762,
+	}
+	friendIDs, _, err := client.Friendships.Incoming(params)
+	assert.Nil(t, err)
+	assert.Equal(t, expected, friendIDs)
+}
