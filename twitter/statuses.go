@@ -33,6 +33,7 @@ type Tweet struct {
 	Source               string                 `json:"source"`
 	Scopes               map[string]interface{} `json:"scopes"`
 	Text                 string                 `json:"text"`
+	FullText             string                 `json:"full_text"`
 	Place                *Place                 `json:"place"`
 	Truncated            bool                   `json:"truncated"`
 	User                 *User                  `json:"user"`
