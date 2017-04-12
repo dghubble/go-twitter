@@ -107,3 +107,28 @@ func (s *FriendshipService) Destroy(params *FriendshipDestroyParams) (*User, *ht
 	resp, err := s.sling.New().Post("destroy.json").QueryStruct(params).Receive(user, apiError)
 	return user, resp, relevantError(err, *apiError)
 }
+
+// FriendshipPendingParams are paramenters for FriendshipService.Outgoing
+type FriendshipPendingParams struct {
+	Cursor int64 `url:"cursor,omitempty"`
+}
+
+// Outgoing returns a collection of numeric IDs for every protected user for whom the authenticating
+// user has a pending follow request.
+// https://dev.twitter.com/rest/reference/get/friendships/outgoing
+func (s *FriendshipService) Outgoing(params *FriendshipPendingParams) (*FriendIDs, *http.Response, error) {
+	ids := new(FriendIDs)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("outgoing.json").QueryStruct(params).Receive(ids, apiError)
+	return ids, resp, relevantError(err, *apiError)
+}
+
+// Incoming returns a collection of numeric IDs for every user who has a pending request to
+// follow the authenticating user.
+// https://dev.twitter.com/rest/reference/get/friendships/incoming
+func (s *FriendshipService) Incoming(params *FriendshipPendingParams) (*FriendIDs, *http.Response, error) {
+	ids := new(FriendIDs)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("incoming.json").QueryStruct(params).Receive(ids, apiError)
+	return ids, resp, relevantError(err, *apiError)
+}
