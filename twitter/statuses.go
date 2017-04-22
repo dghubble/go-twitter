@@ -184,6 +184,27 @@ func (s *StatusService) Retweet(id int64, params *StatusRetweetParams) (*Tweet, 
 	return tweet, resp, relevantError(err, *apiError)
 }
 
+// StatusUnretweetParams are the parameters for StatusService.Unretweet
+type StatusUnretweetParams struct {
+	ID       int64 `url:"id,omitempty"`
+	TrimUser *bool `url:"trim_user,omitempty"`
+}
+
+// Unretweet unretweets the Tweet with the given id and returns the original Tweet.
+// Requires a user auth context.
+// https://dev.twitter.com/rest/reference/post/statuses/unretweet/%3Aid
+func (s *StatusService) Unretweet(id int64, params *StatusUnretweetParams) (*Tweet, *http.Response, error) {
+	if params == nil {
+		params = &StatusUnretweetParams{}
+	}
+	params.ID = id
+	tweet := new(Tweet)
+	apiError := new(APIError)
+	path := fmt.Sprintf("unretweet/%d.json", params.ID)
+	resp, err := s.sling.New().Post(path).BodyForm(params).Receive(tweet, apiError)
+	return tweet, resp, relevantError(err, *apiError)
+}
+
 // StatusRetweetsParams are the parameters for StatusService.Retweets
 type StatusRetweetsParams struct {
 	ID       int64 `url:"id,omitempty"`
