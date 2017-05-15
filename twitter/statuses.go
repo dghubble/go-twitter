@@ -105,10 +105,11 @@ func newStatusService(sling *sling.Sling) *StatusService {
 
 // StatusShowParams are the parameters for StatusService.Show
 type StatusShowParams struct {
-	ID               int64 `url:"id,omitempty"`
-	TrimUser         *bool `url:"trim_user,omitempty"`
-	IncludeMyRetweet *bool `url:"include_my_retweet,omitempty"`
-	IncludeEntities  *bool `url:"include_entities,omitempty"`
+	ID               int64  `url:"id,omitempty"`
+	TrimUser         *bool  `url:"trim_user,omitempty"`
+	IncludeMyRetweet *bool  `url:"include_my_retweet,omitempty"`
+	IncludeEntities  *bool  `url:"include_entities,omitempty"`
+	TweetMode        string `url:"tweet_mode,omitempty"`
 }
 
 // Show returns the requested Tweet.
@@ -130,6 +131,7 @@ type StatusLookupParams struct {
 	TrimUser        *bool   `url:"trim_user,omitempty"`
 	IncludeEntities *bool   `url:"include_entities,omitempty"`
 	Map             *bool   `url:"map,omitempty"`
+	TweetMode       string  `url:"tweet_mode,omitempty"`
 }
 
 // Lookup returns the requested Tweets as a slice. Combines ids from the
@@ -157,6 +159,7 @@ type StatusUpdateParams struct {
 	DisplayCoordinates *bool    `url:"display_coordinates,omitempty"`
 	TrimUser           *bool    `url:"trim_user,omitempty"`
 	MediaIds           []int64  `url:"media_ids,omitempty,comma"`
+	TweetMode          string   `url:"tweet_mode,omitempty"`
 }
 
 // Update updates the user's status, also known as Tweeting.
@@ -175,8 +178,9 @@ func (s *StatusService) Update(status string, params *StatusUpdateParams) (*Twee
 
 // StatusRetweetParams are the parameters for StatusService.Retweet
 type StatusRetweetParams struct {
-	ID       int64 `url:"id,omitempty"`
-	TrimUser *bool `url:"trim_user,omitempty"`
+	ID        int64  `url:"id,omitempty"`
+	TrimUser  *bool  `url:"trim_user,omitempty"`
+	TweetMode string `url:"tweet_mode,omitempty"`
 }
 
 // Retweet retweets the Tweet with the given id and returns the original Tweet
@@ -197,8 +201,9 @@ func (s *StatusService) Retweet(id int64, params *StatusRetweetParams) (*Tweet, 
 
 // StatusUnretweetParams are the parameters for StatusService.Unretweet
 type StatusUnretweetParams struct {
-	ID       int64 `url:"id,omitempty"`
-	TrimUser *bool `url:"trim_user,omitempty"`
+	ID        int64  `url:"id,omitempty"`
+	TrimUser  *bool  `url:"trim_user,omitempty"`
+	TweetMode string `url:"tweet_mode,omitempty"`
 }
 
 // Unretweet unretweets the Tweet with the given id and returns the original Tweet.
@@ -218,9 +223,10 @@ func (s *StatusService) Unretweet(id int64, params *StatusUnretweetParams) (*Twe
 
 // StatusRetweetsParams are the parameters for StatusService.Retweets
 type StatusRetweetsParams struct {
-	ID       int64 `url:"id,omitempty"`
-	Count    int   `url:"count,omitempty"`
-	TrimUser *bool `url:"trim_user,omitempty"`
+	ID        int64  `url:"id,omitempty"`
+	Count     int    `url:"count,omitempty"`
+	TrimUser  *bool  `url:"trim_user,omitempty"`
+	TweetMode string `url:"tweet_mode,omitempty"`
 }
 
 // Retweets returns the most recent retweets of the Tweet with the given id.
@@ -239,8 +245,9 @@ func (s *StatusService) Retweets(id int64, params *StatusRetweetsParams) ([]Twee
 
 // StatusDestroyParams are the parameters for StatusService.Destroy
 type StatusDestroyParams struct {
-	ID       int64 `url:"id,omitempty"`
-	TrimUser *bool `url:"trim_user,omitempty"`
+	ID        int64  `url:"id,omitempty"`
+	TrimUser  *bool  `url:"trim_user,omitempty"`
+	TweetMode string `url:"tweet_mode,omitempty"`
 }
 
 // Destroy deletes the Tweet with the given id and returns it if successful.

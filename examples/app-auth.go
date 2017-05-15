@@ -45,7 +45,7 @@ func main() {
 	fmt.Printf("STATUSES SHOW:\n%+v\n", tweet)
 
 	// statuses lookup
-	statusLookupParams := &twitter.StatusLookupParams{ID: []int64{20}}
+	statusLookupParams := &twitter.StatusLookupParams{ID: []int64{20}, TweetMode: "extended"}
 	tweets, _, _ := client.Statuses.Lookup([]int64{573893817000140800}, statusLookupParams)
 	fmt.Printf("STATUSES LOOKUP:\n%+v\n", tweets)
 
