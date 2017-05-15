@@ -23,6 +23,7 @@ type SearchMetadata struct {
 	NextResults string  `json:"next_results"`
 	CompletedIn float64 `json:"completed_in"`
 	Query       string  `json:"query"`
+	Filter      string  `url:"filter,omitempty"`
 }
 
 // SearchService provides methods for accessing Twitter search API endpoints.
