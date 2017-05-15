@@ -12,6 +12,7 @@ import (
 // Deprecated fields: Contributors, Geo, Annotations
 type Tweet struct {
 	Coordinates          *Coordinates           `json:"coordinates"`
+	FullText             string                 `json:"full_text"`
 	CreatedAt            string                 `json:"created_at"`
 	CurrentUserRetweet   *TweetIdentifier       `json:"current_user_retweet"`
 	Entities             *Entities              `json:"entities"`
