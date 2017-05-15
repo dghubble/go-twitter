@@ -34,6 +34,7 @@ type Tweet struct {
 	Scopes               map[string]interface{} `json:"scopes"`
 	Text                 string                 `json:"text"`
 	FullText             string                 `json:"full_text"`
+	DisplayTextRange     Indices                `json:"display_text_range"`
 	Place                *Place                 `json:"place"`
 	Truncated            bool                   `json:"truncated"`
 	User                 *User                  `json:"user"`
@@ -41,9 +42,18 @@ type Tweet struct {
 	WithheldInCountries  []string               `json:"withheld_in_countries"`
 	WithheldScope        string                 `json:"withheld_scope"`
 	ExtendedEntities     *ExtendedEntity        `json:"extended_entities"`
+	ExtendedTweet        *ExtendedTweet         `json:"extended_tweet"`
 	QuotedStatusID       int64                  `json:"quoted_status_id"`
 	QuotedStatusIDStr    string                 `json:"quoted_status_id_str"`
 	QuotedStatus         *Tweet                 `json:"quoted_status"`
+}
+
+// ExtendedTweet represents fields embedded in extended Tweets when served in
+// compatibility mode (default).
+// https://dev.twitter.com/overview/api/upcoming-changes-to-tweets
+type ExtendedTweet struct {
+	FullText         string  `json:"full_text"`
+	DisplayTextRange Indices `json:"display_text_range"`
 }
 
 // Place represents a Twitter Place / Location
