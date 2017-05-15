@@ -49,6 +49,7 @@ type SearchTweetParams struct {
 	MaxID           int64  `url:"max_id,omitempty"`
 	Until           string `url:"until,omitempty"`
 	IncludeEntities *bool  `url:"include_entities,omitempty"`
+	TweetMode       string `url:"tweet_mode,omitempty"`
 }
 
 // Tweets returns a collection of Tweets matching a search query.

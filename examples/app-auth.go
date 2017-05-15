@@ -45,7 +45,7 @@ func main() {
 	fmt.Printf("STATUSES SHOW:\n%+v\n", tweet)
 
 	// statuses lookup
-	statusLookupParams := &twitter.StatusLookupParams{ID: []int64{20}}
+	statusLookupParams := &twitter.StatusLookupParams{ID: []int64{20}, TweetMode: "extended"}
 	tweets, _, _ := client.Statuses.Lookup([]int64{573893817000140800}, statusLookupParams)
 	fmt.Printf("STATUSES LOOKUP:\n%+v\n", tweets)
 
@@ -61,10 +61,11 @@ func main() {
 
 	// search tweets
 	searchTweetParams := &twitter.SearchTweetParams{
-		Query: "happy birthday",
-		Count: 3,
+		Query:     "happy birthday",
+		TweetMode: "extended",
+		Count:     3,
 	}
 	search, _, _ := client.Search.Tweets(searchTweetParams)
 	fmt.Printf("SEARCH TWEETS:\n%+v\n", search)
-	fmt.Printf("SEARCH METADATA:\n%+v\n", search.SearchMetadata)
+	fmt.Printf("SEARCH METADATA:\n%+v\n", search.Metadata)
 }
