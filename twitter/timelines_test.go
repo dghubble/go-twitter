@@ -21,7 +21,7 @@ func TestTimelineService_UserTimeline(t *testing.T) {
 
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.UserTimeline(&UserTimelineParams{UserID: 113419064, TrimUser: Bool(true), IncludeRetweets: Bool(false)})
-	expected := []Tweet{Tweet{Text: "Gophercon talks!"}, Tweet{Text: "Why gophers are so adorable"}}
+	expected := []Tweet{{Text: "Gophercon talks!"}, {Text: "Why gophers are so adorable"}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, tweets)
 }
@@ -39,7 +39,7 @@ func TestTimelineService_HomeTimeline(t *testing.T) {
 
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.HomeTimeline(&HomeTimelineParams{SinceID: 589147592367431680, ExcludeReplies: Bool(false)})
-	expected := []Tweet{Tweet{Text: "Live on #Periscope"}, Tweet{Text: "Clickbait journalism"}, Tweet{Text: "Useful announcement"}}
+	expected := []Tweet{{Text: "Live on #Periscope"}, {Text: "Clickbait journalism"}, {Text: "Useful announcement"}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, tweets)
 }
@@ -57,7 +57,7 @@ func TestTimelineService_MentionTimeline(t *testing.T) {
 
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.MentionTimeline(&MentionTimelineParams{Count: 20, IncludeEntities: Bool(false)})
-	expected := []Tweet{Tweet{Text: "@dghubble can I get verified?"}, Tweet{Text: "@dghubble why are gophers so great?"}}
+	expected := []Tweet{{Text: "@dghubble can I get verified?"}, {Text: "@dghubble why are gophers so great?"}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, tweets)
 }
@@ -75,7 +75,7 @@ func TestTimelineService_RetweetsOfMeTimeline(t *testing.T) {
 
 	client := NewClient(httpClient)
 	tweets, _, err := client.Timelines.RetweetsOfMeTimeline(&RetweetsOfMeTimelineParams{TrimUser: Bool(false), IncludeUserEntities: Bool(false)})
-	expected := []Tweet{Tweet{Text: "RT Twitter UK edition"}, Tweet{Text: "RT Triply-replicated Gophers"}}
+	expected := []Tweet{{Text: "RT Twitter UK edition"}, {Text: "RT Triply-replicated Gophers"}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, tweets)
 }

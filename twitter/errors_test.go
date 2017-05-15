@@ -9,7 +9,7 @@ import (
 
 var errAPI = APIError{
 	Errors: []ErrorDetail{
-		ErrorDetail{Message: "Status is a duplicate", Code: 187},
+		{Message: "Status is a duplicate", Code: 187},
 	},
 }
 var errHTTP = fmt.Errorf("unknown host")
