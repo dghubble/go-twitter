@@ -3,6 +3,7 @@ package twitter
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/dghubble/sling"
 )
@@ -45,6 +46,11 @@ type Tweet struct {
 	QuotedStatusID       int64                  `json:"quoted_status_id"`
 	QuotedStatusIDStr    string                 `json:"quoted_status_id_str"`
 	QuotedStatus         *Tweet                 `json:"quoted_status"`
+}
+
+// CreatedAtTime is a convenience wrapper that returns the Created_at time, parsed as a time.Time struct
+func (t Tweet) CreatedAtTime() (time.Time, error) {
+	return time.Parse(time.RubyDate, t.CreatedAt)
 }
 
 // ExtendedTweet represents fields embedded in extended Tweets when served in
