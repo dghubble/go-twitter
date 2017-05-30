@@ -29,6 +29,7 @@ type FavoriteListParams struct {
 	SinceID         int64  `url:"since_id,omitempty"`
 	MaxID           int64  `url:"max_id,omitempty"`
 	IncludeEntities *bool  `url:"include_entities,omitempty"`
+	TweetMode       string `url:"tweet_mode,omitempty"`
 }
 
 // List returns liked Tweets from the specified user.

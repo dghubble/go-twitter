@@ -29,6 +29,7 @@ type UserTimelineParams struct {
 	TrimUser        *bool  `url:"trim_user,omitempty"`
 	ExcludeReplies  *bool  `url:"exclude_replies,omitempty"`
 	IncludeRetweets *bool  `url:"include_rts,omitempty"`
+	TweetMode       string `url:"tweet_mode,omitempty"`
 }
 
 // UserTimeline returns recent Tweets from the specified user.
@@ -42,13 +43,14 @@ func (s *TimelineService) UserTimeline(params *UserTimelineParams) ([]Tweet, *ht
 
 // HomeTimelineParams are the parameters for TimelineService.HomeTimeline.
 type HomeTimelineParams struct {
-	Count              int   `url:"count,omitempty"`
-	SinceID            int64 `url:"since_id,omitempty"`
-	MaxID              int64 `url:"max_id,omitempty"`
-	TrimUser           *bool `url:"trim_user,omitempty"`
-	ExcludeReplies     *bool `url:"exclude_replies,omitempty"`
-	ContributorDetails *bool `url:"contributor_details,omitempty"`
-	IncludeEntities    *bool `url:"include_entities,omitempty"`
+	Count              int    `url:"count,omitempty"`
+	SinceID            int64  `url:"since_id,omitempty"`
+	MaxID              int64  `url:"max_id,omitempty"`
+	TrimUser           *bool  `url:"trim_user,omitempty"`
+	ExcludeReplies     *bool  `url:"exclude_replies,omitempty"`
+	ContributorDetails *bool  `url:"contributor_details,omitempty"`
+	IncludeEntities    *bool  `url:"include_entities,omitempty"`
+	TweetMode          string `url:"tweet_mode,omitempty"`
 }
 
 // HomeTimeline returns recent Tweets and retweets from the user and those
@@ -64,12 +66,13 @@ func (s *TimelineService) HomeTimeline(params *HomeTimelineParams) ([]Tweet, *ht
 
 // MentionTimelineParams are the parameters for TimelineService.MentionTimeline.
 type MentionTimelineParams struct {
-	Count              int   `url:"count,omitempty"`
-	SinceID            int64 `url:"since_id,omitempty"`
-	MaxID              int64 `url:"max_id,omitempty"`
-	TrimUser           *bool `url:"trim_user,omitempty"`
-	ContributorDetails *bool `url:"contributor_details,omitempty"`
-	IncludeEntities    *bool `url:"include_entities,omitempty"`
+	Count              int    `url:"count,omitempty"`
+	SinceID            int64  `url:"since_id,omitempty"`
+	MaxID              int64  `url:"max_id,omitempty"`
+	TrimUser           *bool  `url:"trim_user,omitempty"`
+	ContributorDetails *bool  `url:"contributor_details,omitempty"`
+	IncludeEntities    *bool  `url:"include_entities,omitempty"`
+	TweetMode          string `url:"tweet_mode,omitempty"`
 }
 
 // MentionTimeline returns recent Tweet mentions of the authenticated user.
@@ -85,12 +88,13 @@ func (s *TimelineService) MentionTimeline(params *MentionTimelineParams) ([]Twee
 // RetweetsOfMeTimelineParams are the parameters for
 // TimelineService.RetweetsOfMeTimeline.
 type RetweetsOfMeTimelineParams struct {
-	Count               int   `url:"count,omitempty"`
-	SinceID             int64 `url:"since_id,omitempty"`
-	MaxID               int64 `url:"max_id,omitempty"`
-	TrimUser            *bool `url:"trim_user,omitempty"`
-	IncludeEntities     *bool `url:"include_entities,omitempty"`
-	IncludeUserEntities *bool `url:"include_user_entities"`
+	Count               int    `url:"count,omitempty"`
+	SinceID             int64  `url:"since_id,omitempty"`
+	MaxID               int64  `url:"max_id,omitempty"`
+	TrimUser            *bool  `url:"trim_user,omitempty"`
+	IncludeEntities     *bool  `url:"include_entities,omitempty"`
+	IncludeUserEntities *bool  `url:"include_user_entities"`
+	TweetMode           string `url:"tweet_mode,omitempty"`
 }
 
 // RetweetsOfMeTimeline returns the most recent Tweets by the authenticated

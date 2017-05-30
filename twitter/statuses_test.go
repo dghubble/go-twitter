@@ -162,6 +162,26 @@ func TestStatusService_RetweetHandlesNilParams(t *testing.T) {
 	client.Statuses.Retweet(20, nil)
 }
 
+func TestStatusService_Unretweet(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/unretweet/20.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "POST", r)
+		assertQuery(t, map[string]string{}, r)
+		assertPostForm(t, map[string]string{"id": "20", "trim_user": "true"}, r)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"id": 581980947630202020, "text":"RT @jack: just setting up my twttr", "retweeted_status": {"id": 20, "text": "just setting up my twttr"}}`)
+	})
+
+	client := NewClient(httpClient)
+	params := &StatusUnretweetParams{TrimUser: Bool(true)}
+	tweet, _, err := client.Statuses.Unretweet(20, params)
+	expected := &Tweet{ID: 581980947630202020, Text: "RT @jack: just setting up my twttr", RetweetedStatus: &Tweet{ID: 20, Text: "just setting up my twttr"}}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweet)
+}
+
 func TestStatusService_Retweets(t *testing.T) {
 	httpClient, mux, server := testServer()
 	defer server.Close()
