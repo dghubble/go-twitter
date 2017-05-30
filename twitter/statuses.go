@@ -17,7 +17,6 @@ type Tweet struct {
 	Entities             *Entities              `json:"entities"`
 	FavoriteCount        int                    `json:"favorite_count"`
 	Favorited            bool                   `json:"favorited"`
-	DisplayTextRange     *Indices               `json:"display_text_range"`
 	FilterLevel          string                 `json:"filter_level"`
 	ID                   int64                  `json:"id"`
 	IDStr                string                 `json:"id_str"`
