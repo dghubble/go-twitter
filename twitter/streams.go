@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"sync"
 	"time"
@@ -25,6 +26,13 @@ type StreamService struct {
 	public *sling.Sling
 	user   *sling.Sling
 	site   *sling.Sling
+}
+
+// StreamRequestError on HTTP request failure
+type StreamRequestError struct {
+	StatusCode int
+	Status     string
+	Body       string
 }
 
 // newStreamService returns a new StreamService.
@@ -188,6 +196,16 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 	defer close(s.Messages)
 	defer s.group.Done()
 
+	var reportError = func(r *http.Response) {
+		b, _ := ioutil.ReadAll(r.Body)
+
+		s.Messages <- &StreamRequestError{
+			Status:     r.Status,
+			StatusCode: r.StatusCode,
+			Body:       string(b),
+		}
+	}
+
 	var wait time.Duration
 	for !stopped(s.done) {
 		resp, err := s.client.Do(req)
@@ -197,6 +215,7 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 			s.Messages <- err
 			return
 		}
+
 		// when err is nil, resp contains a non-nil Body which must be closed
 		defer resp.Body.Close()
 		s.body = resp.Body
@@ -209,11 +228,14 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 		case 503:
 			// exponential backoff
 			wait = expBackOff.NextBackOff()
+			reportError(resp)
 		case 420, 429:
 			// aggressive exponential backoff
 			wait = aggExpBackOff.NextBackOff()
+			reportError(resp)
 		default:
 			// stop retrying for other response codes
+			reportError(resp)
 			resp.Body.Close()
 			return
 		}
@@ -317,22 +339,28 @@ func decodeMessage(token []byte, data map[string]interface{}) interface{} {
 		event := new(Event)
 		json.Unmarshal(token, event)
 		return event
-	} else if hasPath(data, "for_user") {
-
-		wrapper := new(SiteStreamWrapper)
-		json.Unmarshal(token, wrapper)
-
-		if len(wrapper.Message.Friends) > 0 {
-			return &wrapper.Message.FriendsList
-		}
-
-		// TODO check for other types here?
-		return &wrapper.Message.Tweet
-
 	} else if hasPath(data, "control") {
-		control := new(Control)
-		json.Unmarshal(token, control)
-		return control
+		var control SiteStreamControl
+		json.Unmarshal(token, &control)
+		return &control
+	} else if hasPath(data, "for_user") {
+		// Sitestrem messages could be one of several objects
+		var err error
+		siteStreamFriendsList := new(SiteStreamFriendsList)
+		err = json.Unmarshal(token, siteStreamFriendsList)
+		if err == nil {
+			return siteStreamFriendsList
+		}
+		siteStreamTweet := new(SiteStreamTweet)
+		err = json.Unmarshal(token, siteStreamTweet)
+		if err == nil {
+			return siteStreamTweet
+		}
+		siteStreamDirectMessage := new(SiteStreamDirectMessage)
+		err = json.Unmarshal(token, siteStreamDirectMessage)
+		if err == nil {
+			return siteStreamDirectMessage
+		}
 	}
 
 	// message type unknown, return the data map[string]interface{}

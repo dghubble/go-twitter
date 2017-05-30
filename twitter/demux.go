@@ -11,37 +11,47 @@ type Demux interface {
 // SwitchDemux receives messages and uses a type switch to send each typed
 // message to a handler function.
 type SwitchDemux struct {
-	All              func(message interface{})
-	Tweet            func(tweet *Tweet)
-	DM               func(dm *DirectMessage)
-	StatusDeletion   func(deletion *StatusDeletion)
-	LocationDeletion func(LocationDeletion *LocationDeletion)
-	StreamLimit      func(limit *StreamLimit)
-	StatusWithheld   func(statusWithheld *StatusWithheld)
-	UserWithheld     func(userWithheld *UserWithheld)
-	StreamDisconnect func(disconnect *StreamDisconnect)
-	Warning          func(warning *StallWarning)
-	FriendsList      func(friendsList *FriendsList)
-	Event            func(event *Event)
-	Other            func(message interface{})
+	All                     func(message interface{})
+	Tweet                   func(tweet *Tweet)
+	DM                      func(dm *DirectMessage)
+	StatusDeletion          func(deletion *StatusDeletion)
+	LocationDeletion        func(LocationDeletion *LocationDeletion)
+	StreamLimit             func(limit *StreamLimit)
+	StatusWithheld          func(statusWithheld *StatusWithheld)
+	UserWithheld            func(userWithheld *UserWithheld)
+	StreamDisconnect        func(disconnect *StreamDisconnect)
+	Warning                 func(warning *StallWarning)
+	FriendsList             func(friendsList *FriendsList)
+	Event                   func(event *Event)
+	SiteStreamControl       func(control *SiteStreamControl)
+	SiteStreamTweet         func(tweet *SiteStreamTweet)
+	SiteStreamFriendsList   func(friendsList *SiteStreamFriendsList)
+	SiteStreamDirectMessage func(dm *SiteStreamDirectMessage)
+	StreamRequestError      func(r *StreamRequestError)
+	Other                   func(message interface{})
 }
 
 // NewSwitchDemux returns a new SwitchMux which has NoOp handler functions.
 func NewSwitchDemux() SwitchDemux {
 	return SwitchDemux{
-		All:              func(message interface{}) {},
-		Tweet:            func(tweet *Tweet) {},
-		DM:               func(dm *DirectMessage) {},
-		StatusDeletion:   func(deletion *StatusDeletion) {},
-		LocationDeletion: func(LocationDeletion *LocationDeletion) {},
-		StreamLimit:      func(limit *StreamLimit) {},
-		StatusWithheld:   func(statusWithheld *StatusWithheld) {},
-		UserWithheld:     func(userWithheld *UserWithheld) {},
-		StreamDisconnect: func(disconnect *StreamDisconnect) {},
-		Warning:          func(warning *StallWarning) {},
-		FriendsList:      func(friendsList *FriendsList) {},
-		Event:            func(event *Event) {},
-		Other:            func(message interface{}) {},
+		All:                     func(message interface{}) {},
+		Tweet:                   func(tweet *Tweet) {},
+		DM:                      func(dm *DirectMessage) {},
+		StatusDeletion:          func(deletion *StatusDeletion) {},
+		LocationDeletion:        func(LocationDeletion *LocationDeletion) {},
+		StreamLimit:             func(limit *StreamLimit) {},
+		StatusWithheld:          func(statusWithheld *StatusWithheld) {},
+		UserWithheld:            func(userWithheld *UserWithheld) {},
+		StreamDisconnect:        func(disconnect *StreamDisconnect) {},
+		Warning:                 func(warning *StallWarning) {},
+		FriendsList:             func(friendsList *FriendsList) {},
+		Event:                   func(event *Event) {},
+		SiteStreamControl:       func(control *SiteStreamControl) {},
+		SiteStreamTweet:         func(tweet *SiteStreamTweet) {},
+		SiteStreamFriendsList:   func(friendsList *SiteStreamFriendsList) {},
+		SiteStreamDirectMessage: func(dm *SiteStreamDirectMessage) {},
+		StreamRequestError:      func(r *StreamRequestError) {},
+		Other:                   func(message interface{}) {},
 	}
 }
 
@@ -73,6 +83,16 @@ func (d SwitchDemux) Handle(message interface{}) {
 		d.FriendsList(msg)
 	case *Event:
 		d.Event(msg)
+	case *SiteStreamTweet:
+		d.SiteStreamTweet(msg)
+	case *SiteStreamFriendsList:
+		d.SiteStreamFriendsList(msg)
+	case *SiteStreamDirectMessage:
+		d.SiteStreamDirectMessage(msg)
+	case *SiteStreamControl:
+		d.SiteStreamControl(msg)
+	case *StreamRequestError:
+		d.StreamRequestError(msg)
 	default:
 		d.Other(msg)
 	}
