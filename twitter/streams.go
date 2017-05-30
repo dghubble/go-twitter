@@ -3,6 +3,7 @@ package twitter
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -33,6 +34,11 @@ type StreamRequestError struct {
 	StatusCode int
 	Status     string
 	Body       string
+	URL        string
+}
+
+func (s *StreamRequestError) String() string {
+	return fmt.Sprintf("Status: %s\nURL: %s\nResponse: %s\n", s.Status, s.URL, s.Body)
 }
 
 // newStreamService returns a new StreamService.
@@ -196,13 +202,14 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 	defer close(s.Messages)
 	defer s.group.Done()
 
-	var reportError = func(r *http.Response) {
-		b, _ := ioutil.ReadAll(r.Body)
+	var reportError = func(r *http.Request, rs *http.Response) {
+		b, _ := ioutil.ReadAll(rs.Body)
 
 		s.Messages <- &StreamRequestError{
-			Status:     r.Status,
-			StatusCode: r.StatusCode,
+			Status:     rs.Status,
+			StatusCode: rs.StatusCode,
 			Body:       string(b),
+			URL:        r.URL.String(),
 		}
 	}
 
@@ -228,14 +235,14 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 		case 503:
 			// exponential backoff
 			wait = expBackOff.NextBackOff()
-			reportError(resp)
+			reportError(req, resp)
 		case 420, 429:
 			// aggressive exponential backoff
 			wait = aggExpBackOff.NextBackOff()
-			reportError(resp)
+			reportError(req, resp)
 		default:
 			// stop retrying for other response codes
-			reportError(resp)
+			reportError(req, resp)
 			resp.Body.Close()
 			return
 		}
@@ -344,7 +351,7 @@ func decodeMessage(token []byte, data map[string]interface{}) interface{} {
 		json.Unmarshal(token, &control)
 		return &control
 	} else if hasPath(data, "for_user") {
-		// Sitestrem messages could be one of several objects
+		// Site Stream messages could be one of several objects
 		var err error
 		siteStreamFriendsList := new(SiteStreamFriendsList)
 		err = json.Unmarshal(token, siteStreamFriendsList)

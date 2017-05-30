@@ -123,7 +123,7 @@ func TestStream_Filter(t *testing.T) {
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 2, other: 2}
+	expectedCounts := &counter{all: 3, other: 2}
 	assert.Equal(t, expectedCounts, counts)
 }
 
@@ -163,7 +163,7 @@ func TestStream_Sample(t *testing.T) {
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 2, other: 2}
+	expectedCounts := &counter{all: 3, other: 2}
 	assert.Equal(t, expectedCounts, counts)
 }
 
@@ -201,7 +201,7 @@ func TestStream_User(t *testing.T) {
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 1, friendsList: 1}
+	expectedCounts := &counter{all: 2, friendsList: 1}
 	assert.Equal(t, expectedCounts, counts)
 }
 
@@ -241,7 +241,7 @@ func TestStream_Site(t *testing.T) {
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 2, other: 2}
+	expectedCounts := &counter{all: 3, other: 2}
 	assert.Equal(t, expectedCounts, counts)
 }
 
@@ -281,7 +281,7 @@ func TestStream_PublicFirehose(t *testing.T) {
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 2, other: 2}
+	expectedCounts := &counter{all: 3, other: 2}
 	assert.Equal(t, expectedCounts, counts)
 }
 
