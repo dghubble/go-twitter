@@ -17,6 +17,7 @@ type Tweet struct {
 	Entities             *Entities              `json:"entities"`
 	FavoriteCount        int                    `json:"favorite_count"`
 	Favorited            bool                   `json:"favorited"`
+	DisplayTextRange     *Indices               `json:"display_text_range"`
 	FilterLevel          string                 `json:"filter_level"`
 	ID                   int64                  `json:"id"`
 	IDStr                string                 `json:"id_str"`
@@ -43,6 +44,7 @@ type Tweet struct {
 	QuotedStatusID       int64                  `json:"quoted_status_id"`
 	QuotedStatusIDStr    string                 `json:"quoted_status_id_str"`
 	QuotedStatus         *Tweet                 `json:"quoted_status"`
+	IsQuoteStatus        bool                   `json:"is_quote_status"`
 }
 
 // Place represents a Twitter Place / Location

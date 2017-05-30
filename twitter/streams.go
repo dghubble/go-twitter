@@ -191,6 +191,7 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 	var wait time.Duration
 	for !stopped(s.done) {
 		resp, err := s.client.Do(req)
+
 		if err != nil {
 			// stop retrying for HTTP protocol errors
 			s.Messages <- err
@@ -242,6 +243,7 @@ func (s *Stream) receive(body io.ReadCloser) {
 			// empty keep-alive
 			continue
 		}
+
 		select {
 		// send messages, data, or errors
 		case s.Messages <- getMessage(token):
@@ -315,7 +317,24 @@ func decodeMessage(token []byte, data map[string]interface{}) interface{} {
 		event := new(Event)
 		json.Unmarshal(token, event)
 		return event
+	} else if hasPath(data, "for_user") {
+
+		wrapper := new(SiteStreamWrapper)
+		json.Unmarshal(token, wrapper)
+
+		if len(wrapper.Message.Friends) > 0 {
+			return &wrapper.Message.FriendsList
+		}
+
+		// TODO check for other types here?
+		return &wrapper.Message.Tweet
+
+	} else if hasPath(data, "control") {
+		control := new(Control)
+		json.Unmarshal(token, control)
+		return control
 	}
+
 	// message type unknown, return the data map[string]interface{}
 	return data
 }
