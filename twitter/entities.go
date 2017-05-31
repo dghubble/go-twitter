@@ -1,5 +1,11 @@
 package twitter
 
+// SiteStream message wrapper
+type SiteStream struct {
+	ForUser int64 `json:"for_user"`
+	Message map[string]interface{}
+}
+
 // SiteStreamTweet struct
 type SiteStreamTweet struct {
 	ForUser int64 `json:"for_user"`

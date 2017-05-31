@@ -351,23 +351,44 @@ func decodeMessage(token []byte, data map[string]interface{}) interface{} {
 		json.Unmarshal(token, &control)
 		return &control
 	} else if hasPath(data, "for_user") {
+
 		// Site Stream messages could be one of several objects
 		var err error
-		siteStreamFriendsList := new(SiteStreamFriendsList)
-		err = json.Unmarshal(token, siteStreamFriendsList)
-		if err == nil {
-			return siteStreamFriendsList
+		var siteStream SiteStream
+		err = json.Unmarshal(token, &siteStream)
+		if err != nil {
+			return data
 		}
-		siteStreamTweet := new(SiteStreamTweet)
-		err = json.Unmarshal(token, siteStreamTweet)
-		if err == nil {
-			return siteStreamTweet
+
+		// FriendsList
+		if hasPath(siteStream.Message, "friends") {
+			siteStreamFriendsList := new(SiteStreamFriendsList)
+			err = json.Unmarshal(token, siteStreamFriendsList)
+			if err == nil {
+				return siteStreamFriendsList
+			}
 		}
-		siteStreamDirectMessage := new(SiteStreamDirectMessage)
-		err = json.Unmarshal(token, siteStreamDirectMessage)
-		if err == nil {
-			return siteStreamDirectMessage
+
+		// Tweet
+		if hasPath(siteStream.Message, "retweet_count") {
+			siteStreamTweet := new(SiteStreamTweet)
+			err = json.Unmarshal(token, siteStreamTweet)
+			if err == nil {
+				return siteStreamTweet
+			}
 		}
+
+		// DM
+		if hasPath(siteStream.Message, "sender_id") {
+			siteStreamDirectMessage := new(SiteStreamDirectMessage)
+			err = json.Unmarshal(token, siteStreamDirectMessage)
+			if err == nil {
+				return siteStreamDirectMessage
+			}
+		}
+
+		// TODO other types here
+
 	}
 
 	// message type unknown, return the data map[string]interface{}
