@@ -2,6 +2,7 @@ package twitter
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -230,21 +231,38 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 // scan error, or the done channel is closed.
 func (s *Stream) receive(body io.ReadCloser) {
 	defer body.Close()
-	// A bufio.Scanner steps through 'tokens' of data on each Scan() using a
-	// SplitFunc. SplitFunc tokenizes input bytes to return the number of bytes
-	// to advance, the token slice of bytes, and any errors.
-	scanner := bufio.NewScanner(body)
-	// default ScanLines SplitFunc is incorrect for Twitter Streams, set custom
-	scanner.Split(scanLines)
-	for !stopped(s.done) && scanner.Scan() {
-		token := scanner.Bytes()
-		if len(token) == 0 {
+	reader := bufio.NewReader(body)
+	for !stopped(s.done) {
+		var buf []byte
+		for {
+			// Twitter streaming messages are separated with "\r\n", and a valid
+			// message may sometimes contain '\n' in the middle.
+			// bufio.Reader.Read() can accept one byte delimiter only, so we need to
+			// first break out each line on '\n' and then check whether the line ends
+			// with "\r\n" to find message boundaries.
+			// https://dev.twitter.com/streaming/overview/processing
+			line, err := reader.ReadBytes('\n')
+			if err != nil {
+				return
+			}
+			// If the line ends with "\r\n", it's the end of one streaming message data.
+			if bytes.HasSuffix(line, []byte("\r\n")) {
+				// reader.ReadBytes() returns a slice including the delimiter itself, so we
+				// need to trim '\n' as well as '\r' from the end of the slice.
+				buf = append(buf, bytes.TrimRight(line, "\r\n")...)
+				break
+			}
+			// Otherwise, the line is not the end of a streaming message, so we append
+			// the line to the buffer and continue to scan lines.
+			buf = append(buf, line...)
+		}
+		if len(buf) == 0 {
 			// empty keep-alive
 			continue
 		}
 		select {
 		// send messages, data, or errors
-		case s.Messages <- getMessage(token):
+		case s.Messages <- getMessage(buf):
 			continue
 		// allow client to Stop(), even if not receiving
 		case <-s.done:
