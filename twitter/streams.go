@@ -232,8 +232,11 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 func (s *Stream) receive(body io.ReadCloser) {
 	defer body.Close()
 	reader := bufio.NewReader(body)
+	var buf bytes.Buffer
 	for !stopped(s.done) {
-		var buf []byte
+		// Discard all the bytes from buf and continue to use the allocated memory
+		// space for reading the next message.
+		buf.Truncate(0)
 		for {
 			// Twitter streaming messages are separated with "\r\n", and a valid
 			// message may sometimes contain '\n' in the middle.
@@ -249,20 +252,24 @@ func (s *Stream) receive(body io.ReadCloser) {
 			if bytes.HasSuffix(line, []byte("\r\n")) {
 				// reader.ReadBytes() returns a slice including the delimiter itself, so we
 				// need to trim '\n' as well as '\r' from the end of the slice.
-				buf = append(buf, bytes.TrimRight(line, "\r\n")...)
+				buf.Write(bytes.TrimRight(line, "\r\n"))
 				break
 			}
 			// Otherwise, the line is not the end of a streaming message, so we append
 			// the line to the buffer and continue to scan lines.
-			buf = append(buf, line...)
+			buf.Write(line)
 		}
-		if len(buf) == 0 {
+		// Get the streaming message bytes from buf. Not that Bytes() won't mark the
+		// returned data as "read", and we need to explicitly call Truncate(0) to
+		// discard from buf before writing the next streaming message to buf.
+		data := buf.Bytes()
+		if len(data) == 0 {
 			// empty keep-alive
 			continue
 		}
 		select {
 		// send messages, data, or errors
-		case s.Messages <- getMessage(buf):
+		case s.Messages <- getMessage(data):
 			continue
 		// allow client to Stop(), even if not receiving
 		case <-s.done:
