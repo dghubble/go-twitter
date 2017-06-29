@@ -1,8 +1,6 @@
 package twitter
 
 import (
-	"bufio"
-	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -229,40 +227,13 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 // receive scans a stream response body, JSON decodes tokens to messages, and
 // sends messages to the Messages channel. Receiving continues until an EOF,
 // scan error, or the done channel is closed.
-func (s *Stream) receive(body io.ReadCloser) {
-	defer body.Close()
-	reader := bufio.NewReader(body)
-	var buf bytes.Buffer
+func (s *Stream) receive(body io.Reader) {
+	reader := newStreamResponseBodyReader(body)
 	for !stopped(s.done) {
-		// Discard all the bytes from buf and continue to use the allocated memory
-		// space for reading the next message.
-		buf.Truncate(0)
-		for {
-			// Twitter streaming messages are separated with "\r\n", and a valid
-			// message may sometimes contain '\n' in the middle.
-			// bufio.Reader.Read() can accept one byte delimiter only, so we need to
-			// first break out each line on '\n' and then check whether the line ends
-			// with "\r\n" to find message boundaries.
-			// https://dev.twitter.com/streaming/overview/processing
-			line, err := reader.ReadBytes('\n')
-			if err != nil {
-				return
-			}
-			// If the line ends with "\r\n", it's the end of one streaming message data.
-			if bytes.HasSuffix(line, []byte("\r\n")) {
-				// reader.ReadBytes() returns a slice including the delimiter itself, so we
-				// need to trim '\n' as well as '\r' from the end of the slice.
-				buf.Write(bytes.TrimRight(line, "\r\n"))
-				break
-			}
-			// Otherwise, the line is not the end of a streaming message, so we append
-			// the line to the buffer and continue to scan lines.
-			buf.Write(line)
+		data, err := reader.readNext()
+		if err != nil {
+			return
 		}
-		// Get the streaming message bytes from buf. Not that Bytes() won't mark the
-		// returned data as "read", and we need to explicitly call Truncate(0) to
-		// discard from buf before writing the next streaming message to buf.
-		data := buf.Bytes()
 		if len(data) == 0 {
 			// empty keep-alive
 			continue
