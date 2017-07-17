@@ -21,8 +21,10 @@ func stopped(done <-chan struct{}) bool {
 // or until at least the duration d has elapsed, whichever comes first. This
 // is similar to time.Sleep(d), except it can be interrupted.
 func sleepOrDone(d time.Duration, done <-chan struct{}) {
+	sleep := time.NewTimer(d)
+	defer sleep.Stop()
 	select {
-	case <-time.After(d):
+	case <-sleep.C:
 		return
 	case <-done:
 		return
