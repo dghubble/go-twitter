@@ -10,7 +10,6 @@ import (
 
 // Tweet represents a Twitter Tweet, previously called a status.
 // https://dev.twitter.com/overview/api/tweets
-// Deprecated fields: Contributors, Geo, Annotations
 type Tweet struct {
 	Coordinates          *Coordinates           `json:"coordinates"`
 	CreatedAt            string                 `json:"created_at"`
