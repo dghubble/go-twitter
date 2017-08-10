@@ -49,6 +49,12 @@ type Tweet struct {
 	QuotedStatus         *Tweet                 `json:"quoted_status"`
 }
 
+// GetWebURL return the web url of tweet
+func (t *Tweet) GetWebURL() string {
+	baseURI := "https://twitter.com/%s/status/%s"
+	return fmt.Sprintf(baseURI, t.User.ScreenName, t.IDStr)
+}
+
 // CreatedAtTime is a convenience wrapper that returns the Created_at time, parsed as a time.Time struct
 func (t Tweet) CreatedAtTime() (time.Time, error) {
 	return time.Parse(time.RubyDate, t.CreatedAt)
