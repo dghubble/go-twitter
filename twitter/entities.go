@@ -1,5 +1,36 @@
 package twitter
 
+// SiteStream message wrapper
+type SiteStream struct {
+	ForUser int64 `json:"for_user"`
+	Message map[string]interface{}
+}
+
+// SiteStreamTweet struct
+type SiteStreamTweet struct {
+	ForUser int64 `json:"for_user"`
+	Message Tweet
+}
+
+// SiteStreamFriendsList struct
+type SiteStreamFriendsList struct {
+	ForUser int64 `json:"for_user"`
+	Message FriendsList
+}
+
+// SiteStreamDirectMessage struct
+type SiteStreamDirectMessage struct {
+	ForUser int64 `json:"for_user"`
+	Message DirectMessage
+}
+
+// SiteStreamControl message
+type SiteStreamControl struct {
+	Control struct {
+		ControlURI string `json:"control_uri"`
+	}
+}
+
 // Entities represent metadata and context info parsed from Twitter components.
 // https://dev.twitter.com/overview/api/entities
 // TODO: symbols

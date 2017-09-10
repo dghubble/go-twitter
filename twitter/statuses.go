@@ -46,6 +46,7 @@ type Tweet struct {
 	QuotedStatusID       int64                  `json:"quoted_status_id"`
 	QuotedStatusIDStr    string                 `json:"quoted_status_id_str"`
 	QuotedStatus         *Tweet                 `json:"quoted_status"`
+	IsQuoteStatus        bool                   `json:"is_quote_status"`
 }
 
 // CreatedAtTime is a convenience wrapper that returns the Created_at time, parsed as a time.Time struct
