@@ -24,7 +24,7 @@ type PlaceType struct {
 	Name string `json:"name"`
 }
 
-// Location reporesents a twitter Location.
+// Location represents a twitter Location.
 type Location struct {
 	Country     string    `json:"country"`
 	CountryCode string    `json:"countryCode"`
