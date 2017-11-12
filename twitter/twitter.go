@@ -2,7 +2,6 @@ package twitter
 
 import (
 	"net/http"
-
 	"github.com/dghubble/sling"
 )
 
@@ -24,6 +23,7 @@ type Client struct {
 	Timelines      *TimelineService
 	Trends         *TrendsService
 	Users          *UserService
+	Media		   *MediaService
 }
 
 // NewClient returns a new Client.
@@ -43,6 +43,7 @@ func NewClient(httpClient *http.Client) *Client {
 		Timelines:      newTimelineService(base.New()),
 		Trends:         newTrendsService(base.New()),
 		Users:          newUserService(base.New()),
+		Media:			newMediaService(base.New()),
 	}
 }
 
