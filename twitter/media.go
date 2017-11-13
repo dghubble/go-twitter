@@ -1,26 +1,26 @@
 package twitter
 
 import (
+	"encoding/base64"
 	"github.com/dghubble/sling"
 	"io/ioutil"
-	"encoding/base64"
 	"net/http"
 )
 
 const twitterUploadAPI = "https://upload.twitter.com/1.1/"
 
 type Media struct {
-	MediaId    			int64  `json:"media_id"`
-	MediaIdString		string `json:"media_id_string"`
-	Size				int32 `json:"size"`
-	ExpiresAfterSeconds	int32 `json:"expires_after_secs"`
-	Image				*MediaImage `json:"image"`
+	MediaId             int64       `json:"media_id"`
+	MediaIdString       string      `json:"media_id_string"`
+	Size                int32       `json:"size"`
+	ExpiresAfterSeconds int32       `json:"expires_after_secs"`
+	Image               *MediaImage `json:"image"`
 }
 
 type MediaImage struct {
-	ImageType		string `json:"image_type"`
-	Width			int32 `json:"w"`
-	Height			int32 `json:"h"`
+	ImageType string `json:"image_type"`
+	Width     int32  `json:"w"`
+	Height    int32  `json:"h"`
 }
 
 type MediaParams struct {
@@ -28,12 +28,12 @@ type MediaParams struct {
 }
 
 type MediaService struct {
-	sling      *sling.Sling
+	sling *sling.Sling
 }
 
 func newMediaService(sling *sling.Sling) *MediaService {
 	return &MediaService{
-		sling:     sling.Path("media/"),
+		sling: sling.Path("media/"),
 	}
 }
 
