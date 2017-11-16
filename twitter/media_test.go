@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStatusService_Update(t *testing.T) {
+func TestMediaService_Update(t *testing.T) {
 	httpClient, mux, server := testServer()
 	defer server.Close()
 
