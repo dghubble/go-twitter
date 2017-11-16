@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func TestMediaService_Update(t *testing.T) {
+func TestMediaService_UploadFile(t *testing.T) {
 	httpClient, mux, server := testServer()
 	defer server.Close()
 
@@ -23,7 +23,9 @@ func TestMediaService_Update(t *testing.T) {
 
 	client := NewClient(httpClient)
 
-	mediaObject, _, err := client.Media.UploadFile(os.Getenv("HOME") + "/gopath/src/github.com/dghubble/go-twitter/photo.png")
+	dir, _ := os.Getwd()
+	photoPath := dir + "/../photo.png"
+	mediaObject, _, err := client.Media.UploadFile(photoPath)
 	expected := &Media{MediaID: 931033976529092608, MediaIDString: "931033976529092608", Size: 397666, ExpiresAfterSeconds: 86400, Image: &MediaImage{ImageType: "image/jpeg", Width: 1200, Height: 1200}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, mediaObject)
