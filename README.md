@@ -18,6 +18,7 @@ go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/
     * Statuses
     * Timelines
     * Users
+    * Media
 * Twitter Streaming API
     * Public Streams
     * User Streams
@@ -255,6 +256,31 @@ client := twitter.NewClient(httpClient)
 ```
 
 To implement Login with Twitter for web or mobile, see the gologin [package](https://github.com/dghubble/gologin) and [examples](https://github.com/dghubble/gologin/tree/master/examples/twitter).
+
+### Media
+Twitter API to upload images/video's
+
+####Simple image upload
+Simple file upload for images only
+
+```go
+imageObject, httpResponse, error := client.Media.UploadFile("/path/to/image.jpg");
+```
+
+####Upload Image or video
+Upload for images and video's to twitter.
+
+```go
+twitterResponse, httpResponse, error := client.Media.UploadInit("/path/to/image.jpg")
+client.Media.UploadAppendChunks(twitterResponse)
+client.Media.UploadFinalize(twitterResponse)
+```
+####Status
+Track upload status
+
+```go
+statusResponse, httpResponse, error := client.Media.UploadStatus(twitterResponse.MediaID)
+```
 
 ## Roadmap
 
