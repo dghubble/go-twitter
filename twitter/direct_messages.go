@@ -59,6 +59,7 @@ type DirectMessageGetParams struct {
 	Count           int   `url:"count,omitempty"`
 	IncludeEntities *bool `url:"include_entities,omitempty"`
 	SkipStatus      *bool `url:"skip_status,omitempty"`
+	FullText        *bool `url:"full_text,omitempty"`
 }
 
 // Get returns recent Direct Messages received by the authenticated user.
