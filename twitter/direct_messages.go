@@ -117,7 +117,7 @@ func (s *DirectMessageService) Get(params *DirectMessageGetParams) ([]DirectMess
 func (s *DirectMessageService) GetEvents(params *DirectMessageEventsGetParams) (DirectMessageEvent, *http.Response, error) {
 	event := new(DirectMessageEvent)
 	apiError := new(APIError)
-	resp, err := s.sling.Get("events/list.json").QueryStruct(params).Receive(event, apiError)
+	resp, err := s.sling.New().Get("events/list.json").QueryStruct(params).Receive(event, apiError)
 	return *event, resp, relevantError(err, *apiError)
 }
 
