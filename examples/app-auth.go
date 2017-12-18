@@ -24,7 +24,8 @@ type User struct {
 
 // Message contains the raw DM content
 type Message struct {
-	Text string
+	Text      string
+	CreatedAt string
 }
 
 func main() {
@@ -44,35 +45,34 @@ func main() {
 	users := make(map[string]User)
 
 	// Initial Rest calls to the twitter events
-	dms, _, _ := client.DirectMessages.GetEvents(&twitter.DirectMessageEventsGetParams{Count: 5})
+	dms, _, _ := client.DirectMessages.GetEvents(&twitter.DirectMessageEventsGetParams{Count: 20})
 
 	for m := range dms.Events {
+		fmt.Printf("%s - %s\n", dms.Events[m].Message.SenderID, dms.Events[m].Message.Data.Text)
 		if _, ok := users[dms.Events[m].Message.SenderID]; !ok {
 			// User Not found, create one
 			user := User{
-				SenderID: dms.Events[m].Message.SenderID,
 				Messages: make([]Message, 0),
 			}
-			user.Messages = append(user.Messages, Message{
-				Text: dms.Events[m].Message.Data.Text,
-			})
 			users[dms.Events[m].Message.SenderID] = user
-		} else {
-			user := users[dms.Events[m].Message.SenderID]
-			user.Messages = append(user.Messages, Message{
-				Text: dms.Events[m].Message.Data.Text,
-			})
 		}
+		user := users[dms.Events[m].Message.SenderID]
+		user.Messages = append(user.Messages, Message{
+			Text:      dms.Events[m].Message.Data.Text,
+			CreatedAt: dms.Events[m].CreatedAt,
+		})
+		users[dms.Events[m].Message.SenderID] = user
 	}
 
+	fmt.Println(users)
 	// fmt.Println(dms)
-	fmt.Println(dms.NextCursor)
+	// fmt.Println(dms.NextCursor)
 
-	for i := 1; i <= 1; i++ {
-		twitterEventsRestRateLimit.Wait()
-		dms, _, _ := client.DirectMessages.GetEvents(&twitter.DirectMessageEventsGetParams{NextCursor: dms.NextCursor, Count: 1})
-		fmt.Println(dms.NextCursor)
-	}
+	// for i := 1; i <= 1; i++ {
+	// 	twitterEventsRestRateLimit.Wait()
+	// 	dms, _, _ := client.DirectMessages.GetEvents(&twitter.DirectMessageEventsGetParams{NextCursor: dms.NextCursor, Count: 1})
+	// 	fmt.Println(dms.NextCursor)
+	// }
 
 	// for m := range dms.Events {
 
