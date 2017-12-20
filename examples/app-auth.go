@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"time"
 
@@ -21,14 +22,15 @@ type TwitterConfig struct {
 
 // User to container message data and user information
 type User struct {
-	SenderID string
-	Messages []Message
+	SenderID   string
+	ScreenName string
+	Messages   []Message
 }
 
 // Message contains the raw DM content
 type Message struct {
 	Text      string
-	CreatedAt string
+	CreatedAt int
 }
 
 var users = make(map[string]User)
@@ -45,9 +47,10 @@ func userParser(dms *twitter.DirectMessageEvent) bool {
 			users[dms.Events[m].Message.SenderID] = user
 		}
 		user := users[dms.Events[m].Message.SenderID]
+		createdTimestamp, _ := strconv.Atoi(dms.Events[m].CreatedAt)
 		user.Messages = append(user.Messages, Message{
 			Text:      dms.Events[m].Message.Data.Text,
-			CreatedAt: dms.Events[m].CreatedAt,
+			CreatedAt: createdTimestamp,
 		})
 		users[dms.Events[m].Message.SenderID] = user
 	}
@@ -66,31 +69,51 @@ func main() {
 	// Twitter client
 	client := twitter.NewClient(httpClient)
 	// When did we first start our rest calls
-	initialRestCall := time.Now()
+	// initialRestCall := time.Now()
 
 	// Initial Rest calls to the twitter events
 	dms, _, _ := client.DirectMessages.GetEvents(&twitter.DirectMessageEventsGetParams{Count: 50})
 	userParser(&dms)
 
-	fmt.Println(initialRestCall)
+	// fmt.Println(initialRestCall)
 
-	for i := 1; i <= 3; i++ {
+	for i := 1; i <= 1; i++ {
 		twitterEventsRestRateLimit.Wait()
 		dms, _, _ = client.DirectMessages.GetEvents(&twitter.DirectMessageEventsGetParams{NextCursor: dms.NextCursor, Count: 50})
-		fmt.Println(time.Now())
-		fmt.Println(dms.NextCursor)
 		userParser(&dms)
 	}
 
 	userIDs := []int64{}
 	for k := range users {
-		fmt.Println(len(users[k].Messages))
+		// fmt.Println(len(users[k].Messages))
 		i, _ := strconv.Atoi(k)
 		userIDs = append(userIDs, int64(i))
 	}
 
-	// userLookup, _, _ := client.Users.Lookup(&twitter.UserLookupParams{UserID: userIDs})
+	usersLookup, _, _ := client.Users.Lookup(&twitter.UserLookupParams{UserID: userIDs})
+
+	for user := range usersLookup {
+		u := usersLookup[user]
+		uID := u.IDStr
+		uu := users[uID]
+		uu.ScreenName = u.ScreenName
+		users[uID] = uu
+		// fmt.Println(u.ScreenName)
+		// fmt.Println(uu)
+	}
+
 	fmt.Println(userIDs)
+	// myUser := users["14259060"]
+
+	for u := range users {
+		user := users[u]
+		sort.Slice(user.Messages, func(eye, jay int) bool {
+			return user.Messages[eye].CreatedAt < user.Messages[jay].CreatedAt
+		})
+	}
+
+	// fmt.Println(body)
+	// fmt.Println(userIDs)
 	// for m := range dms.Events {
 
 	// 	dm := dms.Events[m]
