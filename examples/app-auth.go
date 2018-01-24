@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"sort"
 	"strconv"
-	"time"
 
-	"github.com/beefsack/go-rate"
+	"encoding/csv"
+
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	"github.com/kelseyhightower/envconfig"
@@ -35,6 +36,20 @@ type Message struct {
 
 var users = make(map[string]User)
 
+// Add a method to the user
+func (m *Message) CSV() []string {
+	return []string{strconv.Itoa(m.CreatedAt), m.Text}
+}
+
+// Add a method to the user
+func (u *User) CSV() [][]string {
+	dms := make([][]string, 0)
+	for see := range u.Messages {
+		dms = append(dms, u.Messages[see].CSV())
+	}
+	return dms
+}
+
 //userParser to collate user messages
 func userParser(dms *twitter.DirectMessageEvent) bool {
 	for m := range dms.Events {
@@ -58,7 +73,7 @@ func userParser(dms *twitter.DirectMessageEvent) bool {
 }
 
 func main() {
-	twitterEventsRestRateLimit := rate.New(1, time.Second)
+	// twitterEventsRestRateLimit := rate.New(1, time.Second)
 
 	var twitterConfig TwitterConfig
 	envconfig.Process("twitter", &twitterConfig)
@@ -72,16 +87,16 @@ func main() {
 	// initialRestCall := time.Now()
 
 	// Initial Rest calls to the twitter events
-	dms, _, _ := client.DirectMessages.GetEvents(&twitter.DirectMessageEventsGetParams{Count: 50})
+	dms, _, _ := client.DirectMessages.GetEvents(&twitter.DirectMessageEventsGetParams{Count: 3})
 	userParser(&dms)
 
 	// fmt.Println(initialRestCall)
 
-	for i := 1; i <= 1; i++ {
-		twitterEventsRestRateLimit.Wait()
-		dms, _, _ = client.DirectMessages.GetEvents(&twitter.DirectMessageEventsGetParams{NextCursor: dms.NextCursor, Count: 50})
-		userParser(&dms)
-	}
+	// for i := 1; i <= 1; i++ {
+	// 	twitterEventsRestRateLimit.Wait()
+	// 	dms, _, _ = client.DirectMessages.GetEvents(&twitter.DirectMessageEventsGetParams{NextCursor: dms.NextCursor, Count: 0})
+	// 	userParser(&dms)
+	// }
 
 	userIDs := []int64{}
 	for k := range users {
@@ -112,12 +127,11 @@ func main() {
 		})
 	}
 
-	// fmt.Println(body)
-	// fmt.Println(userIDs)
-	// for m := range dms.Events {
-
-	// 	dm := dms.Events[m]
-	// 	fmt.Println(dm.Message.Data.Text)
-	// 	fmt.Println(dm.Message.SenderID)
-	// }
+	for yew := range users {
+		user := users[yew]
+		file, _ := os.Create(fmt.Sprintf("/tmp/%s", user.ScreenName))
+		writer := csv.NewWriter(file)
+		defer writer.Flush()
+		writer.WriteAll(user.CSV())
+	}
 }
