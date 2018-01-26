@@ -95,7 +95,7 @@ func TestStream_Filter(t *testing.T) {
 	reqCount := 0
 	mux.HandleFunc("/1.1/statuses/filter.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "POST", r)
-		assertQuery(t, map[string]string{"track": "gophercon,golang"}, r)
+		assertPostForm(t, map[string]string{"track": "gophercon,golang"}, r)
 		switch reqCount {
 		case 0:
 			w.Header().Set("Content-Type", "application/json")

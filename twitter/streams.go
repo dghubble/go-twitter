@@ -50,7 +50,7 @@ type StreamFilterParams struct {
 // Filter returns messages that match one or more filter predicates.
 // https://dev.twitter.com/streaming/reference/post/statuses/filter
 func (srv *StreamService) Filter(params *StreamFilterParams) (*Stream, error) {
-	req, err := srv.public.New().Post("filter.json").QueryStruct(params).Request()
+	req, err := srv.public.New().Post("filter.json").BodyForm(params).Request()
 	if err != nil {
 		return nil, err
 	}
