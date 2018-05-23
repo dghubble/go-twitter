@@ -2,7 +2,9 @@ package twitter
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"sync"
 	"time"
@@ -20,20 +22,26 @@ const (
 
 // StreamService provides methods for accessing the Twitter Streaming API.
 type StreamService struct {
-	client *http.Client
-	public *sling.Sling
-	user   *sling.Sling
-	site   *sling.Sling
+	client                       *http.Client
+	public                       *sling.Sling
+	user                         *sling.Sling
+	site                         *sling.Sling
+	exponentialBackoff           backoff.BackOff
+	aggressiveExponentialBackoff backoff.BackOff
 }
 
 // newStreamService returns a new StreamService.
 func newStreamService(client *http.Client, sling *sling.Sling) *StreamService {
 	sling.Set("User-Agent", userAgent)
+	expBackoff := newExponentialBackOff()
+	aggExpBackoff := newAggressiveExponentialBackOff()
 	return &StreamService{
-		client: client,
-		public: sling.New().Base(publicStream).Path("statuses/"),
-		user:   sling.New().Base(userStream),
-		site:   sling.New().Base(siteStream),
+		client:                       client,
+		public:                       sling.New().Base(publicStream).Path("statuses/"),
+		user:                         sling.New().Base(userStream),
+		site:                         sling.New().Base(siteStream),
+		exponentialBackoff:           newBackoffWithMaxRetries(expBackoff, 0),
+		aggressiveExponentialBackoff: newBackoffWithMaxRetries(aggExpBackoff, 0),
 	}
 }
 
@@ -54,7 +62,7 @@ func (srv *StreamService) Filter(params *StreamFilterParams) (*Stream, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newStream(srv.client, req), nil
+	return newStream(srv.client, req, srv.exponentialBackoff, srv.aggressiveExponentialBackoff), nil
 }
 
 // StreamSampleParams are the parameters for StreamService.Sample.
@@ -70,7 +78,7 @@ func (srv *StreamService) Sample(params *StreamSampleParams) (*Stream, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newStream(srv.client, req), nil
+	return newStream(srv.client, req, srv.exponentialBackoff, srv.aggressiveExponentialBackoff), nil
 }
 
 // StreamUserParams are the parameters for StreamService.User.
@@ -91,7 +99,7 @@ func (srv *StreamService) User(params *StreamUserParams) (*Stream, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newStream(srv.client, req), nil
+	return newStream(srv.client, req, srv.exponentialBackoff, srv.aggressiveExponentialBackoff), nil
 }
 
 // StreamSiteParams are the parameters for StreamService.Site.
@@ -112,7 +120,7 @@ func (srv *StreamService) Site(params *StreamSiteParams) (*Stream, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newStream(srv.client, req), nil
+	return newStream(srv.client, req, srv.exponentialBackoff, srv.aggressiveExponentialBackoff), nil
 }
 
 // StreamFirehoseParams are the parameters for StreamService.Firehose.
@@ -131,7 +139,7 @@ func (srv *StreamService) Firehose(params *StreamFirehoseParams) (*Stream, error
 	if err != nil {
 		return nil, err
 	}
-	return newStream(srv.client, req), nil
+	return newStream(srv.client, req, srv.exponentialBackoff, srv.aggressiveExponentialBackoff), nil
 }
 
 // Stream maintains a connection to the Twitter Streaming API, receives
@@ -152,7 +160,7 @@ type Stream struct {
 // newStream creates a Stream and starts a goroutine to retry connecting and
 // receive from a stream response. The goroutine may stop due to retry errors
 // or be stopped by calling Stop() on the stream.
-func newStream(client *http.Client, req *http.Request) *Stream {
+func newStream(client *http.Client, req *http.Request, expBackoff, aggExpBackoff backoff.BackOff) *Stream {
 	s := &Stream{
 		client:   client,
 		Messages: make(chan interface{}),
@@ -160,7 +168,7 @@ func newStream(client *http.Client, req *http.Request) *Stream {
 		group:    &sync.WaitGroup{},
 	}
 	s.group.Add(1)
-	go s.retry(req, newExponentialBackOff(), newAggressiveExponentialBackOff())
+	go s.retry(req, expBackoff, aggExpBackoff)
 	return s
 }
 
@@ -201,17 +209,20 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 		switch resp.StatusCode {
 		case 200:
 			// receive stream response Body, handles closing
-			s.receive(resp.Body)
+			s.receiveStream(resp.Body)
 			expBackOff.Reset()
 			aggExpBackOff.Reset()
 		case 503:
 			// exponential backoff
+			s.receiveError(resp)
 			wait = expBackOff.NextBackOff()
 		case 420, 429:
 			// aggressive exponential backoff
+			s.receiveError(resp)
 			wait = aggExpBackOff.NextBackOff()
 		default:
 			// stop retrying for other response codes
+			s.receiveError(resp)
 			resp.Body.Close()
 			return
 		}
@@ -224,10 +235,10 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 	}
 }
 
-// receive scans a stream response body, JSON decodes tokens to messages, and
+// receiveStream scans a stream response body, JSON decodes tokens to messages, and
 // sends messages to the Messages channel. Receiving continues until an EOF,
 // scan error, or the done channel is closed.
-func (s *Stream) receive(body io.Reader) {
+func (s *Stream) receiveStream(body io.Reader) {
 	reader := newStreamResponseBodyReader(body)
 	for !stopped(s.done) {
 		data, err := reader.readNext()
@@ -247,6 +258,19 @@ func (s *Stream) receive(body io.Reader) {
 			return
 		}
 	}
+}
+
+// receiveError JSON decodes Twitter API errors when they are present and sends
+// either an APIError or a an error message string to the Messages channel.
+func (s *Stream) receiveError(resp *http.Response) {
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	if resp.ContentLength > 0 && body[0] == '{' {
+		s.Messages <- getMessage(body)
+	} else {
+		s.Messages <- fmt.Sprintf("Error connecting to Twitter: %d - %s", resp.StatusCode, body)
+	}
+	return
 }
 
 // getMessage unmarshals the token and returns a message struct, if the type
@@ -311,6 +335,10 @@ func decodeMessage(token []byte, data map[string]interface{}) interface{} {
 		event := new(Event)
 		json.Unmarshal(token, event)
 		return event
+	} else if hasPath(data, "errors") {
+		apiError := new(APIError)
+		json.Unmarshal(token, apiError)
+		return apiError
 	}
 	// message type unknown, return the data map[string]interface{}
 	return data

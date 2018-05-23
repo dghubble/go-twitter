@@ -82,6 +82,12 @@ func TestStream_Event(t *testing.T) {
 	assert.IsType(t, &Event{}, msg)
 }
 
+func TestStream_APIError(t *testing.T) {
+	msgJSON := []byte(`{"errors":[{"code":215,"message":"Bad Authentication data."}]}`)
+	msg := getMessage(msgJSON)
+	assert.IsType(t, &APIError{}, msg)
+}
+
 func TestStream_Unknown(t *testing.T) {
 	msgJSON := []byte(`{"unknown_data": {"new_twitter_type":"unexpected"}}`)
 	msg := getMessage(msgJSON)
@@ -105,8 +111,8 @@ func TestStream_Filter(t *testing.T) {
 					`{"text": "Gophercon super talks!"}`+"\r\n",
 			)
 		default:
-			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			// Simulate stream disconnect
+			http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
 		}
 		reqCount++
 	})
@@ -117,6 +123,8 @@ func TestStream_Filter(t *testing.T) {
 	streamFilterParams := &StreamFilterParams{
 		Track: []string{"gophercon", "golang"},
 	}
+	client.Streams.exponentialBackoff = &BackOffRecorder{MaxRetries: 1}
+	client.Streams.aggressiveExponentialBackoff = &BackOffRecorder{MaxRetries: 1}
 	stream, err := client.Streams.Filter(streamFilterParams)
 	// assert that the expected messages are received
 	assert.NoError(t, err)
@@ -124,7 +132,7 @@ func TestStream_Filter(t *testing.T) {
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 2, other: 2}
+	expectedCounts := &counter{all: 3, other: 3}
 	assert.Equal(t, expectedCounts, counts)
 }
 
@@ -145,8 +153,8 @@ func TestStream_Sample(t *testing.T) {
 					`{"text": "Gophercon super talks!"}`+"\r\n",
 			)
 		default:
-			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			// Simulate stream disconnect
+			http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
 		}
 		reqCount++
 	})
@@ -157,6 +165,8 @@ func TestStream_Sample(t *testing.T) {
 	streamSampleParams := &StreamSampleParams{
 		StallWarnings: Bool(true),
 	}
+	client.Streams.exponentialBackoff = &BackOffRecorder{MaxRetries: 1}
+	client.Streams.aggressiveExponentialBackoff = &BackOffRecorder{MaxRetries: 1}
 	stream, err := client.Streams.Sample(streamSampleParams)
 	// assert that the expected messages are received
 	assert.NoError(t, err)
@@ -164,7 +174,7 @@ func TestStream_Sample(t *testing.T) {
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 2, other: 2}
+	expectedCounts := &counter{all: 3, other: 3}
 	assert.Equal(t, expectedCounts, counts)
 }
 
@@ -182,8 +192,8 @@ func TestStream_User(t *testing.T) {
 			w.Header().Set("Transfer-Encoding", "chunked")
 			fmt.Fprintf(w, `{"friends": [666024290140217347, 666024290140217349, 666024290140217342]}`+"\r\n"+"\r\n")
 		default:
-			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			// Simulate stream disconnect
+			http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
 		}
 		reqCount++
 	})
@@ -195,6 +205,8 @@ func TestStream_User(t *testing.T) {
 		StallWarnings: Bool(true),
 		With:          "followings",
 	}
+	client.Streams.exponentialBackoff = &BackOffRecorder{MaxRetries: 1}
+	client.Streams.aggressiveExponentialBackoff = &BackOffRecorder{MaxRetries: 1}
 	stream, err := client.Streams.User(streamUserParams)
 	// assert that the expected messages are received
 	assert.NoError(t, err)
@@ -202,7 +214,7 @@ func TestStream_User(t *testing.T) {
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 1, friendsList: 1}
+	expectedCounts := &counter{all: 2, friendsList: 1, other: 1}
 	assert.Equal(t, expectedCounts, counts)
 }
 
@@ -222,8 +234,8 @@ func TestStream_User_TooManyFriends(t *testing.T) {
 			friendsList := "[" + strings.Repeat("1234567890, ", 7000) + "1234567890]"
 			fmt.Fprintf(w, `{"friends": %s}`+"\r\n"+"\r\n", friendsList)
 		default:
-			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			// Simulate stream disconnect
+			http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
 		}
 		reqCount++
 	})
@@ -235,6 +247,8 @@ func TestStream_User_TooManyFriends(t *testing.T) {
 		StallWarnings: Bool(true),
 		With:          "followings",
 	}
+	client.Streams.exponentialBackoff = &BackOffRecorder{MaxRetries: 1}
+	client.Streams.aggressiveExponentialBackoff = &BackOffRecorder{MaxRetries: 1}
 	stream, err := client.Streams.User(streamUserParams)
 	// assert that the expected messages are received
 	assert.NoError(t, err)
@@ -242,7 +256,7 @@ func TestStream_User_TooManyFriends(t *testing.T) {
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 1, friendsList: 1}
+	expectedCounts := &counter{all: 2, friendsList: 1, other: 1}
 	assert.Equal(t, expectedCounts, counts)
 }
 
@@ -263,8 +277,8 @@ func TestStream_Site(t *testing.T) {
 					`{"text": "Gophercon super talks!"}`+"\r\n",
 			)
 		default:
-			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			// Simulate stream disconnect
+			http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
 		}
 		reqCount++
 	})
@@ -275,14 +289,15 @@ func TestStream_Site(t *testing.T) {
 	streamSiteParams := &StreamSiteParams{
 		Follow: []string{"666024290140217347", "666024290140217349"},
 	}
+	client.Streams.exponentialBackoff = &BackOffRecorder{MaxRetries: 1}
+	client.Streams.aggressiveExponentialBackoff = &BackOffRecorder{MaxRetries: 1}
 	stream, err := client.Streams.Site(streamSiteParams)
 	// assert that the expected messages are received
 	assert.NoError(t, err)
-	defer stream.Stop()
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 2, other: 2}
+	expectedCounts := &counter{all: 3, other: 3}
 	assert.Equal(t, expectedCounts, counts)
 }
 
@@ -303,8 +318,8 @@ func TestStream_PublicFirehose(t *testing.T) {
 					`{"text": "Gophercon super talks!"}`+"\r\n",
 			)
 		default:
-			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			// Simulate stream disconnect
+			http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
 		}
 		reqCount++
 	})
@@ -315,6 +330,8 @@ func TestStream_PublicFirehose(t *testing.T) {
 	streamFirehoseParams := &StreamFirehoseParams{
 		Count: 100,
 	}
+	client.Streams.exponentialBackoff = &BackOffRecorder{MaxRetries: 1}
+	client.Streams.aggressiveExponentialBackoff = &BackOffRecorder{MaxRetries: 1}
 	stream, err := client.Streams.Firehose(streamFirehoseParams)
 	// assert that the expected messages are received
 	assert.NoError(t, err)
@@ -322,7 +339,7 @@ func TestStream_PublicFirehose(t *testing.T) {
 	for message := range stream.Messages {
 		demux.Handle(message)
 	}
-	expectedCounts := &counter{all: 2, other: 2}
+	expectedCounts := &counter{all: 3, other: 3}
 	assert.Equal(t, expectedCounts, counts)
 }
 
@@ -330,17 +347,10 @@ func TestStreamRetry_ExponentialBackoff(t *testing.T) {
 	httpClient, mux, server := testServer()
 	defer server.Close()
 
-	reqCount := 0
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		switch reqCount {
-		case 0:
-			http.Error(w, "Service Unavailable", 503)
-		default:
-			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
-		}
-		reqCount++
+		http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
 	})
+
 	stream := &Stream{
 		client:   httpClient,
 		Messages: make(chan interface{}),
@@ -349,13 +359,21 @@ func TestStreamRetry_ExponentialBackoff(t *testing.T) {
 	}
 	stream.group.Add(1)
 	req, _ := http.NewRequest("GET", "http://example.com/", nil)
-	expBackoff := &BackOffRecorder{}
-	// receive messages and throw them away
-	go NewSwitchDemux().HandleChan(stream.Messages)
-	stream.retry(req, expBackoff, nil)
+	expBackoff := &BackOffRecorder{MaxRetries: 1}
+	// receive messages and count types, stop receiving after max retries
+	counts := &counter{}
+	demux := newCounterDemux(counts)
+
+	go stream.retry(req, expBackoff, nil)
 	defer stream.Stop()
+	for message := range stream.Messages {
+		demux.Handle(message)
+	}
+
 	// assert exponential backoff in response to 503
 	assert.Equal(t, 1, expBackoff.Count)
+	expectedCounts := &counter{all: 1, other: 1}
+	assert.Equal(t, expectedCounts, counts)
 }
 
 func TestStreamRetry_AggressiveBackoff(t *testing.T) {
@@ -366,12 +384,11 @@ func TestStreamRetry_AggressiveBackoff(t *testing.T) {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch reqCount {
 		case 0:
-			http.Error(w, "Enhance Your Calm", 420)
-		case 1:
-			http.Error(w, "Too Many Requests", 429)
+			http.Error(w, "Enhance your calm", 420)
 		default:
-			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			w.WriteHeader(http.StatusTooManyRequests)
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprintf(w, `{"errors": [{"code": 88, "message": "Rate limit exceeded"}]}`)
 		}
 		reqCount++
 	})
@@ -383,11 +400,21 @@ func TestStreamRetry_AggressiveBackoff(t *testing.T) {
 	}
 	stream.group.Add(1)
 	req, _ := http.NewRequest("GET", "http://example.com/", nil)
-	aggExpBackoff := &BackOffRecorder{}
-	// receive messages and throw them away
-	go NewSwitchDemux().HandleChan(stream.Messages)
-	stream.retry(req, nil, aggExpBackoff)
+	aggExpBackoff := &BackOffRecorder{MaxRetries: 2}
+
+	// receive messages and count types, stop receiving after max retries
+	counts := &counter{}
+	demux := newCounterDemux(counts)
+
+	go stream.retry(req, nil, aggExpBackoff)
 	defer stream.Stop()
+
+	for message := range stream.Messages {
+		demux.Handle(message)
+	}
+
 	// assert aggressive exponential backoff in response to 420 and 429
 	assert.Equal(t, 2, aggExpBackoff.Count)
+	expectedCounts := &counter{all: 2, apiError: 1, other: 1}
+	assert.Equal(t, expectedCounts, counts)
 }

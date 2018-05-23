@@ -47,6 +47,7 @@ type counter struct {
 	stallWarning     int
 	friendsList      int
 	event            int
+	apiError         int
 	other            int
 }
 
@@ -89,6 +90,9 @@ func newCounterDemux(counter *counter) Demux {
 	demux.Event = func(*Event) {
 		counter.event++
 	}
+	demux.APIError = func(*APIError) {
+		counter.apiError++
+	}
 	demux.Other = func(interface{}) {
 		counter.other++
 	}
@@ -110,12 +114,13 @@ func exampleMessages() (messages []interface{}, expectedCounts *counter) {
 		stallWarning     = &StallWarning{}
 		friendsList      = &FriendsList{}
 		event            = &Event{}
+		apiError         = &APIError{}
 		otherA           = func() {}
 		otherB           = struct{}{}
 	)
 	messages = []interface{}{tweet, dm, statusDeletion, locationDeletion,
 		streamLimit, statusWithheld, userWithheld, streamDisconnect,
-		stallWarning, friendsList, event, otherA, otherB}
+		stallWarning, friendsList, event, apiError, otherA, otherB}
 	expectedCounts = &counter{
 		all:              len(messages),
 		tweet:            1,
@@ -129,6 +134,7 @@ func exampleMessages() (messages []interface{}, expectedCounts *counter) {
 		stallWarning:     1,
 		friendsList:      1,
 		event:            1,
+		apiError:         1,
 		other:            2,
 	}
 	return messages, expectedCounts

@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,11 +25,15 @@ func TestNewAggressiveExponentialBackOff(t *testing.T) {
 // BackoffRecorder is an implementation of backoff.BackOff that records
 // calls to NextBackOff and Reset for later inspection in tests.
 type BackOffRecorder struct {
-	Count int
+	Count      int
+	MaxRetries int
 }
 
 func (b *BackOffRecorder) NextBackOff() time.Duration {
 	b.Count++
+	if b.Count == b.MaxRetries {
+		return backoff.Stop
+	}
 	return 1 * time.Nanosecond
 }
 

@@ -23,3 +23,7 @@ func newAggressiveExponentialBackOff() *backoff.ExponentialBackOff {
 	b.Reset()
 	return b
 }
+
+func newBackoffWithMaxRetries(b backoff.BackOff, maxRetries uint64) backoff.BackOff {
+	return backoff.WithMaxRetries(b, maxRetries)
+}
