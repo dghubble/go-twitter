@@ -270,7 +270,6 @@ func (s *Stream) receiveError(resp *http.Response) {
 	} else {
 		s.Messages <- fmt.Sprintf("Error connecting to Twitter: %d - %s", resp.StatusCode, body)
 	}
-	return
 }
 
 // getMessage unmarshals the token and returns a message struct, if the type
