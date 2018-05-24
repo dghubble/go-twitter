@@ -2,6 +2,7 @@ package twitter
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/dghubble/sling"
 )
@@ -19,6 +20,11 @@ type DirectMessage struct {
 	SenderID            int64     `json:"sender_id"`
 	SenderScreenName    string    `json:"sender_screen_name"`
 	Text                string    `json:"text"`
+}
+
+// CreatedAtTime is a convenience wrapper that returns the Created_at time, parsed as a time.Time struct
+func (d DirectMessage) CreatedAtTime() (time.Time, error) {
+	return time.Parse(time.RubyDate, d.CreatedAt)
 }
 
 // DirectMessageService provides methods for accessing Twitter direct message
