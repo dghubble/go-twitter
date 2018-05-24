@@ -22,7 +22,7 @@ type DirectMessage struct {
 	Text                string    `json:"text"`
 }
 
-// CreatedAtTime is a convenience wrapper that returns the Created_at time, parsed as a time.Time struct
+// CreatedAtTime returns the time a Direct Message was created.
 func (d DirectMessage) CreatedAtTime() (time.Time, error) {
 	return time.Parse(time.RubyDate, d.CreatedAt)
 }

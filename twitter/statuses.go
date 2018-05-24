@@ -48,7 +48,7 @@ type Tweet struct {
 	QuotedStatus         *Tweet                 `json:"quoted_status"`
 }
 
-// CreatedAtTime is a convenience wrapper that returns the Created_at time, parsed as a time.Time struct
+// CreatedAtTime returns the time a tweet was created.
 func (t Tweet) CreatedAtTime() (time.Time, error) {
 	return time.Parse(time.RubyDate, t.CreatedAt)
 }
