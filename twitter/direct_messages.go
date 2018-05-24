@@ -6,6 +6,39 @@ import (
 	"github.com/dghubble/sling"
 )
 
+// DirectMessageEvent is a list direct message event
+type DirectMessageEvent struct {
+	NextCursor string         `json:"next_cursor"`
+	Events     []MessageEvent `json:"events"`
+	Apps       string         `json:"apps"`
+}
+
+//MessageEvent is a signle direct message sent or received
+type MessageEvent struct {
+	Type      string   `json:"type"`
+	ID        int64    `json:"id"`
+	CreatedAt string   `json:"created_timestamp"`
+	Message   *Message `json:"message_create"`
+}
+
+//Message contains the Sender data as well as the Message contents
+type Message struct {
+	SenderID string       `json:"sender_id"`
+	Target   *Target      `json:"target"`
+	Data     *MessageData `json:"message_data"`
+}
+
+//Target recipient information
+type Target struct {
+	RecipientID string `json:"recipient_id"`
+}
+
+//MessageData contains the raw text of the message sent or received
+type MessageData struct {
+	Text     string    `json:"text"`
+	Entities *Entities `json:"entitites"`
+}
+
 // DirectMessage is a direct message to a single recipient.
 type DirectMessage struct {
 	CreatedAt           string    `json:"created_at"`
@@ -59,6 +92,13 @@ type DirectMessageGetParams struct {
 	Count           int   `url:"count,omitempty"`
 	IncludeEntities *bool `url:"include_entities,omitempty"`
 	SkipStatus      *bool `url:"skip_status,omitempty"`
+	FullText        bool  `url:"full_text,omitempty"`
+}
+
+//DirectMessageEventsGetParams are the parameters for DirectMessageEvents.Get
+type DirectMessageEventsGetParams struct {
+	NextCursor string `url:"cursor,omitempty"`
+	Count      int    `url:"count,omitempty"`
 }
 
 // Get returns recent Direct Messages received by the authenticated user.
@@ -69,6 +109,16 @@ func (s *DirectMessageService) Get(params *DirectMessageGetParams) ([]DirectMess
 	apiError := new(APIError)
 	resp, err := s.baseSling.New().Get("direct_messages.json").QueryStruct(params).Receive(dms, apiError)
 	return *dms, resp, relevantError(err, *apiError)
+}
+
+// GetEvents returns recent Direct Message Events received or sent by the authenticated user.
+// Requires a user auth context with DM scope.
+//https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events
+func (s *DirectMessageService) GetEvents(params *DirectMessageEventsGetParams) (DirectMessageEvent, *http.Response, error) {
+	event := new(DirectMessageEvent)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("events/list.json").QueryStruct(params).Receive(event, apiError)
+	return *event, resp, relevantError(err, *apiError)
 }
 
 // DirectMessageSentParams are the parameters for DirectMessageService.Sent
