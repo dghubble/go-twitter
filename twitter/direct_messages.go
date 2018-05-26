@@ -17,7 +17,7 @@ type DirectMessageEvent struct {
 // MessageEvent is a signle direct message sent or received
 type MessageEvent struct {
 	Type      string   `json:"type"`
-	ID        int64    `json:"id"`
+	ID        int64    `json:"id,string"`
 	CreatedAt string   `json:"created_timestamp"`
 	Message   *Message `json:"message_create"`
 }
