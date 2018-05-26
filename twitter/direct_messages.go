@@ -7,35 +7,32 @@ import (
 	"github.com/dghubble/sling"
 )
 
-// DirectMessageEvent is a list direct message event
+// DirectMessageEvents is a list direct message event
+type DirectMessageEvents struct {
+	NextCursor string               `json:"next_cursor"`
+	Events     []DirectMessageEvent `json:"events"`
+	Apps       string               `json:"apps"`
+}
+
+// DirectMessageEvent is a signle direct message sent or received
 type DirectMessageEvent struct {
-	NextCursor string         `json:"next_cursor"`
-	Events     []MessageEvent `json:"events"`
-	Apps       string         `json:"apps"`
+	Type      string                     `json:"type"`
+	ID        int64                      `json:"id,string"`
+	CreatedAt string                     `json:"created_timestamp"`
+	Message   *DirectMessageEventMessage `json:"message_create"`
 }
 
-// MessageEvent is a signle direct message sent or received
-type MessageEvent struct {
-	Type      string   `json:"type"`
-	ID        int64    `json:"id"`
-	CreatedAt string   `json:"created_timestamp"`
-	Message   *Message `json:"message_create"`
+// DirectMessageEventMessage contains the Sender data as well as the Message contents
+type DirectMessageEventMessage struct {
+	SenderID int64 `json:"sender_id,string"`
+	Target   struct {
+		RecipientID int64 `json:"recipient_id,string"`
+	} `json:"target"`
+	Data *DirectMessageEventMessageData `json:"message_data"`
 }
 
-// Message contains the Sender data as well as the Message contents
-type Message struct {
-	SenderID string       `json:"sender_id"`
-	Target   *Target      `json:"target"`
-	Data     *MessageData `json:"message_data"`
-}
-
-// Target recipient information
-type Target struct {
-	RecipientID string `json:"recipient_id"`
-}
-
-// MessageData contains the raw text of the message sent or received
-type MessageData struct {
+// DirectMessageEventMessageData contains the raw text of the message sent or received
+type DirectMessageEventMessageData struct {
 	Text     string    `json:"text"`
 	Entities *Entities `json:"entitites"`
 }
@@ -119,8 +116,8 @@ func (s *DirectMessageService) Get(params *DirectMessageGetParams) ([]DirectMess
 // GetEvents returns recent Direct Message Events received or sent by the authenticated user.
 // Requires a user auth context with DM scope.
 // https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events
-func (s *DirectMessageService) GetEvents(params *DirectMessageEventsGetParams) (DirectMessageEvent, *http.Response, error) {
-	event := new(DirectMessageEvent)
+func (s *DirectMessageService) GetEvents(params *DirectMessageEventsGetParams) (DirectMessageEvents, *http.Response, error) {
+	event := new(DirectMessageEvents)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Get("events/list.json").QueryStruct(params).Receive(event, apiError)
 	return *event, resp, relevantError(err, *apiError)
