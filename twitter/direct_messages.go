@@ -7,35 +7,32 @@ import (
 	"github.com/dghubble/sling"
 )
 
-// DirectMessageEvent is a list direct message event
-type DirectMessageEvent struct {
-	NextCursor string         `json:"next_cursor"`
-	Events     []MessageEvent `json:"events"`
-	Apps       string         `json:"apps"`
+// DirectMessageEvents is a list direct message event
+type DirectMessageEvents struct {
+	NextCursor string               `json:"next_cursor"`
+	Events     []DirectMessageEvent `json:"events"`
+	Apps       string               `json:"apps"`
 }
 
-// MessageEvent is a signle direct message sent or received
-type MessageEvent struct {
-	Type      string   `json:"type"`
-	ID        int64    `json:"id,string"`
-	CreatedAt string   `json:"created_timestamp"`
-	Message   *Message `json:"message_create"`
+// DirectMessageEvent is a signle direct message sent or received
+type DirectMessageEvent struct {
+	Type      string                     `json:"type"`
+	ID        int64                      `json:"id,string"`
+	CreatedAt string                     `json:"created_timestamp"`
+	Message   *DirectMessageEventMessage `json:"message_create"`
 }
 
 // Message contains the Sender data as well as the Message contents
-type Message struct {
-	SenderID string       `json:"sender_id"`
-	Target   *Target      `json:"target"`
-	Data     *MessageData `json:"message_data"`
-}
-
-// Target recipient information
-type Target struct {
-	RecipientID string `json:"recipient_id"`
+type DirectMessageEventMessage struct {
+	SenderID int64 `json:"sender_id,string"`
+	Target   struct {
+		RecipientID int64 `json:"recipient_id,string"`
+	} `json:"target"`
+	Data *DirectMessageEventMessageData `json:"message_data"`
 }
 
 // MessageData contains the raw text of the message sent or received
-type MessageData struct {
+type DirectMessageEventMessageData struct {
 	Text     string    `json:"text"`
 	Entities *Entities `json:"entitites"`
 }
@@ -119,8 +116,8 @@ func (s *DirectMessageService) Get(params *DirectMessageGetParams) ([]DirectMess
 // GetEvents returns recent Direct Message Events received or sent by the authenticated user.
 // Requires a user auth context with DM scope.
 // https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events
-func (s *DirectMessageService) GetEvents(params *DirectMessageEventsGetParams) (DirectMessageEvent, *http.Response, error) {
-	event := new(DirectMessageEvent)
+func (s *DirectMessageService) GetEvents(params *DirectMessageEventsGetParams) (DirectMessageEvents, *http.Response, error) {
+	event := new(DirectMessageEvents)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Get("events/list.json").QueryStruct(params).Receive(event, apiError)
 	return *event, resp, relevantError(err, *apiError)
@@ -182,4 +179,78 @@ func (s *DirectMessageService) Destroy(id int64, params *DirectMessageDestroyPar
 	apiError := new(APIError)
 	resp, err := s.sling.New().Post("destroy.json").BodyForm(params).Receive(dm, apiError)
 	return dm, resp, relevantError(err, *apiError)
+}
+
+// SenderIDs for all DM events (useful for loading Sender Accounts)
+func (dms *DirectMessageEvents) SenderIDs() (ids []int64) {
+	exists := func(id int64, ids []int64) (found bool) {
+		for _, x := range ids {
+			if x == id {
+				found = true
+				break
+			}
+		}
+		return
+	}
+	// Find all user ids
+	for _, event := range dms.Events {
+		id := event.Message.SenderID
+		if !exists(id, ids) {
+			ids = append(ids, id)
+		}
+	}
+	return
+}
+
+// RecipientIDs for all DM events (useful for loading Recipient Accounts)
+func (dms *DirectMessageEvents) RecipientIDs() (ids []int64) {
+	exists := func(id int64, ids []int64) (found bool) {
+		for _, x := range ids {
+			if x == id {
+				found = true
+				break
+			}
+		}
+		return
+	}
+	// Find all user ids
+	for _, event := range dms.Events {
+		id := event.Message.Target.RecipientID
+		if !exists(id, ids) {
+			ids = append(ids, id)
+		}
+	}
+	return
+}
+
+// LoadAccounts for both senders and receivers
+func (dms *DirectMessageEvents) LoadAccounts(client *Client) (users map[int64]User, err error) {
+
+	ids := dms.SenderIDs()
+	ids = append(ids, dms.RecipientIDs()...)
+
+	removeDuplicates := func(a []int64) []int64 {
+		result := []int64{}
+		seen := map[int64]bool{}
+		for _, val := range a {
+			if _, ok := seen[val]; !ok {
+				result = append(result, val)
+				seen[val] = true
+			}
+		}
+		return result
+	}
+
+	var accounts []User
+	accounts, _, err = client.Users.Lookup(&UserLookupParams{UserID: removeDuplicates(ids)})
+	if err != nil {
+		return
+	}
+
+	users = make(map[int64]User)
+	for _, account := range accounts {
+		users[account.ID] = account
+	}
+
+	return
 }
