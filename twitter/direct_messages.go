@@ -181,68 +181,25 @@ func (s *DirectMessageService) Destroy(id int64, params *DirectMessageDestroyPar
 	return dm, resp, relevantError(err, *apiError)
 }
 
-// SenderIDs for all DM events (useful for loading Sender Accounts)
-func (dms *DirectMessageEvents) SenderIDs() (ids []int64) {
-	exists := func(id int64, ids []int64) (found bool) {
-		for _, x := range ids {
-			if x == id {
-				found = true
-				break
-			}
-		}
-		return
-	}
-	// Find all user ids
-	for _, event := range dms.Events {
-		id := event.Message.SenderID
-		if !exists(id, ids) {
-			ids = append(ids, id)
-		}
-	}
-	return
-}
-
-// RecipientIDs for all DM events (useful for loading Recipient Accounts)
-func (dms *DirectMessageEvents) RecipientIDs() (ids []int64) {
-	exists := func(id int64, ids []int64) (found bool) {
-		for _, x := range ids {
-			if x == id {
-				found = true
-				break
-			}
-		}
-		return
-	}
-	// Find all user ids
+// LoadAccounts for both the sender and receiver for all DM events
+func (dms *DirectMessageEvents) LoadAccounts(client *Client) (users map[int64]User, err error) {
+	var ids []int64
+	seen := map[int64]bool{}
 	for _, event := range dms.Events {
 		id := event.Message.Target.RecipientID
-		if !exists(id, ids) {
+		if _, ok := seen[id]; !ok {
 			ids = append(ids, id)
+			seen[id] = true
 		}
-	}
-	return
-}
-
-// LoadAccounts for both senders and receivers
-func (dms *DirectMessageEvents) LoadAccounts(client *Client) (users map[int64]User, err error) {
-
-	ids := dms.SenderIDs()
-	ids = append(ids, dms.RecipientIDs()...)
-
-	removeDuplicates := func(a []int64) []int64 {
-		result := []int64{}
-		seen := map[int64]bool{}
-		for _, val := range a {
-			if _, ok := seen[val]; !ok {
-				result = append(result, val)
-				seen[val] = true
-			}
+		id = event.Message.SenderID
+		if _, ok := seen[id]; !ok {
+			ids = append(ids, id)
+			seen[id] = true
 		}
-		return result
 	}
 
 	var accounts []User
-	accounts, _, err = client.Users.Lookup(&UserLookupParams{UserID: removeDuplicates(ids)})
+	accounts, _, err = client.Users.Lookup(&UserLookupParams{UserID: ids})
 	if err != nil {
 		return
 	}
