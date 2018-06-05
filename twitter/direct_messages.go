@@ -22,7 +22,7 @@ type DirectMessageEvent struct {
 	Message   *DirectMessageEventMessage `json:"message_create"`
 }
 
-// Message contains the Sender data as well as the Message contents
+// DirectMessageEventMessage contains the Sender data as well as the Message contents
 type DirectMessageEventMessage struct {
 	SenderID int64 `json:"sender_id,string"`
 	Target   struct {
@@ -31,7 +31,7 @@ type DirectMessageEventMessage struct {
 	Data *DirectMessageEventMessageData `json:"message_data"`
 }
 
-// MessageData contains the raw text of the message sent or received
+// DirectMessageEventMessageData contains the raw text of the message sent or received
 type DirectMessageEventMessageData struct {
 	Text     string    `json:"text"`
 	Entities *Entities `json:"entitites"`
