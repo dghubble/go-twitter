@@ -7,6 +7,42 @@ import (
 	"github.com/dghubble/sling"
 )
 
+// DirectMessageEvents is a list direct message event
+type DirectMessageEvents struct {
+	NextCursor string               `json:"next_cursor"`
+	Events     []DirectMessageEvent `json:"events"`
+	Apps       string               `json:"apps"`
+}
+
+// DirectMessageEvent is a signle direct message sent or received
+type DirectMessageEvent struct {
+	Type      string                     `json:"type"`
+	ID        int64                      `json:"id,string"`
+	CreatedAt string                     `json:"created_timestamp"`
+	Message   *DirectMessageEventMessage `json:"message_create"`
+}
+
+// DirectMessageEventMessage contains the Sender data as well as the Message contents
+type DirectMessageEventMessage struct {
+	SenderID int64 `json:"sender_id,string"`
+	Target   struct {
+		RecipientID int64 `json:"recipient_id,string"`
+	} `json:"target"`
+	Data *DirectMessageEventMessageData `json:"message_data"`
+}
+
+// DirectMessageEventMessageData contains the raw text of the message sent or received
+type DirectMessageEventMessageData struct {
+	Text     string    `json:"text"`
+	Entities *Entities `json:"entitites"`
+}
+
+// DirectMessageEventsGetParams are the parameters for DirectMessageEvents.Get
+type DirectMessageEventsGetParams struct {
+	NextCursor string `url:"cursor,omitempty"`
+	Count      int    `url:"count,omitempty"`
+}
+
 // DirectMessage is a direct message to a single recipient.
 type DirectMessage struct {
 	CreatedAt           string    `json:"created_at"`
@@ -77,6 +113,16 @@ func (s *DirectMessageService) Get(params *DirectMessageGetParams) ([]DirectMess
 	return *dms, resp, relevantError(err, *apiError)
 }
 
+// GetEvents returns recent Direct Message Events received or sent by the authenticated user.
+// Requires a user auth context with DM scope.
+// https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events
+func (s *DirectMessageService) GetEvents(params *DirectMessageEventsGetParams) (DirectMessageEvents, *http.Response, error) {
+	event := new(DirectMessageEvents)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("events/list.json").QueryStruct(params).Receive(event, apiError)
+	return *event, resp, relevantError(err, *apiError)
+}
+
 // DirectMessageSentParams are the parameters for DirectMessageService.Sent
 type DirectMessageSentParams struct {
 	SinceID         int64 `url:"since_id,omitempty"`
@@ -133,4 +179,35 @@ func (s *DirectMessageService) Destroy(id int64, params *DirectMessageDestroyPar
 	apiError := new(APIError)
 	resp, err := s.sling.New().Post("destroy.json").BodyForm(params).Receive(dm, apiError)
 	return dm, resp, relevantError(err, *apiError)
+}
+
+// LoadAccounts for both the sender and receiver for all DM events
+func (dms *DirectMessageEvents) LoadAccounts(client *Client) (users map[int64]User, err error) {
+	var ids []int64
+	seen := map[int64]bool{}
+	for _, event := range dms.Events {
+		id := event.Message.Target.RecipientID
+		if _, ok := seen[id]; !ok {
+			ids = append(ids, id)
+			seen[id] = true
+		}
+		id = event.Message.SenderID
+		if _, ok := seen[id]; !ok {
+			ids = append(ids, id)
+			seen[id] = true
+		}
+	}
+
+	var accounts []User
+	accounts, _, err = client.Users.Lookup(&UserLookupParams{UserID: ids})
+	if err != nil {
+		return
+	}
+
+	users = make(map[int64]User)
+	for _, account := range accounts {
+		users[account.ID] = account
+	}
+
+	return
 }
