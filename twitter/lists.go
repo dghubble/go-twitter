@@ -414,7 +414,7 @@ func (s *ListsService) SubscribersDestroy(params *ListsSubscribersDestroyParams)
 	return resp, err
 }
 
-// ListsSubscribersDestroyParams are the parameters for ListsService.Update
+// ListsUpdateParams are the parameters for ListsService.Update
 type ListsUpdateParams struct {
 	ListID          int64  `url:"list_id,omitempty"`
 	Slug            string `url:"slug,omitempty"`
