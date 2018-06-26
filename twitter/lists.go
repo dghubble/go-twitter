@@ -331,7 +331,7 @@ func (s *ListsService) MembersCreate(params *ListsMembersCreateParams) (*http.Re
 type ListsMembersCreateAllParams struct {
 	ListID          int64  `url:"list_id,omitempty"`
 	Slug            string `url:"slug,omitempty"`
-	UserID          int64  `url:"user_id,omitempty"`
+	UserID          string `url:"user_id,omitempty"`
 	ScreenName      string `url:"screen_name,omitempty"`
 	OwnerScreenName string `url:"owner_screen_name,omitempty"`
 	OwnerID         int64  `url:"owner_id,omitempty"`
@@ -367,7 +367,7 @@ func (s *ListsService) MembersDestroy(params *ListsMembersDestroyParams) (*http.
 type ListsMembersDestroyAllParams struct {
 	ListID          int64  `url:"list_id,omitempty"`
 	Slug            string `url:"slug,omitempty"`
-	UserID          int64  `url:"user_id,omitempty"`
+	UserID          string `url:"user_id,omitempty"`
 	ScreenName      string `url:"screen_name,omitempty"`
 	OwnerScreenName string `url:"owner_screen_name,omitempty"`
 	OwnerID         int64  `url:"owner_id,omitempty"`
