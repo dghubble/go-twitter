@@ -7,60 +7,32 @@ import (
 	"github.com/dghubble/sling"
 )
 
-// DirectMessageEvents is a list direct message event
+// DirectMessageEvents lists Direct Message events.
 type DirectMessageEvents struct {
-	NextCursor string               `json:"next_cursor"`
-	Events     []DirectMessageEvent `json:"events"`
 	Apps       string               `json:"apps"`
+	Events     []DirectMessageEvent `json:"events"`
+	NextCursor string               `json:"next_cursor"`
 }
 
-// DirectMessageEvent is a signle direct message sent or received
+// DirectMessageEvent is a single Direct Message sent or received.
 type DirectMessageEvent struct {
-	Type      string                     `json:"type"`
-	ID        int64                      `json:"id,string"`
 	CreatedAt string                     `json:"created_timestamp"`
+	ID        string                     `json:"id"`
+	Type      string                     `json:"type"`
 	Message   *DirectMessageEventMessage `json:"message_create"`
 }
 
-// DirectMessageEventMessage contains the Sender data as well as the Message contents
+// DirectMessageEventMessage contains message contents, along with sender and
+// target recipient.
 type DirectMessageEventMessage struct {
-	SenderID int64 `json:"sender_id,string"`
+	SenderID string `json:"sender_id"`
 	Target   struct {
-		RecipientID int64 `json:"recipient_id,string"`
+		RecipientID string `json:"recipient_id"`
 	} `json:"target"`
-	Data *DirectMessageEventMessageData `json:"message_data"`
-}
-
-// DirectMessageEventMessageData contains the raw text of the message sent or received
-type DirectMessageEventMessageData struct {
-	Text     string    `json:"text"`
-	Entities *Entities `json:"entitites"`
-}
-
-// DirectMessageEventsGetParams are the parameters for DirectMessageEvents.Get
-type DirectMessageEventsGetParams struct {
-	NextCursor string `url:"cursor,omitempty"`
-	Count      int    `url:"count,omitempty"`
-}
-
-// DirectMessage is a direct message to a single recipient.
-type DirectMessage struct {
-	CreatedAt           string    `json:"created_at"`
-	Entities            *Entities `json:"entities"`
-	ID                  int64     `json:"id"`
-	IDStr               string    `json:"id_str"`
-	Recipient           *User     `json:"recipient"`
-	RecipientID         int64     `json:"recipient_id"`
-	RecipientScreenName string    `json:"recipient_screen_name"`
-	Sender              *User     `json:"sender"`
-	SenderID            int64     `json:"sender_id"`
-	SenderScreenName    string    `json:"sender_screen_name"`
-	Text                string    `json:"text"`
-}
-
-// CreatedAtTime returns the time a Direct Message was created.
-func (d DirectMessage) CreatedAtTime() (time.Time, error) {
-	return time.Parse(time.RubyDate, d.CreatedAt)
+	Data struct {
+		Text     string    `json:"text"`
+		Entities *Entities `json:"entitites"`
+	} `json:"message_data"`
 }
 
 // DirectMessageService provides methods for accessing Twitter direct message
@@ -78,12 +50,52 @@ func newDirectMessageService(sling *sling.Sling) *DirectMessageService {
 	}
 }
 
+// DirectMessageEventsListParams are the parameters for
+// DirectMessageService.EventsList
+type DirectMessageEventsListParams struct {
+	Cursor string `url:"cursor,omitempty"`
+	Count  int    `url:"count,omitempty"`
+}
+
+// EventsList returns Direct Message events (both sent and received) within
+// the last 30 days in reverse chronological order.
+// Requires a user auth context with DM scope.
+// https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events
+func (s *DirectMessageService) EventsList(params *DirectMessageEventsListParams) (*DirectMessageEvents, *http.Response, error) {
+	events := new(DirectMessageEvents)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("events/list.json").QueryStruct(params).Receive(events, apiError)
+	return events, resp, relevantError(err, *apiError)
+}
+
+// DEPRECATED
+
+// DirectMessage is a direct message to a single recipient (DEPRECATED).
+type DirectMessage struct {
+	CreatedAt           string    `json:"created_at"`
+	Entities            *Entities `json:"entities"`
+	ID                  int64     `json:"id"`
+	IDStr               string    `json:"id_str"`
+	Recipient           *User     `json:"recipient"`
+	RecipientID         int64     `json:"recipient_id"`
+	RecipientScreenName string    `json:"recipient_screen_name"`
+	Sender              *User     `json:"sender"`
+	SenderID            int64     `json:"sender_id"`
+	SenderScreenName    string    `json:"sender_screen_name"`
+	Text                string    `json:"text"`
+}
+
+// CreatedAtTime returns the time a Direct Message was created (DEPRECATED).
+func (d DirectMessage) CreatedAtTime() (time.Time, error) {
+	return time.Parse(time.RubyDate, d.CreatedAt)
+}
+
 // directMessageShowParams are the parameters for DirectMessageService.Show
 type directMessageShowParams struct {
 	ID int64 `url:"id,omitempty"`
 }
 
-// Show returns the requested Direct Message.
+// Show returns the requested Direct Message (DEPRECATED).
 // Requires a user auth context with DM scope.
 // https://dev.twitter.com/rest/reference/get/direct_messages/show
 func (s *DirectMessageService) Show(id int64) (*DirectMessage, *http.Response, error) {
@@ -95,6 +107,7 @@ func (s *DirectMessageService) Show(id int64) (*DirectMessage, *http.Response, e
 }
 
 // DirectMessageGetParams are the parameters for DirectMessageService.Get
+// (DEPRECATED).
 type DirectMessageGetParams struct {
 	SinceID         int64 `url:"since_id,omitempty"`
 	MaxID           int64 `url:"max_id,omitempty"`
@@ -103,7 +116,8 @@ type DirectMessageGetParams struct {
 	SkipStatus      *bool `url:"skip_status,omitempty"`
 }
 
-// Get returns recent Direct Messages received by the authenticated user.
+// Get returns recent Direct Messages received by the authenticated user
+// (DEPRECATED).
 // Requires a user auth context with DM scope.
 // https://dev.twitter.com/rest/reference/get/direct_messages
 func (s *DirectMessageService) Get(params *DirectMessageGetParams) ([]DirectMessage, *http.Response, error) {
@@ -113,17 +127,8 @@ func (s *DirectMessageService) Get(params *DirectMessageGetParams) ([]DirectMess
 	return *dms, resp, relevantError(err, *apiError)
 }
 
-// GetEvents returns recent Direct Message Events received or sent by the authenticated user.
-// Requires a user auth context with DM scope.
-// https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events
-func (s *DirectMessageService) GetEvents(params *DirectMessageEventsGetParams) (DirectMessageEvents, *http.Response, error) {
-	event := new(DirectMessageEvents)
-	apiError := new(APIError)
-	resp, err := s.sling.New().Get("events/list.json").QueryStruct(params).Receive(event, apiError)
-	return *event, resp, relevantError(err, *apiError)
-}
-
 // DirectMessageSentParams are the parameters for DirectMessageService.Sent
+// (DEPRECATED).
 type DirectMessageSentParams struct {
 	SinceID         int64 `url:"since_id,omitempty"`
 	MaxID           int64 `url:"max_id,omitempty"`
@@ -132,7 +137,8 @@ type DirectMessageSentParams struct {
 	IncludeEntities *bool `url:"include_entities,omitempty"`
 }
 
-// Sent returns recent Direct Messages sent by the authenticated user.
+// Sent returns recent Direct Messages sent by the authenticated user
+// (DEPRECATED).
 // Requires a user auth context with DM scope.
 // https://dev.twitter.com/rest/reference/get/direct_messages/sent
 func (s *DirectMessageService) Sent(params *DirectMessageSentParams) ([]DirectMessage, *http.Response, error) {
@@ -143,6 +149,7 @@ func (s *DirectMessageService) Sent(params *DirectMessageSentParams) ([]DirectMe
 }
 
 // DirectMessageNewParams are the parameters for DirectMessageService.New
+// (DEPRECATED).
 type DirectMessageNewParams struct {
 	UserID     int64  `url:"user_id,omitempty"`
 	ScreenName string `url:"screen_name,omitempty"`
@@ -150,7 +157,7 @@ type DirectMessageNewParams struct {
 }
 
 // New sends a new Direct Message to a specified user as the authenticated
-// user.
+// user (DEPRECATED).
 // Requires a user auth context with DM scope.
 // https://dev.twitter.com/rest/reference/post/direct_messages/new
 func (s *DirectMessageService) New(params *DirectMessageNewParams) (*DirectMessage, *http.Response, error) {
@@ -161,13 +168,14 @@ func (s *DirectMessageService) New(params *DirectMessageNewParams) (*DirectMessa
 }
 
 // DirectMessageDestroyParams are the parameters for DirectMessageService.Destroy
+// (DEPRECATED).
 type DirectMessageDestroyParams struct {
 	ID              int64 `url:"id,omitempty"`
 	IncludeEntities *bool `url:"include_entities,omitempty"`
 }
 
 // Destroy deletes the Direct Message with the given id and returns it if
-// successful.
+// successful (DEPRECATED).
 // Requires a user auth context with DM scope.
 // https://dev.twitter.com/rest/reference/post/direct_messages/destroy
 func (s *DirectMessageService) Destroy(id int64, params *DirectMessageDestroyParams) (*DirectMessage, *http.Response, error) {
