@@ -103,7 +103,7 @@ type ListsMembersParams struct {
 	OwnerScreenName string `url:"owner_screen_name,omitempty"`
 	OwnerID         int64  `url:"owner_id,omitempty"`
 	Count           int    `url:"count,omitempty"`
-	Cursor          int    `url:"cursor,omitempty"`
+	Cursor          int64  `url:"cursor,omitempty"`
 	IncludeEntities *bool  `url:"include_entities,omitempty"`
 	SkipStatus      *bool  `url:"skip_status,omitempty"`
 }
