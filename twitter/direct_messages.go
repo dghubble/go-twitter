@@ -30,8 +30,12 @@ type DirectMessageEventMessage struct {
 		RecipientID string `json:"recipient_id"`
 	} `json:"target"`
 	Data struct {
-		Text     string    `json:"text"`
-		Entities *Entities `json:"entitites"`
+		Text       string    `json:"text"`
+		Entities   *Entities `json:"entitites"`
+		Attachment struct {
+			Type  string      `json:"type"`
+			Media MediaEntity `json:"media"`
+		} `json:"attachment"`
 	} `json:"message_data"`
 }
 
