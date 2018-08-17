@@ -9,7 +9,6 @@ import (
 
 // DirectMessageEvents lists Direct Message events.
 type DirectMessageEvents struct {
-	Apps       string               `json:"apps"`
 	Events     []DirectMessageEvent `json:"events"`
 	NextCursor string               `json:"next_cursor"`
 }
