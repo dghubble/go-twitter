@@ -9,9 +9,17 @@ import (
 
 // DirectMessageEvents lists Direct Message events.
 type DirectMessageEvents struct {
-	Apps       string               `json:"apps"`
-	Events     []DirectMessageEvent `json:"events"`
-	NextCursor string               `json:"next_cursor"`
+	Apps       map[string]ApplicationInfo `json:"apps"`
+	Events     []DirectMessageEvent       `json:"events"`
+	NextCursor string                     `json:"next_cursor"`
+}
+
+// ApplicationInfo contains information about applications associated with an
+// account (this field is returned when listing direct message events).
+type ApplicationInfo struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	URL  string `json:"url"`
 }
 
 // DirectMessageEvent is a single Direct Message sent or received.
