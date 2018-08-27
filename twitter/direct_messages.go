@@ -21,21 +21,30 @@ type DirectMessageEvent struct {
 	Message   *DirectMessageEventMessage `json:"message_create"`
 }
 
+// DirectMessageTarget is the recipient of the Direct Message event
+type DirectMessageTarget struct {
+	RecipientID string `json:"recipient_id"`
+}
+
+// DirectMessageAttachment is an attachment embedded in a Direct Message
+type DirectMessageAttachment struct {
+	Type  string      `json:"type"`
+	Media MediaEntity `json:"media"`
+}
+
+// DirectMessageData is the message data contained inside a Direct Message
+type DirectMessageData struct {
+	Text       string                   `json:"text"`
+	Entities   *Entities                `json:"entitites"`
+	Attachment *DirectMessageAttachment `json:"attachment"`
+}
+
 // DirectMessageEventMessage contains message contents, along with sender and
 // target recipient.
 type DirectMessageEventMessage struct {
-	SenderID string `json:"sender_id"`
-	Target   struct {
-		RecipientID string `json:"recipient_id"`
-	} `json:"target"`
-	Data struct {
-		Text       string    `json:"text"`
-		Entities   *Entities `json:"entitites"`
-		Attachment struct {
-			Type  string      `json:"type"`
-			Media MediaEntity `json:"media"`
-		} `json:"attachment"`
-	} `json:"message_data"`
+	SenderID string              `json:"sender_id"`
+	Target   DirectMessageTarget `json:"target"`
+	Data     DirectMessageData   `json:"message_data"`
 }
 
 // DirectMessageService provides methods for accessing Twitter direct message
@@ -68,6 +77,19 @@ func (s *DirectMessageService) EventsList(params *DirectMessageEventsListParams)
 	events := new(DirectMessageEvents)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Get("events/list.json").QueryStruct(params).Receive(events, apiError)
+	return events, resp, relevantError(err, *apiError)
+}
+
+// DirectMessageEventSendParams are the parameters for
+// DirectMessageService.EventSend
+type DirectMessageEventSendParams struct {
+	Event DirectMessageEvent `json:"event"`
+}
+
+func (s *DirectMessageService) EventSend(params *DirectMessageEventSendParams) (*DirectMessageEvents, *http.Response, error) {
+	events := new(DirectMessageEvents)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Post("events/new.json").BodyJSON(params).Receive(events, apiError)
 	return events, resp, relevantError(err, *apiError)
 }
 
