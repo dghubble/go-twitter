@@ -18,6 +18,12 @@ type AccountActivityRegisterWebhookParams struct {
 	URL     string `url:"url"`
 }
 
+// CreateSubscriptionParams are the parameters used for subscribing to events
+// for a given user
+type AccountActivityCreateSubscriptionParams struct {
+	EnvName string
+}
+
 // AccountActivityWebhook contains information about a webhook created on the account activity
 // API
 type AccountActivityWebhook struct {
@@ -44,4 +50,16 @@ func (s *AccountActivityService) RegisterWebhook(params *AccountActivityRegister
 	resp, err := s.sling.New().Post("all/"+params.EnvName+"/webhooks.json").BodyForm(params).Receive(webhook, apiError)
 
 	return webhook, resp, relevantError(err, *apiError)
+}
+
+// CreateSubscription subscribes the application's webhooks to all of the
+// authenticated user's events
+func (s *AccountActivityService) CreateSubscription(params *AccountActivityCreateSubscriptionParams) (*http.Response, error) {
+	if params == nil {
+		params = &AccountActivityCreateSubscriptionParams{}
+	}
+	apiError := new(APIError)
+	resp, err := s.sling.New().Post("all/"+params.EnvName+"/subscriptions.json").BodyForm(params).Receive(nil, apiError)
+
+	return resp, relevantError(err, *apiError)
 }

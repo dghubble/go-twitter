@@ -30,21 +30,30 @@ type DirectMessageEvent struct {
 	Message   *DirectMessageEventMessage `json:"message_create"`
 }
 
+// DirectMessageEventMessageTarget is a nested struct within
+// DirectMessageEventMessages representing who will be receiving the message
+type DirectMessageEventMessageTarget struct {
+	RecipientID string `json:"recipient_id"`
+}
+
+// DirectMessageEventMessageData is a nested struct within
+// DirectMessageEventMessages which represents the data being sent to the
+// receipient
+type DirectMessageEventMessageData struct {
+	Text       string    `json:"text"`
+	Entities   *Entities `json:"entitites"`
+	Attachment struct {
+		Type  string      `json:"type"`
+		Media MediaEntity `json:"media"`
+	} `json:"attachment"`
+}
+
 // DirectMessageEventMessage contains message contents, along with sender and
 // target recipient.
 type DirectMessageEventMessage struct {
-	SenderID string `json:"sender_id"`
-	Target   struct {
-		RecipientID string `json:"recipient_id"`
-	} `json:"target"`
-	Data struct {
-		Text       string    `json:"text"`
-		Entities   *Entities `json:"entitites"`
-		Attachment struct {
-			Type  string      `json:"type"`
-			Media MediaEntity `json:"media"`
-		} `json:"attachment"`
-	} `json:"message_data"`
+	SenderID string                           `json:"sender_id"`
+	Target   *DirectMessageEventMessageTarget `json:"target"`
+	Data     *DirectMessageEventMessageData   `json:"message_data"`
 }
 
 // DirectMessageService provides methods for accessing Twitter direct message
@@ -69,6 +78,19 @@ type DirectMessageEventsListParams struct {
 	Count  int    `url:"count,omitempty"`
 }
 
+// DirectMessageEventsCreateParams is a simplified struct representing the
+// parameters required in order to create a new direct message event
+type DirectMessageEventsCreateParams struct {
+	RecipientID string
+	Text        string
+}
+
+// DirectMessageEventsCreateResponse represents the data structure returned by
+// the Twitter API after the successful creation of an event
+type DirectMessageEventsCreateResponse struct {
+	Event DirectMessageEvent
+}
+
 // EventsList returns Direct Message events (both sent and received) within
 // the last 30 days in reverse chronological order.
 // Requires a user auth context with DM scope.
@@ -78,6 +100,50 @@ func (s *DirectMessageService) EventsList(params *DirectMessageEventsListParams)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Get("events/list.json").QueryStruct(params).Receive(events, apiError)
 	return events, resp, relevantError(err, *apiError)
+}
+
+type directMessageEventsCreateData struct {
+	Text string `json:"text"`
+}
+
+type directMessageEventsCreateTarget struct {
+	RecipientID string `json:"recipient_id"`
+}
+
+type directMessageEventsCreateMessage struct {
+	Target *directMessageEventsCreateTarget `json:"target"`
+	Data   *directMessageEventsCreateData   `json:"message_data"`
+}
+
+type directMessageEventsCreateEvent struct {
+	Type    string                            `json:"type"`
+	Message *directMessageEventsCreateMessage `json:"message_create"`
+}
+
+type directMessageEventsCreateParams struct {
+	Event *directMessageEventsCreateEvent `json:"event"`
+}
+
+// EventsCreate creates a new Direct Message event
+func (s *DirectMessageService) EventsCreate(params *DirectMessageEventsCreateParams) (*DirectMessageEventsCreateResponse, *http.Response, error) {
+	apiParams := &directMessageEventsCreateParams{
+		Event: &directMessageEventsCreateEvent{
+			Type: "message_create",
+			Message: &directMessageEventsCreateMessage{
+				Target: &directMessageEventsCreateTarget{
+					RecipientID: params.RecipientID,
+				},
+				Data: &directMessageEventsCreateData{
+					Text: params.Text,
+				},
+			},
+		},
+	}
+	apiError := new(APIError)
+	event := new(DirectMessageEventsCreateResponse)
+	resp, err := s.sling.New().Post("events/new.json").BodyJSON(apiParams).Receive(event, apiError)
+
+	return event, resp, relevantError(err, *apiError)
 }
 
 // DEPRECATED
