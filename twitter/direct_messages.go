@@ -17,9 +17,11 @@ type DirectMessageEvents struct {
 // ApplicationInfo contains information about applications associated with an
 // account (this field is returned when listing direct message events).
 type ApplicationInfo struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	URL  string `json:"url"`
+	ID         string               `json:"id"`
+	Name       string               `json:"name"`
+	URL        string               `json:"url"`
+	Events     []DirectMessageEvent `json:"events"`
+	NextCursor string               `json:"next_cursor"`
 }
 
 // DirectMessageEvent is a single Direct Message sent or received.
