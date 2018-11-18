@@ -106,7 +106,7 @@ func TestStream_Filter(t *testing.T) {
 			)
 		default:
 			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			http.Error(w, "Stream API not available!", 500)
 		}
 		reqCount++
 	})
@@ -146,7 +146,7 @@ func TestStream_Sample(t *testing.T) {
 			)
 		default:
 			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			http.Error(w, "Stream API not available!", 500)
 		}
 		reqCount++
 	})
@@ -183,7 +183,7 @@ func TestStream_User(t *testing.T) {
 			fmt.Fprintf(w, `{"friends": [666024290140217347, 666024290140217349, 666024290140217342]}`+"\r\n"+"\r\n")
 		default:
 			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			http.Error(w, "Stream API not available!", 500)
 		}
 		reqCount++
 	})
@@ -223,7 +223,7 @@ func TestStream_User_TooManyFriends(t *testing.T) {
 			fmt.Fprintf(w, `{"friends": %s}`+"\r\n"+"\r\n", friendsList)
 		default:
 			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			http.Error(w, "Stream API not available!", 500)
 		}
 		reqCount++
 	})
@@ -264,7 +264,7 @@ func TestStream_Site(t *testing.T) {
 			)
 		default:
 			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			http.Error(w, "Stream API not available!", 500)
 		}
 		reqCount++
 	})
@@ -304,7 +304,7 @@ func TestStream_PublicFirehose(t *testing.T) {
 			)
 		default:
 			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			http.Error(w, "Stream API not available!", 500)
 		}
 		reqCount++
 	})
@@ -337,7 +337,7 @@ func TestStreamRetry_ExponentialBackoff(t *testing.T) {
 			http.Error(w, "Service Unavailable", 503)
 		default:
 			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			http.Error(w, "Stream API not available!", 500)
 		}
 		reqCount++
 	})
@@ -371,7 +371,7 @@ func TestStreamRetry_AggressiveBackoff(t *testing.T) {
 			http.Error(w, "Too Many Requests", 429)
 		default:
 			// Only allow first request
-			http.Error(w, "Stream API not available!", 130)
+			http.Error(w, "Stream API not available!", 500)
 		}
 		reqCount++
 	})
