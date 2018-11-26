@@ -12,3 +12,5 @@ install:
   - go get -v -t ./twitter
 script:
   - ./test
+notifications:
+  email: change
