@@ -1,6 +1,7 @@
 package twitter
 
 import (
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -66,6 +67,13 @@ func assertPostForm(t *testing.T, expected map[string]string, req *http.Request)
 		expectedValues.Add(key, value)
 	}
 	assert.Equal(t, expectedValues, req.Form)
+}
+
+// assertPostJSON tests that the Request has the expected JSON body.
+func assertPostJSON(t *testing.T, expected string, req *http.Request) {
+	data, err := ioutil.ReadAll(req.Body)
+	assert.Nil(t, err)
+	assert.Equal(t, expected, string(data))
 }
 
 // assertDone asserts that the empty struct channel is closed before the given

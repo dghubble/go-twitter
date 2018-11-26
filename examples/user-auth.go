@@ -67,14 +67,4 @@ func main() {
 	// Update (POST!) Tweet (uncomment to run)
 	// tweet, _, _ := client.Statuses.Update("just setting up my twttr", nil)
 	// fmt.Printf("Posted Tweet\n%v\n", tweet)
-
-	// List most recent 3 Direct Messages
-	messages, _, _ := client.DirectMessages.EventsList(
-		&twitter.DirectMessageEventsListParams{Count: 3},
-	)
-	fmt.Println("User's DIRECT MESSAGES:")
-	for _, event := range messages.Events {
-		fmt.Printf("%+v\n", event)
-		fmt.Printf("%+v\n", event.Message)
-	}
 }

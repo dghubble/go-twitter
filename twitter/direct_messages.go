@@ -15,8 +15,8 @@ type DirectMessageEvents struct {
 
 // DirectMessageEvent is a single Direct Message sent or received.
 type DirectMessageEvent struct {
-	CreatedAt string                     `json:"created_timestamp"`
-	ID        string                     `json:"id"`
+	CreatedAt string                     `json:"created_timestamp,omitempty"`
+	ID        string                     `json:"id,omitempty"`
 	Type      string                     `json:"type"`
 	Message   *DirectMessageEventMessage `json:"message_create"`
 }
@@ -24,18 +24,28 @@ type DirectMessageEvent struct {
 // DirectMessageEventMessage contains message contents, along with sender and
 // target recipient.
 type DirectMessageEventMessage struct {
-	SenderID string `json:"sender_id"`
-	Target   struct {
-		RecipientID string `json:"recipient_id"`
-	} `json:"target"`
-	Data struct {
-		Text       string    `json:"text"`
-		Entities   *Entities `json:"entitites"`
-		Attachment struct {
-			Type  string      `json:"type"`
-			Media MediaEntity `json:"media"`
-		} `json:"attachment"`
-	} `json:"message_data"`
+	SenderID string               `json:"sender_id,omitempty"`
+	Target   *DirectMessageTarget `json:"target"`
+	Data     *DirectMessageData   `json:"message_data"`
+}
+
+// DirectMessageTarget specifies the recipient of a Direct Message event.
+type DirectMessageTarget struct {
+	RecipientID string `json:"recipient_id"`
+}
+
+// DirectMessageData is the message data contained in a Direct Message event.
+type DirectMessageData struct {
+	Text       string                       `json:"text"`
+	Entities   *Entities                    `json:"entitites,omitempty"`
+	Attachment *DirectMessageDataAttachment `json:"attachment,omitempty"`
+}
+
+// DirectMessageDataAttachment contains message data attachments for a Direct
+// Message event.
+type DirectMessageDataAttachment struct {
+	Type  string      `json:"type"`
+	Media MediaEntity `json:"media"`
 }
 
 // DirectMessageService provides methods for accessing Twitter direct message
@@ -51,6 +61,48 @@ func newDirectMessageService(sling *sling.Sling) *DirectMessageService {
 		baseSling: sling.New(),
 		sling:     sling.Path("direct_messages/"),
 	}
+}
+
+// DirectMessageEventsNewParams are the parameters for
+// DirectMessageService.EventsNew
+type DirectMessageEventsNewParams struct {
+	Event *DirectMessageEvent `json:"event"`
+}
+
+// EventsNew publishes a new Direct Message event and returns the event.
+// Requires a user auth context with DM scope.
+// https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event
+func (s *DirectMessageService) EventsNew(params *DirectMessageEventsNewParams) (*DirectMessageEvent, *http.Response, error) {
+	// Twitter API wraps the event response
+	wrap := &struct {
+		Event *DirectMessageEvent `json:"event"`
+	}{}
+	apiError := new(APIError)
+	resp, err := s.sling.New().Post("events/new.json").BodyJSON(params).Receive(wrap, apiError)
+	return wrap.Event, resp, relevantError(err, *apiError)
+}
+
+// DirectMessageEventsShowParams are the parameters for
+// DirectMessageService.EventsShow
+type DirectMessageEventsShowParams struct {
+	ID string `url:"id,omitempty"`
+}
+
+// EventsShow returns a single Direct Message event by id.
+// Requires a user auth context with DM scope.
+// https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/get-event
+func (s *DirectMessageService) EventsShow(id string, params *DirectMessageEventsShowParams) (*DirectMessageEvent, *http.Response, error) {
+	if params == nil {
+		params = &DirectMessageEventsShowParams{}
+	}
+	params.ID = id
+	// Twitter API wraps the event response
+	wrap := &struct {
+		Event *DirectMessageEvent `json:"event"`
+	}{}
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("events/show.json").QueryStruct(params).Receive(wrap, apiError)
+	return wrap.Event, resp, relevantError(err, *apiError)
 }
 
 // DirectMessageEventsListParams are the parameters for
@@ -69,6 +121,18 @@ func (s *DirectMessageService) EventsList(params *DirectMessageEventsListParams)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Get("events/list.json").QueryStruct(params).Receive(events, apiError)
 	return events, resp, relevantError(err, *apiError)
+}
+
+// EventsDestroy deletes the Direct Message event by id.
+// Requires a user auth context with DM scope.
+// https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/delete-message-event
+func (s *DirectMessageService) EventsDestroy(id string) (*http.Response, error) {
+	params := struct {
+		ID string `url:"id,omitempty"`
+	}{id}
+	apiError := new(APIError)
+	resp, err := s.sling.New().Delete("events/destroy.json").QueryStruct(params).Receive(nil, apiError)
+	return resp, relevantError(err, *apiError)
 }
 
 // DEPRECATED
