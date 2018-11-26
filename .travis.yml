@@ -1,16 +1,12 @@
 language: go
 go:
-  - 1.9.x
+  - "1.9.x"
   - "1.10.x"
   - "1.11.x"
-  - tip
-matrix:
-  allow_failures:
-    - go: tip
 install:
   - go get golang.org/x/lint/golint
   - go get -v -t ./twitter
 script:
-  - ./test
+  - make
 notifications:
   email: change
