@@ -39,6 +39,8 @@ type DirectMessageData struct {
 	Text       string                       `json:"text"`
 	Entities   *Entities                    `json:"entitites,omitempty"`
 	Attachment *DirectMessageDataAttachment `json:"attachment,omitempty"`
+	QuickReply *DirectMessageQuickReply     `json:"quick_reply,omitempty"`
+	CTAs       []DirectMessageCTA           `json:"ctas,omitempty"`
 }
 
 // DirectMessageDataAttachment contains message data attachments for a Direct
@@ -46,6 +48,28 @@ type DirectMessageData struct {
 type DirectMessageDataAttachment struct {
 	Type  string      `json:"type"`
 	Media MediaEntity `json:"media"`
+}
+
+// DirectMessageQuickReply contains quick reply data for a Direct Message
+// event.
+type DirectMessageQuickReply struct {
+	Type    string                          `json:"type"`
+	Options []DirectMessageQuickReplyOption `json:"options"`
+}
+
+// DirectMessageQuickReplyOption represents Option object for
+// a Direct Message's Quick Reply.
+type DirectMessageQuickReplyOption struct {
+	Label       string `json:"label"`
+	Description string `json:"description,omitempty"`
+	Metadata    string `json:"metadata,omitempty"`
+}
+
+// DirectMessageCTA contains CTA data for a Direct Message event.
+type DirectMessageCTA struct {
+	Type  string `json:"type"`
+	Label string `json:"label"`
+	URL   string `json:"url"`
 }
 
 // DirectMessageService provides methods for accessing Twitter direct message
