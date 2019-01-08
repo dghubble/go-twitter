@@ -27,6 +27,8 @@ type Tweet struct {
 	InReplyToUserIDStr   string                 `json:"in_reply_to_user_id_str"`
 	Lang                 string                 `json:"lang"`
 	PossiblySensitive    bool                   `json:"possibly_sensitive"`
+	QuoteCount           int                    `json:"quote_count"`
+	ReplyCount           int                    `json:"reply_count"`
 	RetweetCount         int                    `json:"retweet_count"`
 	Retweeted            bool                   `json:"retweeted"`
 	RetweetedStatus      *Tweet                 `json:"retweeted_status"`
