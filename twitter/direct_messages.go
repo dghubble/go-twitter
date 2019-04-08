@@ -44,7 +44,8 @@ type DirectMessageData struct {
 	CTAs               []DirectMessageCTA               `json:"ctas,omitempty"`
 }
 
-// Quick Reply Response
+// DirectMessageQuickReplyResponse is only available when QuickReply is used.
+// Contains the response of QuickReply.
 type DirectMessageQuickReplyResponse struct {
 	Type     string `json:"type"`
 	Metadata string `json:"metadata"`
