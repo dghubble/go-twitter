@@ -243,15 +243,16 @@ If no user auth context is needed, make requests as your application with applic
 import (
     "github.com/dghubble/go-twitter/twitter"
     "golang.org/x/oauth2"
+    "golang.org/x/oauth2/clientcredentials"    
 )
 
-config := &oauth2.Config{}
-token := &oauth2.Token{AccessToken: accessToken}
-// http.Client will automatically authorize Requests
-httpClient := config.Client(oauth2.NoContext, token)
-
-// Twitter client
-client := twitter.NewClient(httpClient)
+config := &clientcredentials.Config{
+    ClientID:     consumerKey,
+    ClientSecret: consumerSecret,
+    TokenURL:     "https://api.twitter.com/oauth2/token",
+}
+httpClient := config.Client(oauth2.NoContext)
+twClient := twitter.NewClient(httpClient)    
 ```
 
 To implement Login with Twitter for web or mobile, see the gologin [package](https://github.com/dghubble/gologin) and [examples](https://github.com/dghubble/gologin/tree/master/examples/twitter).
