@@ -247,13 +247,17 @@ import (
     "golang.org/x/oauth2/clientcredentials"    
 )
 
+// oauth2 configures a client that uses app credentials to keep a fresh token
 config := &clientcredentials.Config{
-    ClientID:     consumerKey,
-    ClientSecret: consumerSecret,
+    ClientID:     "consumerKey",
+    ClientSecret: "consumerSecret",
     TokenURL:     "https://api.twitter.com/oauth2/token",
 }
+// http.Client will automatically authorize Requests
 httpClient := config.Client(oauth2.NoContext)
-twClient := twitter.NewClient(httpClient)    
+
+// Twitter client
+client := twitter.NewClient(httpClient)    
 ```
 
 To implement Login with Twitter for web or mobile, see the gologin [package](https://github.com/dghubble/gologin) and [examples](https://github.com/dghubble/gologin/tree/master/examples/twitter).
