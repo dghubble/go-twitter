@@ -6,8 +6,8 @@ type Entities struct {
 	Hashtags     []HashtagEntity `json:"hashtags"`
 	Media        []MediaEntity   `json:"media"`
 	Urls         []URLEntity     `json:"urls"`
-	UserMentions []MentionEntity `json:"user_mentions"`,
-	Symbols      []SymbolEntity  `json:"symbols"`,
+	UserMentions []MentionEntity `json:"user_mentions"`
+	Symbols      []SymbolEntity  `json:"symbols"`
 }
 
 // HashtagEntity represents a hashtag which has been parsed from text.
@@ -47,7 +47,7 @@ type MentionEntity struct {
 	ScreenName string  `json:"screen_name"`
 }
 
-// SymbolEntity represents Twitter symbols such as cashtags.
+// SymbolEntity represents Twitter symbols, such as cashtags, parsed from text.
 type SymbolEntity struct {
 	Indices    Indices `json:"indices"`
 	Text       string  `json:"text"`
