@@ -15,10 +15,11 @@ type Config struct {
 	PhotoSizeLimit             int         `json:"photo_size_limit"`
 	PhotoSizes                 *PhotoSizes `json:"photo_sizes"`
 	ShortURLLength             int         `json:"short_url_length"`
-	ShortURLLengthHttps        int         `json:"short_url_length_https"`
+	ShortURLLengthHTTPS        int         `json:"short_url_length_https"`
 	NonUsernamePaths           []string    `json:"non_username_paths"`
 }
 
+// PhotoSizes holds data for the four sizes of images that twitter supports.
 type PhotoSizes struct {
 	Large  *SinglePhotoSize `json:"large"`
 	Medium *SinglePhotoSize `json:"medium"`
@@ -26,6 +27,7 @@ type PhotoSizes struct {
 	Thumb  *SinglePhotoSize `json:"thumb"`
 }
 
+// SinglePhotoSize holds the information for a single photo size.
 type SinglePhotoSize struct {
 	Height int    `json:"h"`
 	Width  int    `json:"w"`
