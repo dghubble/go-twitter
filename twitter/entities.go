@@ -49,8 +49,8 @@ type MentionEntity struct {
 
 // SymbolEntity represents Twitter symbols, such as cashtags, parsed from text.
 type SymbolEntity struct {
-	Indices    Indices `json:"indices"`
-	Text       string  `json:"text"`
+	Indices Indices `json:"indices"`
+	Text    string  `json:"text"`
 }
 
 // UserEntities contain Entities parsed from User url and description fields.
