@@ -1,7 +1,7 @@
 package twitter
 
 // Entities represent metadata and context info parsed from Twitter components.
-// https://dev.twitter.com/overview/api/entities
+// https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/entities-object
 // TODO: symbols
 type Entities struct {
 	Hashtags     []HashtagEntity `json:"hashtags"`
@@ -48,14 +48,14 @@ type MentionEntity struct {
 }
 
 // UserEntities contain Entities parsed from User url and description fields.
-// https://dev.twitter.com/overview/api/entities-in-twitter-objects#users
+// https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/entities-object#mentions
 type UserEntities struct {
 	URL         Entities `json:"url"`
 	Description Entities `json:"description"`
 }
 
 // ExtendedEntity contains media information.
-// https://dev.twitter.com/overview/api/entities-in-twitter-objects#extended_entities
+// https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/extended-entities-object
 type ExtendedEntity struct {
 	Media []MediaEntity `json:"media"`
 }
@@ -74,7 +74,7 @@ func (i Indices) End() int {
 }
 
 // MediaSizes contain the different size media that are available.
-// https://dev.twitter.com/overview/api/entities#obj-sizes
+// https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/entities-object#media-size
 type MediaSizes struct {
 	Thumb  MediaSize `json:"thumb"`
 	Large  MediaSize `json:"large"`
