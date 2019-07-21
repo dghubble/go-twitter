@@ -16,6 +16,7 @@ const chunkSize = 1024 * 1024
 // docs say 15M so we'll go with that.
 const maxSize = 15 * 1024 * 1024
 
+// MediaService provides methods for accessing twitter media APIs.
 type MediaService struct {
 	sling *sling.Sling
 }
@@ -46,10 +47,12 @@ type mediaAppendParams struct {
 	SegmentIndex int    `url:"segment_index"`
 }
 
+// MediaVideoInfo holds information about media identified as videos.
 type MediaVideoInfo struct {
 	VideoType string `json:"video_type"`
 }
 
+// MediaProcessingInfo holds information about pending media uploads.
 type MediaProcessingInfo struct {
 	State           string                `json:"state"`
 	CheckAfterSecs  int                   `json:"check_after_secs"`
@@ -57,6 +60,8 @@ type MediaProcessingInfo struct {
 	Error           *MediaProcessingError `json:"error"`
 }
 
+// MediaProcessingError holds information about pending media
+// processing failures.
 type MediaProcessingError struct {
 	Code    int    `json:"code"`
 	Name    string `json:"name"`
