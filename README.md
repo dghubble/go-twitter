@@ -17,6 +17,7 @@ go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/
     * RateLimits
     * Search
     * Statuses
+    * Media
     * Timelines
     * Users
 * Twitter Streaming API
@@ -57,6 +58,25 @@ tweet, resp, err := client.Statuses.Update("just setting up my twttr", nil)
 
 // Status Show
 tweet, resp, err := client.Statuses.Show(585613041028431872, nil)
+
+// Send a Tweet with Media
+
+// It supports video / gif / images
+file, err := ioutil.ReadFile("pic.png")
+if err != nil {
+    log.Fatal(err)
+}
+
+mediaUpload := &twitter.MediaUploadParams{
+    File:     file,
+    MimeType: "image/png",
+}
+
+media, _, err := client.Media.Upload(mediaUpload)
+if err != nil {
+    log.Fatal(err)
+}
+// then use media.MediaID or media.MediaIDString
 
 // Search Tweets
 search, resp, err := client.Search.Tweets(&twitter.SearchTweetParams{
