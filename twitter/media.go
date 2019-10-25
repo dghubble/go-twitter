@@ -84,7 +84,7 @@ func (s *MediaService) mediaInit(p *MediaUploadParams) (*TwitterMediaID, *http.R
 
 	twitterMediaID := new(TwitterMediaID)
 	apiError := new(APIError)
-	resp, err := s.sling.New().Post(fmt.Sprintf("%s%s", twitterUploadAPI, "media/upload.json")).Add("Content-Type", "application/x-www-form-urlencoded").BodyForm(paramsBody).Receive(twitterMediaID, apiError)
+	resp, err := s.sling.New().Post("upload.json").Add("Content-Type", "application/x-www-form-urlencoded").BodyForm(paramsBody).Receive(twitterMediaID, apiError)
 	return twitterMediaID, resp, relevantError(err, *apiError)
 }
 
@@ -109,7 +109,7 @@ func (s *MediaService) mediaAppend(twitterMediaID *TwitterMediaID, params *Media
 		}
 
 		apiError := new(APIError)
-		resp, err := s.sling.New().Post(fmt.Sprintf("%s%s", twitterUploadAPI, "media/upload.json")).Add("Content-Type", "application/x-www-form-urlencoded").BodyForm(mediaUploadCommand).Receive(nil, apiError)
+		resp, err := s.sling.New().Post("upload.json").Add("Content-Type", "application/x-www-form-urlencoded").BodyForm(mediaUploadCommand).Receive(nil, apiError)
 		if err != nil {
 			return resp, relevantError(err, *apiError)
 		}
@@ -125,7 +125,7 @@ func (s *MediaService) mediaFinilize(mediaID int64) (*http.Response, error) {
 	}
 
 	apiError := new(APIError)
-	resp, err := s.sling.New().Post(fmt.Sprintf("%s%s", twitterUploadAPI, "media/upload.json")).Add("Content-Type", "application/x-www-form-urlencoded").BodyForm(params).Receive(nil, apiError)
+	resp, err := s.sling.New().Post("upload.json").Add("Content-Type", "application/x-www-form-urlencoded").BodyForm(params).Receive(nil, apiError)
 	if err != nil {
 		return resp, relevantError(err, *apiError)
 	}

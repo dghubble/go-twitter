@@ -34,6 +34,7 @@ type Client struct {
 // NewClient returns a new Client.
 func NewClient(httpClient *http.Client) *Client {
 	base := sling.New().Client(httpClient).Base(twitterAPI)
+	upload := sling.New().Client(httpClient).Base(twitterUploadAPI)
 	return &Client{
 		sling:          base,
 		Accounts:       newAccountService(base.New()),
@@ -51,7 +52,7 @@ func NewClient(httpClient *http.Client) *Client {
 		Timelines:      newTimelineService(base.New()),
 		Trends:         newTrendsService(base.New()),
 		Users:          newUserService(base.New()),
-		Media:          newMediaService(base.New()),
+		Media:          newMediaService(upload.New()),
 	}
 }
 
