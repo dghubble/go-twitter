@@ -2,10 +2,10 @@ package twitter
 
 import (
 	"fmt"
-	"net/http"
-	"time"
-
 	"github.com/dghubble/sling"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 // Tweet represents a Twitter Tweet, previously called a status.
@@ -143,6 +143,12 @@ type StatusLookupParams struct {
 	TweetMode       string  `url:"tweet_mode,omitempty"`
 }
 
+// LookupMapResponse is the response from Twitter's Statuses Lookup
+// when the "map" parameter is true
+type LookupMapResponse struct {
+	ID map[string]Tweet
+}
+
 // Lookup returns the requested Tweets as a slice. Combines ids from the
 // required ids argument and from params.Id.
 // https://dev.twitter.com/rest/reference/get/statuses/lookup
@@ -151,10 +157,34 @@ func (s *StatusService) Lookup(ids []int64, params *StatusLookupParams) ([]Tweet
 		params = &StatusLookupParams{}
 	}
 	params.ID = append(params.ID, ids...)
-	tweets := new([]Tweet)
+	tweets := make([]Tweet, len(params.ID))
 	apiError := new(APIError)
-	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(tweets, apiError)
-	return *tweets, resp, relevantError(err, *apiError)
+
+	var resp *http.Response
+	var err error
+
+	sli := s.sling.New().Get("lookup.json").QueryStruct(params)
+
+	// twitter's API returns a different response format
+	// if the map parameter is true
+	if params.Map != nil && *params.Map {
+		lookupResponse := new(LookupMapResponse)
+		resp, err = sli.Receive(lookupResponse, apiError)
+
+		// Ensuring that the order of the returned tweets
+		// is the same as the order given.
+		for k, v := range lookupResponse.ID {
+			for i, id := range params.ID {
+				if strconv.FormatInt(id, 10) == k {
+					tweets[i] = v
+				}
+			}
+		}
+	} else {
+		resp, err = sli.Receive(&tweets, apiError)
+	}
+
+	return tweets, resp, relevantError(err, *apiError)
 }
 
 // StatusUpdateParams are the parameters for StatusService.Update
