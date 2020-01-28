@@ -177,6 +177,7 @@ func (s *StatusService) Lookup(ids []int64, params *StatusLookupParams) ([]Tweet
 			for i, id := range params.ID {
 				if strconv.FormatInt(id, 10) == k {
 					tweets[i] = v
+					break
 				}
 			}
 		}
