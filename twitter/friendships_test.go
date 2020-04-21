@@ -121,3 +121,39 @@ func TestFriendshipService_Incoming(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expected, friendIDs)
 }
+
+func TestFriendshipService_LookupWithIds(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/friendships/lookup.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "GET", r)
+		assertQuery(t, map[string]string{"user_id": "113419064,623265148"}, r)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `[{"screen_name": "golang"}, {"screen_name": "dghubble"}]`)
+	})
+
+	client := NewClient(httpClient)
+	users, _, err := client.Friendships.Lookup(&FriendshipLookupParams{UserID: []int64{113419064, 623265148}})
+	expected := []FriendshipLookup{FriendshipLookup{ScreenName: "golang"}, FriendshipLookup{ScreenName: "dghubble"}}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, users)
+}
+
+func TestFriendshipService_LookupWithScreenNames(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/friendships/lookup.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "GET", r)
+		assertQuery(t, map[string]string{"screen_name": "foo,bar"}, r)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `[{"name": "Foo"}, {"name": "Bar"}]`)
+	})
+
+	client := NewClient(httpClient)
+	users, _, err := client.Friendships.Lookup(&FriendshipLookupParams{ScreenName: []string{"foo", "bar"}})
+	expected := []FriendshipLookup{FriendshipLookup{Name: "Foo"}, FriendshipLookup{Name: "Bar"}}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, users)
+}
