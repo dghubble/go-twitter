@@ -36,11 +36,19 @@ type DirectMessageTarget struct {
 
 // DirectMessageData is the message data contained in a Direct Message event.
 type DirectMessageData struct {
-	Text       string                       `json:"text"`
-	Entities   *Entities                    `json:"entitites,omitempty"`
-	Attachment *DirectMessageDataAttachment `json:"attachment,omitempty"`
-	QuickReply *DirectMessageQuickReply     `json:"quick_reply,omitempty"`
-	CTAs       []DirectMessageCTA           `json:"ctas,omitempty"`
+	Text               string                           `json:"text"`
+	Entities           *Entities                        `json:"entitites,omitempty"`
+	Attachment         *DirectMessageDataAttachment     `json:"attachment,omitempty"`
+	QuickReply         *DirectMessageQuickReply         `json:"quick_reply,omitempty"`
+	QuickReplyResponse *DirectMessageQuickReplyResponse `json:"quick_reply_response,omitempty"`
+	CTAs               []DirectMessageCTA               `json:"ctas,omitempty"`
+}
+
+// DirectMessageQuickReplyResponse is only available when QuickReply is used.
+// Contains the response of QuickReply.
+type DirectMessageQuickReplyResponse struct {
+	Type     string `json:"type"`
+	Metadata string `json:"metadata"`
 }
 
 // DirectMessageDataAttachment contains message data attachments for a Direct
