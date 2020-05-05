@@ -48,6 +48,8 @@ type SearchTweetParams struct {
 	SinceID         int64  `url:"since_id,omitempty"`
 	MaxID           int64  `url:"max_id,omitempty"`
 	Until           string `url:"until,omitempty"`
+	Since           string `url:"since,omitempty"`
+	Filter          string `url:"filter,omitempty"`
 	IncludeEntities *bool  `url:"include_entities,omitempty"`
 	TweetMode       string `url:"tweet_mode,omitempty"`
 }
