@@ -13,6 +13,7 @@ go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/
     * Friendships
     * Followers
     * Lists
+    * PremiumSearch
     * RateLimits
     * Search
     * Statuses
@@ -243,15 +244,20 @@ If no user auth context is needed, make requests as your application with applic
 import (
     "github.com/dghubble/go-twitter/twitter"
     "golang.org/x/oauth2"
+    "golang.org/x/oauth2/clientcredentials"    
 )
 
-config := &oauth2.Config{}
-token := &oauth2.Token{AccessToken: accessToken}
+// oauth2 configures a client that uses app credentials to keep a fresh token
+config := &clientcredentials.Config{
+    ClientID:     "consumerKey",
+    ClientSecret: "consumerSecret",
+    TokenURL:     "https://api.twitter.com/oauth2/token",
+}
 // http.Client will automatically authorize Requests
-httpClient := config.Client(oauth2.NoContext, token)
+httpClient := config.Client(oauth2.NoContext)
 
 // Twitter client
-client := twitter.NewClient(httpClient)
+client := twitter.NewClient(httpClient)    
 ```
 
 To implement Login with Twitter for web or mobile, see the gologin [package](https://github.com/dghubble/gologin) and [examples](https://github.com/dghubble/gologin/tree/master/examples/twitter).

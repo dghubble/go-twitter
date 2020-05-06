@@ -21,6 +21,7 @@ type Client struct {
 	Lists          *ListsService
 	RateLimits     *RateLimitService
 	Search         *SearchService
+	PremiumSearch  *PremiumSearchService
 	Statuses       *StatusService
 	Streams        *StreamService
 	Timelines      *TimelineService
@@ -42,6 +43,7 @@ func NewClient(httpClient *http.Client) *Client {
 		Lists:          newListService(base.New()),
 		RateLimits:     newRateLimitService(base.New()),
 		Search:         newSearchService(base.New()),
+		PremiumSearch:  newPremiumSearchService(base.New()),
 		Statuses:       newStatusService(base.New()),
 		Streams:        newStreamService(httpClient, base.New()),
 		Timelines:      newTimelineService(base.New()),
