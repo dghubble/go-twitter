@@ -30,8 +30,13 @@ type Client struct {
 }
 
 // NewClient returns a new Client.
-func NewClient(httpClient *http.Client) *Client {
-	base := sling.New().Client(httpClient).Base(twitterAPI)
+//
+// *http.Client implements the sling.Doer interface.
+func NewClient(httpClient sling.Doer) *Client {
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+	base := sling.New().Doer(httpClient).Base(twitterAPI)
 	return &Client{
 		sling:          base,
 		Accounts:       newAccountService(base.New()),

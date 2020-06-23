@@ -20,14 +20,14 @@ const (
 
 // StreamService provides methods for accessing the Twitter Streaming API.
 type StreamService struct {
-	client *http.Client
+	client sling.Doer
 	public *sling.Sling
 	user   *sling.Sling
 	site   *sling.Sling
 }
 
 // newStreamService returns a new StreamService.
-func newStreamService(client *http.Client, sling *sling.Sling) *StreamService {
+func newStreamService(client sling.Doer, sling *sling.Sling) *StreamService {
 	sling.Set("User-Agent", userAgent)
 	return &StreamService{
 		client: client,
@@ -142,7 +142,7 @@ func (srv *StreamService) Firehose(params *StreamFirehoseParams) (*Stream, error
 // The client must Stop() the stream when finished receiving, which will
 // wait until the stream is properly stopped.
 type Stream struct {
-	client   *http.Client
+	client   sling.Doer
 	Messages chan interface{}
 	done     chan struct{}
 	group    *sync.WaitGroup
@@ -152,7 +152,7 @@ type Stream struct {
 // newStream creates a Stream and starts a goroutine to retry connecting and
 // receive from a stream response. The goroutine may stop due to retry errors
 // or be stopped by calling Stop() on the stream.
-func newStream(client *http.Client, req *http.Request) *Stream {
+func newStream(client sling.Doer, req *http.Request) *Stream {
 	s := &Stream{
 		client:   client,
 		Messages: make(chan interface{}),
