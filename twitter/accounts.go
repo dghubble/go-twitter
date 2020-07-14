@@ -39,7 +39,7 @@ func (s *AccountService) VerifyCredentials(params *AccountVerifyParams) (*User, 
 // UpdateProfileParams are the params for AccountService.UpdateProfile
 type UpdateProfileParams struct {
 	Name            string `url:"name,omitempty"`
-	Url             string `url:"url,omitempty"`
+	URL             string `url:"url,omitempty"`
 	Location        string `url:"location,omitempty"`
 	Description     string `url:"description,omitempty"`
 	IncludeEntities *bool  `url:"include_entities,omitempty"`
