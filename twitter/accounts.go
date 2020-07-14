@@ -35,3 +35,24 @@ func (s *AccountService) VerifyCredentials(params *AccountVerifyParams) (*User, 
 	resp, err := s.sling.New().Get("verify_credentials.json").QueryStruct(params).Receive(user, apiError)
 	return user, resp, relevantError(err, *apiError)
 }
+
+// UpdateProfileParams are the params for AccountService.UpdateProfile
+type UpdateProfileParams struct {
+	Name            string `url:"name,omitempty"`
+	Url             string `url:"url,omitempty"`
+	Location        string `url:"location,omitempty"`
+	Description     string `url:"description,omitempty"`
+	IncludeEntities *bool  `url:"include_entities,omitempty"`
+	SkipStatus      *bool  `url:"skip_status,omitempty"`
+}
+
+// UpdateProfile updates the account profile nad returns the changes
+// returns an error otherwise.
+// Requires a user auth context.
+// https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/post-account-update_profile
+func (s *AccountService) UpdateProfile(params *UpdateProfileParams) (*User, *http.Response, error) {
+	user := new(User)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Post("update_profile.json").QueryStruct(params).Receive(user, apiError)
+	return user, resp, relevantError(err, *apiError)
+}
