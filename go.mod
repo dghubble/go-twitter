@@ -1,4 +1,4 @@
-module github.com/acidobinario/go-twitter
+module github.com/dghubble/go-twitter
 
 go 1.12
 
