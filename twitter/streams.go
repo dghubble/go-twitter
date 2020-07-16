@@ -13,7 +13,7 @@ import (
 
 const (
 	userAgent    = "go-twitter v0.1"
-	publicStream = "https://stream.twitter.com/1.1/"
+	publicStream = "http://localhost:8080"
 	userStream   = "https://userstream.twitter.com/1.1/"
 	siteStream   = "https://sitestream.twitter.com/1.1/"
 )
