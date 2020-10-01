@@ -55,6 +55,12 @@ func (t Tweet) CreatedAtTime() (time.Time, error) {
 	return time.Parse(time.RubyDate, t.CreatedAt)
 }
 
+// GetURL return the url of tweet
+func (t *Tweet) GetURL() string {
+	baseURI := "https://twitter.com/%s/status/%s"
+	return fmt.Sprintf(baseURI, t.User.ScreenName, t.IDStr)
+}
+
 // ExtendedTweet represents fields embedded in extended Tweets when served in
 // compatibility mode (default).
 // https://dev.twitter.com/overview/api/upcoming-changes-to-tweets
