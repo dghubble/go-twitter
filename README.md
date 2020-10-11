@@ -1,4 +1,5 @@
-# go-twitter [![Build Status](https://travis-ci.org/dghubble/go-twitter.svg?branch=master)](https://travis-ci.org/dghubble/go-twitter) [![GoDoc](https://godoc.org/github.com/dghubble/go-twitter?status.svg)](https://godoc.org/github.com/dghubble/go-twitter)
+# go-twitter [![Build Status](https://github.com/dghubble/go-twitter/workflows/test/badge.svg)](https://github.com/dghubble/go-twitter/actions?query=workflow%3Atest+branch%3Amaster) [![GoDoc](https://godoc.org/github.com/dghubble/go-twitter?status.svg)](https://godoc.org/github.com/dghubble/go-twitter)
+
 <img align="right" src="https://storage.googleapis.com/dghubble/gopher-on-bird.png">
 
 go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/rest/public). Check the [usage](#usage) section or try the [examples](/examples) to see how to access the Twitter API.
@@ -143,7 +144,7 @@ If you run this in your main goroutine, it will receive messages forever unless 
 
 ### Demux
 
-Receiving messages of type `interface{}` isn't very nice, it means you'll have to type switch and probably filter out message types you don't care about. 
+Receiving messages of type `interface{}` isn't very nice, it means you'll have to type switch and probably filter out message types you don't care about.
 
 For this, try a `Demux`, like `SwitchDemux`, which receives messages and type switches them to call functions with typed messages.
 
@@ -244,7 +245,7 @@ If no user auth context is needed, make requests as your application with applic
 import (
     "github.com/dghubble/go-twitter/twitter"
     "golang.org/x/oauth2"
-    "golang.org/x/oauth2/clientcredentials"    
+    "golang.org/x/oauth2/clientcredentials"
 )
 
 // oauth2 configures a client that uses app credentials to keep a fresh token
@@ -257,7 +258,7 @@ config := &clientcredentials.Config{
 httpClient := config.Client(oauth2.NoContext)
 
 // Twitter client
-client := twitter.NewClient(httpClient)    
+client := twitter.NewClient(httpClient)
 ```
 
 To implement Login with Twitter for web or mobile, see the gologin [package](https://github.com/dghubble/gologin) and [examples](https://github.com/dghubble/gologin/tree/master/examples/twitter).
