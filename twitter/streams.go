@@ -311,6 +311,10 @@ func decodeMessage(token []byte, data map[string]interface{}) interface{} {
 		event := new(Event)
 		json.Unmarshal(token, event)
 		return event
+	} else if hasPath(data, "matching_rules") {
+		streamData := new(StreamData)
+		json.Unmarshal(token, streamData)
+		return streamData
 	}
 	// message type unknown, return the data map[string]interface{}
 	return data
