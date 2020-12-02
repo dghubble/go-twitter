@@ -23,6 +23,7 @@ type SwitchDemux struct {
 	Warning          func(warning *StallWarning)
 	FriendsList      func(friendsList *FriendsList)
 	Event            func(event *Event)
+	StreamData func(data *StreamData)
 	Other            func(message interface{})
 }
 
@@ -41,6 +42,7 @@ func NewSwitchDemux() SwitchDemux {
 		Warning:          func(warning *StallWarning) {},
 		FriendsList:      func(friendsList *FriendsList) {},
 		Event:            func(event *Event) {},
+		StreamData: func(data *StreamData) {},
 		Other:            func(message interface{}) {},
 	}
 }
@@ -73,6 +75,8 @@ func (d SwitchDemux) Handle(message interface{}) {
 		d.FriendsList(msg)
 	case *Event:
 		d.Event(msg)
+	case *StreamData:
+		d.StreamData(msg)
 	default:
 		d.Other(msg)
 	}
