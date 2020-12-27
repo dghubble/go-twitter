@@ -301,8 +301,8 @@ type StatusOEmbedParams struct {
 	Align      string `url:"align,omitempty"`
 	MaxWidth   int64  `url:"maxwidth,omitempty"`
 	HideMedia  *bool  `url:"hide_media,omitempty"`
-	HideThread *bool  `url:"hide_media,omitempty"`
-	OmitScript *bool  `url:"hide_media,omitempty"`
+	HideThread *bool  `url:"hide_thread,omitempty"`
+	OmitScript *bool  `url:"omit_script,omitempty"`
 	WidgetType string `url:"widget_type,omitempty"`
 	HideTweet  *bool  `url:"hide_tweet,omitempty"`
 }
