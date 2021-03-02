@@ -122,7 +122,7 @@ type StatusShowParams struct {
 }
 
 // Show returns the requested Tweet.
-// https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid
+// https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-statuses-show-id
 func (s *StatusService) Show(id int64, params *StatusShowParams) (*Tweet, *http.Response, error) {
 	if params == nil {
 		params = &StatusShowParams{}
