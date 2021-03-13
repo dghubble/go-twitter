@@ -8,6 +8,8 @@ type Entities struct {
 	Media        []MediaEntity   `json:"media"`
 	Urls         []URLEntity     `json:"urls"`
 	UserMentions []MentionEntity `json:"user_mentions"`
+	Symbols      []SymbolEntity  `json:"symbols"`
+	Polls        []PollEntity    `json:"polls"`
 }
 
 // HashtagEntity represents a hashtag which has been parsed from text.
@@ -45,6 +47,25 @@ type MentionEntity struct {
 	IDStr      string  `json:"id_str"`
 	Name       string  `json:"name"`
 	ScreenName string  `json:"screen_name"`
+}
+
+// SymbolEntity represents Symbols i.e. $cashtags, included in the text of the Tweet.
+type SymbolEntity struct {
+	Indices Indices `json:"indices"`
+	Text    string  `json:"text"`
+}
+
+// PollEntity represents Twitter Polls mentioned in the Tweet.
+type PollEntity struct {
+	Options         []OptionEntry `json:"options"`
+	EndDateTime     string        `json:"end_datetime"`
+	DurationMinutes string        `json:"duration_minutes"`
+}
+
+//OptionEntry represents Options in the PollEntity, each having a poll position and text for that position.
+type OptionEntry struct {
+	Position int    `json:"options"`
+	Text     string `json:"text"`
 }
 
 // UserEntities contain Entities parsed from User url and description fields.
