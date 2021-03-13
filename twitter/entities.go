@@ -2,7 +2,6 @@ package twitter
 
 // Entities represent metadata and context info parsed from Twitter components.
 // https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/entities-object
-// TODO: symbols
 type Entities struct {
 	Hashtags     []HashtagEntity `json:"hashtags"`
 	Media        []MediaEntity   `json:"media"`
