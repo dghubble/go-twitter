@@ -18,10 +18,19 @@ type HashtagEntity struct {
 
 // URLEntity represents a URL which has been parsed from text.
 type URLEntity struct {
-	Indices     Indices `json:"indices"`
-	DisplayURL  string  `json:"display_url"`
-	ExpandedURL string  `json:"expanded_url"`
-	URL         string  `json:"url"`
+	Indices     Indices    `json:"indices"`
+	DisplayURL  string     `json:"display_url"`
+	ExpandedURL string     `json:"expanded_url"`
+	URL         string     `json:"url"`
+	Unwound     UnwoundURL `json:"unwound"`
+}
+
+// UnwoundURL contains enriched metadata about a URL
+type UnwoundURL struct {
+	URL         string `json:"url"`
+	Status      int64  `json:"status"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
 }
 
 // MediaEntity represents media elements associated with a Tweet.
