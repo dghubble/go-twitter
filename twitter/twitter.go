@@ -7,18 +7,21 @@ import (
 )
 
 const twitterAPI = "https://api.twitter.com/1.1/"
+const twitterUpload = "https://upload.twitter.com/1.1/"
 
 // Client is a Twitter client for making Twitter API requests.
 type Client struct {
 	sling *sling.Sling
 	// Twitter API Services
 	Accounts       *AccountService
+	Config         *ConfigService
 	DirectMessages *DirectMessageService
 	Favorites      *FavoriteService
 	Followers      *FollowerService
 	Friends        *FriendService
 	Friendships    *FriendshipService
 	Lists          *ListsService
+	Media          *MediaService
 	RateLimits     *RateLimitService
 	Search         *SearchService
 	PremiumSearch  *PremiumSearchService
@@ -32,15 +35,18 @@ type Client struct {
 // NewClient returns a new Client.
 func NewClient(httpClient *http.Client) *Client {
 	base := sling.New().Client(httpClient).Base(twitterAPI)
+	upload := sling.New().Client(httpClient).Base(twitterUpload)
 	return &Client{
 		sling:          base,
 		Accounts:       newAccountService(base.New()),
+		Config:         newConfigService(base.New()),
 		DirectMessages: newDirectMessageService(base.New()),
 		Favorites:      newFavoriteService(base.New()),
 		Followers:      newFollowerService(base.New()),
 		Friends:        newFriendService(base.New()),
 		Friendships:    newFriendshipService(base.New()),
 		Lists:          newListService(base.New()),
+		Media:          newMediaService(upload.New()),
 		RateLimits:     newRateLimitService(base.New()),
 		Search:         newSearchService(base.New()),
 		PremiumSearch:  newPremiumSearchService(base.New()),
