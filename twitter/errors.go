@@ -24,6 +24,17 @@ func (e APIError) Error() string {
 	return ""
 }
 
+// Contains checks if the APIError contains an ErrorDetail with the specified code.
+func (e APIError) Contains(code int) bool {
+	for _, err := range e.Errors {
+		if err.Code == code {
+			return true
+		}
+	}
+
+	return false
+}
+
 // Empty returns true if empty. Otherwise, at least 1 error message/code is
 // present and false is returned.
 func (e APIError) Empty() bool {

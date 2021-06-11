@@ -132,3 +132,28 @@ func (s *FriendshipService) Incoming(params *FriendshipPendingParams) (*FriendID
 	resp, err := s.sling.New().Get("incoming.json").QueryStruct(params).Receive(ids, apiError)
 	return ids, resp, relevantError(err, *apiError)
 }
+
+// FriendshipLookupParams are parameters for FriendshipService.Lookup
+type FriendshipLookupParams struct {
+	UserID     []int64  `url:"user_id,omitempty,comma"`
+	ScreenName []string `url:"screen_name,omitempty,comma"`
+}
+
+// FriendshipResponse represents the target user.
+type FriendshipResponse struct {
+	ID          int64    `json:"id"`
+	IDStr       string   `json:"id_str"`
+	ScreenName  string   `json:"screen_name"`
+	Name        string   `json:"name"`
+	Connections []string `json:"connections"`
+}
+
+// Lookup returns the relationships of the authenticating user to the comma-separated list of up to
+// 100 screen_names or user_ids provided.
+// https://dev.twitter.com/rest/reference/get/friendships/lookup
+func (s *FriendshipService) Lookup(params *FriendshipLookupParams) (*[]FriendshipResponse, *http.Response, error) {
+	ids := new([]FriendshipResponse)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Get("lookup.json").QueryStruct(params).Receive(ids, apiError)
+	return ids, resp, relevantError(err, *apiError)
+}
