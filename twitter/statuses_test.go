@@ -273,3 +273,41 @@ func TestStatusService_OEmbed(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expected, oembed)
 }
+
+func TestStatusService_Retweeters(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/retweeter/ids.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "GET", r)
+		assertQuery(t, map[string]string{"id": "10", "cursor": "11", "count": "100", "stringify_ids": "10"}, r)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{
+    "previous_cursor": 11,
+    "ids": [
+        "1382021622"
+    ],
+    "previous_cursor_str": "11",
+    "next_cursor": 22,
+    "next_cursor_str": "22"
+}`)
+	})
+
+	client := NewClient(httpClient)
+	params := &StatusRetweeterParams{
+		ID:           10,
+		Cursor:       11,
+		Count:        100,
+		StringifyIDs: "10",
+	}
+	tweets, _, err := client.Statuses.Retweeters(params)
+	expected := &Retweeter{
+		PreviousCursor:    11,
+		IDs:               []string{"1382021622"},
+		PreviousCursorStr: "11",
+		NextCursor:        22,
+		NextCursorStr:     "22",
+	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweets)
+}
