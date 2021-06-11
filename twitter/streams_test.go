@@ -273,7 +273,7 @@ func TestStream_Site(t *testing.T) {
 	demux := newCounterDemux(counts)
 	client := NewClient(httpClient)
 	streamSiteParams := &StreamSiteParams{
-		Follow: []string{"666024290140217347", "666024290140217349"},
+		Follow: []int64{666024290140217347, 666024290140217349},
 	}
 	stream, err := client.Streams.Site(streamSiteParams)
 	// assert that the expected messages are received

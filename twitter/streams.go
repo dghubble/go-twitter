@@ -40,7 +40,7 @@ func newStreamService(client *http.Client, sling *sling.Sling) *StreamService {
 // StreamFilterParams are parameters for StreamService.Filter.
 type StreamFilterParams struct {
 	FilterLevel   string   `url:"filter_level,omitempty"`
-	Follow        []string `url:"follow,omitempty,comma"`
+	Follow        []int64  `url:"follow,omitempty,comma"`
 	Language      []string `url:"language,omitempty,comma"`
 	Locations     []string `url:"locations,omitempty,comma"`
 	StallWarnings *bool    `url:"stall_warnings,omitempty"`
@@ -97,7 +97,7 @@ func (srv *StreamService) User(params *StreamUserParams) (*Stream, error) {
 // StreamSiteParams are the parameters for StreamService.Site.
 type StreamSiteParams struct {
 	FilterLevel   string   `url:"filter_level,omitempty"`
-	Follow        []string `url:"follow,omitempty,comma"`
+	Follow        []int64  `url:"follow,omitempty,comma"`
 	Language      []string `url:"language,omitempty,comma"`
 	Replies       string   `url:"replies,omitempty"`
 	StallWarnings *bool    `url:"stall_warnings,omitempty"`
