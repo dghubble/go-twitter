@@ -37,7 +37,7 @@ type DirectMessageTarget struct {
 // DirectMessageData is the message data contained in a Direct Message event.
 type DirectMessageData struct {
 	Text       string                       `json:"text"`
-	Entities   *Entities                    `json:"entitites,omitempty"`
+	Entities   *Entities                    `json:"entities,omitempty"`
 	Attachment *DirectMessageDataAttachment `json:"attachment,omitempty"`
 	QuickReply *DirectMessageQuickReply     `json:"quick_reply,omitempty"`
 	CTAs       []DirectMessageCTA           `json:"ctas,omitempty"`
