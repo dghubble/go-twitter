@@ -43,11 +43,45 @@ type DirectMessageData struct {
 	CTAs       []DirectMessageCTA           `json:"ctas,omitempty"`
 }
 
+// DirectMessageDataAttachmentLocationSharedCoordinateCoordinates shows the coordinate.
+// https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/message-attachments/guides/attaching-location
+type DirectMessageDataAttachmentLocationSharedCoordinateCoordinates struct {
+	Type        string    `json:"type"`
+	Coordinates []float64 `json:"coordinates"`
+}
+
+// DirectMessageDataAttachmentLocationSharedCoordinate show the coordinate.
+// https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/message-attachments/guides/attaching-location
+type DirectMessageDataAttachmentLocationSharedCoordinate struct {
+	Coordinates DirectMessageDataAttachmentLocationSharedCoordinateCoordinates `json:"coordinates"`
+}
+
+// DirectMessageDataAttachmentLocationSharedPlacePlace show the place id.
+// https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/message-attachments/guides/attaching-location
+type DirectMessageDataAttachmentLocationSharedPlacePlace struct {
+	ID string `json:"id"`
+}
+
+// DirectMessageDataAttachmentLocationSharedPlace show the place id.
+// https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/message-attachments/guides/attaching-location
+type DirectMessageDataAttachmentLocationSharedPlace struct {
+	Place DirectMessageDataAttachmentLocationSharedPlacePlace `json:"place"`
+}
+
+// DirectMessageDataAttachmentLocation is the place of location.
+// https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/message-attachments/guides/attaching-location
+type DirectMessageDataAttachmentLocation struct {
+	Type             string
+	SharedCoordinate *DirectMessageDataAttachmentLocationSharedCoordinate `json:"shared_coordinate,omitempty"`
+	SharedPlace      *DirectMessageDataAttachmentLocationSharedPlace      `json:"shared_place,omitempty"`
+}
+
 // DirectMessageDataAttachment contains message data attachments for a Direct
 // Message event.
 type DirectMessageDataAttachment struct {
-	Type  string      `json:"type"`
-	Media MediaEntity `json:"media"`
+	Type     string                               `json:"type"`
+	Media    *MediaEntity                         `json:"media,omitempty"`
+	Location *DirectMessageDataAttachmentLocation `json:"location,omitempty"`
 }
 
 // DirectMessageQuickReply contains quick reply data for a Direct Message
