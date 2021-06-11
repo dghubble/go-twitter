@@ -53,7 +53,31 @@ func TestStatusService_Lookup(t *testing.T) {
 	client := NewClient(httpClient)
 	params := &StatusLookupParams{ID: []int64{20}, TrimUser: Bool(true)}
 	tweets, _, err := client.Statuses.Lookup([]int64{573893817000140800}, params)
+
 	expected := []Tweet{Tweet{ID: 20, Text: "just setting up my twttr"}, Tweet{ID: 573893817000140800, Text: "Don't get lost #PaxEast2015"}}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, tweets)
+}
+
+func TestStatusService_Lookup_Map(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/statuses/lookup.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "GET", r)
+		assertQuery(t, map[string]string{"id": "20,573893817000140800", "trim_user": "true", "map": "true"}, r)
+		w.Header().Set("Content-Type", "application/json")
+
+		// Twitter doesn't seem to offer guarantees that the json will come back
+		// in the order it is given, so we test a reorder:
+		fmt.Fprintf(w, `{ "id": { "573893817000140800": {"id": 573893817000140800, "text": "Don't get lost #PaxEast2015"}, "20": null }}`)
+	})
+
+	client := NewClient(httpClient)
+	params := &StatusLookupParams{ID: []int64{20}, TrimUser: Bool(true), Map: Bool(true)}
+	tweets, _, err := client.Statuses.Lookup([]int64{573893817000140800}, params)
+
+	expected := []Tweet{Tweet{ID: 0, Text: ""}, Tweet{ID: 573893817000140800, Text: "Don't get lost #PaxEast2015"}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, tweets)
 }
