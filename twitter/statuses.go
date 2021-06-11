@@ -159,16 +159,17 @@ func (s *StatusService) Lookup(ids []int64, params *StatusLookupParams) ([]Tweet
 
 // StatusUpdateParams are the parameters for StatusService.Update
 type StatusUpdateParams struct {
-	Status             string   `url:"status,omitempty"`
-	InReplyToStatusID  int64    `url:"in_reply_to_status_id,omitempty"`
-	PossiblySensitive  *bool    `url:"possibly_sensitive,omitempty"`
-	Lat                *float64 `url:"lat,omitempty"`
-	Long               *float64 `url:"long,omitempty"`
-	PlaceID            string   `url:"place_id,omitempty"`
-	DisplayCoordinates *bool    `url:"display_coordinates,omitempty"`
-	TrimUser           *bool    `url:"trim_user,omitempty"`
-	MediaIds           []int64  `url:"media_ids,omitempty,comma"`
-	TweetMode          string   `url:"tweet_mode,omitempty"`
+	Status                    string   `url:"status,omitempty"`
+	InReplyToStatusID         int64    `url:"in_reply_to_status_id,omitempty"`
+	AutoPopulateReplyMetadata *bool    `url:"auto_populate_reply_metadata,omitempty"`
+	PossiblySensitive         *bool    `url:"possibly_sensitive,omitempty"`
+	Lat                       *float64 `url:"lat,omitempty"`
+	Long                      *float64 `url:"long,omitempty"`
+	PlaceID                   string   `url:"place_id,omitempty"`
+	DisplayCoordinates        *bool    `url:"display_coordinates,omitempty"`
+	TrimUser                  *bool    `url:"trim_user,omitempty"`
+	MediaIds                  []int64  `url:"media_ids,omitempty,comma"`
+	TweetMode                 string   `url:"tweet_mode,omitempty"`
 }
 
 // Update updates the user's status, also known as Tweeting.
