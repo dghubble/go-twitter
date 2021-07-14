@@ -56,7 +56,7 @@ tweets, resp, err := client.Timelines.HomeTimeline(&twitter.HomeTimelineParams{
 // Send a Tweet
 tweet, resp, err := client.Statuses.Update("just setting up my twttr", nil)
 
-// Retweet tweet
+// Retweet a tweet
 retweet, resp, err := client.Statuses.Retweet(int64(585613041028431872), &twitter.StatusRetweetParams{
 
 		ID: 585613041028431872,
