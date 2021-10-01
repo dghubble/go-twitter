@@ -201,6 +201,7 @@ type ListsStatusesParams struct {
 	Count           int    `url:"count,omitempty"`
 	IncludeEntities *bool  `url:"include_entities,omitempty"`
 	IncludeRetweets *bool  `url:"include_rts,omitempty"`
+	TweetMode       string `url:"tweet_mode,omitempty"`
 }
 
 // Statuses returns a timeline of tweets authored by members of the specified list.
