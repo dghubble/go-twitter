@@ -1,6 +1,6 @@
 module github.com/dghubble/go-twitter
 
-go 1.12
+go 1.16
 
 require (
 	github.com/cenkalti/backoff v2.1.1+incompatible
