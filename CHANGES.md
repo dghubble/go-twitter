@@ -2,6 +2,11 @@
 
 Notable changes over time. Note, `go-twitter` does not follow a semver release cycle since it may change whenever the Twitter API changes (external).
 
+## 06/2022
+
+* Forked off from [original](https://github.com/dghubble/go-twitter) so we
+can start taking pull requests.
+
 ## 07/2019
 
 * Add Go module support ([#143](https://github.com/dghubble/go-twitter/pull/143))
