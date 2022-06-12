@@ -93,26 +93,8 @@ func TestMediaService_Upload(t *testing.T) {
 			},
 		},
 		{
-			name:     "start fails",
-			data:     []byte{11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11},
-			filetype: "video/mp4",
-			wantErr:  true,
-		},
-		{
 			name:     "big fail",
 			data:     bytes.Repeat([]byte{10}, maxSize+20),
-			filetype: "image/gif",
-			wantErr:  true,
-		},
-		{
-			name:     "append fails",
-			data:     bytes.Repeat([]byte{17}, 17),
-			filetype: "image/jpeg",
-			wantErr:  true,
-		},
-		{
-			name:     "finalize fails",
-			data:     bytes.Repeat([]byte{23}, 23),
 			filetype: "image/gif",
 			wantErr:  true,
 		},
@@ -129,6 +111,10 @@ func TestMediaService_Upload(t *testing.T) {
 
 	for _, test := range tests {
 		resp, _, err := client.Media.Upload(test.data, test.filetype)
+		if (err != nil) != test.wantErr {
+			t.Errorf("Media.Upload(%v): wantErr %v, got %v", test.name, test.wantErr, err != nil)
+			continue
+		}
 		if err != nil {
 			if !test.wantErr {
 				t.Errorf("Media.Upload(%v): err: %v", test.name, err)
