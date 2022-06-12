@@ -10,12 +10,14 @@ This is a fork of the (original Go Twitter API)[https://github.com/dghubble/go-t
 
 * Twitter REST API:
     * Accounts
+    * Config
     * DirectMessageEvents
     * Favorites
     * Friends
     * Friendships
     * Followers
     * Lists
+    * Media
     * PremiumSearch
     * RateLimits
     * Search
