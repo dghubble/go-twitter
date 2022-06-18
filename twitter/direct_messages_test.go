@@ -24,6 +24,7 @@ var (
 					Hashtags:     []HashtagEntity{},
 					Urls:         []URLEntity{},
 					UserMentions: []MentionEntity{},
+					Symbols:      []SymbolEntity{},
 				},
 			},
 		},
@@ -52,7 +53,7 @@ var (
 }`
 	testDMEventShowJSON     = `{"event": ` + testDMEventJSON + `}`
 	testDMEventListJSON     = `{"events": [` + testDMEventJSON + `], "next_cursor": "AB345dkfC"}`
-	testDMEventNewInputJSON = `{"event":{"type":"message_create","message_create":{"target":{"recipient_id":"3694959333"},"message_data":{"text":"example","entities":{"hashtags":null,"media":null,"urls":null,"user_mentions":null}}}}}
+	testDMEventNewInputJSON = `{"event":{"type":"message_create","message_create":{"target":{"recipient_id":"3694959333"},"message_data":{"text":"example","entities":{"hashtags":null,"media":null,"urls":null,"user_mentions":null,"symbols":null,"polls":null}}}}}
 `
 
 	// DEPRECATED

@@ -2,12 +2,13 @@ package twitter
 
 // Entities represent metadata and context info parsed from Twitter components.
 // https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/entities-object
-// TODO: symbols
 type Entities struct {
 	Hashtags     []HashtagEntity `json:"hashtags"`
 	Media        []MediaEntity   `json:"media"`
 	Urls         []URLEntity     `json:"urls"`
 	UserMentions []MentionEntity `json:"user_mentions"`
+	Symbols      []SymbolEntity  `json:"symbols"`
+	Polls        []PollEntity    `json:"polls"`
 }
 
 // HashtagEntity represents a hashtag which has been parsed from text.
@@ -45,6 +46,28 @@ type MentionEntity struct {
 	IDStr      string  `json:"id_str"`
 	Name       string  `json:"name"`
 	ScreenName string  `json:"screen_name"`
+}
+
+// SymbolEntity represents a $cashtag in a tweet. There will be one
+// SymbolEntity per $cashtag.
+type SymbolEntity struct {
+	Indices Indices `json:"indices"`
+	Text    string  `json:"text"`
+}
+
+// PollEntity represents a twitter poll, if there is one in the tweet.
+type PollEntity struct {
+	Options         []OptionEntry `json:"options"`
+	EndDatetime     string        `json:"end_datetime"`
+	DurationMinutes string        `json:"duration_minutes"`
+}
+
+// OptionEntry represents an option in a PollEntity. Position is the
+// poll entry position in the entry list, while Text is the text of
+// the poll entry.
+type OptionEntry struct {
+	Position int    `json:"options"`
+	Text     string `json:"text"`
 }
 
 // UserEntities contain Entities parsed from User url and description fields.
