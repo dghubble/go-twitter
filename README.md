@@ -4,7 +4,7 @@
 
 go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/rest/public). Check the [usage](#usage) section or try the [examples](/examples) to see how to access the Twitter API.
 
-This is a fork of the (original Go Twitter API)[https://github.com/dghubble/go-twitter] which doesn't appear to be actively maintained.
+This is a fork of the [original Go Twitter API](https://github.com/dghubble/go-twitter) which doesn't appear to be actively maintained.
 
 ### Features
 
