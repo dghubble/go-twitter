@@ -20,6 +20,11 @@ var (
 			},
 			Data: &DirectMessageData{
 				Text: "example",
+				Entities: &Entities{
+					Hashtags:     []HashtagEntity{},
+					Urls:         []URLEntity{},
+					UserMentions: []MentionEntity{},
+				},
 			},
 		},
 	}
@@ -47,8 +52,9 @@ var (
 }`
 	testDMEventShowJSON     = `{"event": ` + testDMEventJSON + `}`
 	testDMEventListJSON     = `{"events": [` + testDMEventJSON + `], "next_cursor": "AB345dkfC"}`
-	testDMEventNewInputJSON = `{"event":{"type":"message_create","message_create":{"target":{"recipient_id":"3694959333"},"message_data":{"text":"example"}}}}
+	testDMEventNewInputJSON = `{"event":{"type":"message_create","message_create":{"target":{"recipient_id":"3694959333"},"message_data":{"text":"example","entities":{"hashtags":null,"media":null,"urls":null,"user_mentions":null}}}}}
 `
+
 	// DEPRECATED
 	testDM = DirectMessage{
 		ID:        240136858829479936,
@@ -80,7 +86,8 @@ func TestDirectMessageService_EventsNew(t *testing.T) {
 					RecipientID: "3694959333",
 				},
 				Data: &DirectMessageData{
-					Text: "example",
+					Text:     "example",
+					Entities: &Entities{},
 				},
 			},
 		},
