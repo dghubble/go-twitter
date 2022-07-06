@@ -87,7 +87,7 @@ type ListsListParams struct {
 	Reverse    bool   `url:"reverse,omitempty"`
 }
 
-// List eturns all lists the authenticating or specified user subscribes to, including their own.
+// List returns all lists the authenticating or specified user subscribes to, including their own.
 // https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/get-lists-list
 func (s *ListsService) List(params *ListsListParams) ([]List, *http.Response, error) {
 	list := new([]List)
