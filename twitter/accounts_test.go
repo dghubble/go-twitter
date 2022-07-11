@@ -25,3 +25,21 @@ func TestAccountService_VerifyCredentials(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expected, user)
 }
+func TestAccountService_UpdateProfile(t *testing.T) {
+	httpClient, mux, server := testServer()
+	defer server.Close()
+
+	mux.HandleFunc("/1.1/account/update_profile.json", func(w http.ResponseWriter, r *http.Request) {
+		assertMethod(t, "POST", r)
+		assertQuery(t, map[string]string{"location": "anywhere"}, r)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"name": "xkcdComic", "location":"anywhere"}`)
+	})
+
+	client := NewClient(httpClient)
+	params := &AccountUpdateProfileParams{Location: "anywhere"}
+	user, _, err := client.Accounts.UpdateProfile(params)
+	expected := &User{Name: "xkcdComic", Location: "anywhere"}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, user)
+}
