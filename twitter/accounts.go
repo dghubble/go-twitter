@@ -46,6 +46,14 @@ type AccountUpdateProfileParams struct {
 	SkipStatus      *bool  `url:"skip_status,omitempty"`
 }
 
+type AccountUpdateProfileBannerPhotoParams struct {
+	Banner string `url:"banner,omitempty"`
+	Width   int    `url:"width,omitempty"`
+	Height  int    `url:"height,omitempty"`
+	OffsetX int    `url:"offset_left,omitempty"`
+	OffsetY int    `url:"offset_top,omitempty"`
+}
+
 // UpdateProfile updates the account profile with specified fields and returns
 // the User.
 // Requires a user auth context.
@@ -54,5 +62,12 @@ func (s *AccountService) UpdateProfile(params *AccountUpdateProfileParams) (*Use
 	user := new(User)
 	apiError := new(APIError)
 	resp, err := s.sling.New().Post("update_profile.json").QueryStruct(params).Receive(user, apiError)
+	return user, resp, relevantError(err, *apiError)
+}
+
+func (s *AccountService) UpdateProfileBannerPhoto(params *AccountUpdateProfileBannerPhotoParams) (*User, *http.Response, error) {
+	user := new(User)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Post("update_profile_banner.json").QueryStruct(params).Receive(user, apiError)
 	return user, resp, relevantError(err, *apiError)
 }
