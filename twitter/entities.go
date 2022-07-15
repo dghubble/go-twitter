@@ -2,12 +2,12 @@ package twitter
 
 // Entities represent metadata and context info parsed from Twitter components.
 // https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/entities-object
-// TODO: symbols
 type Entities struct {
 	Hashtags     []HashtagEntity `json:"hashtags"`
 	Media        []MediaEntity   `json:"media"`
 	Urls         []URLEntity     `json:"urls"`
 	UserMentions []MentionEntity `json:"user_mentions"`
+	Symbols      []SymbolEntity  `json:"symbols"`
 }
 
 // HashtagEntity represents a hashtag which has been parsed from text.
@@ -45,6 +45,13 @@ type MentionEntity struct {
 	IDStr      string  `json:"id_str"`
 	Name       string  `json:"name"`
 	ScreenName string  `json:"screen_name"`
+}
+
+// SymbolEntity represents a symbol (e.g. $twtr) which has been parsed from text.
+// https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/entities#symbols
+type SymbolEntity struct {
+	Indices Indices `json:"indices"`
+	Text    string  `json:"text"`
 }
 
 // UserEntities contain Entities parsed from User url and description fields.
