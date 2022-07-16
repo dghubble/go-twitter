@@ -122,7 +122,7 @@ type StatusShowParams struct {
 }
 
 // Show returns the requested Tweet.
-// https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid
+// https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-statuses-show-id
 func (s *StatusService) Show(id int64, params *StatusShowParams) (*Tweet, *http.Response, error) {
 	if params == nil {
 		params = &StatusShowParams{}
@@ -145,7 +145,7 @@ type StatusLookupParams struct {
 
 // Lookup returns the requested Tweets as a slice. Combines ids from the
 // required ids argument and from params.Id.
-// https://dev.twitter.com/rest/reference/get/statuses/lookup
+// https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-statuses-lookup
 func (s *StatusService) Lookup(ids []int64, params *StatusLookupParams) ([]Tweet, *http.Response, error) {
 	if params == nil {
 		params = &StatusLookupParams{}
@@ -173,7 +173,7 @@ type StatusUpdateParams struct {
 
 // Update updates the user's status, also known as Tweeting.
 // Requires a user auth context.
-// https://dev.twitter.com/rest/reference/post/statuses/update
+// https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/post-statuses-update
 func (s *StatusService) Update(status string, params *StatusUpdateParams) (*Tweet, *http.Response, error) {
 	if params == nil {
 		params = &StatusUpdateParams{}
@@ -195,7 +195,7 @@ type StatusRetweetParams struct {
 // Retweet retweets the Tweet with the given id and returns the original Tweet
 // with embedded retweet details.
 // Requires a user auth context.
-// https://dev.twitter.com/rest/reference/post/statuses/retweet/%3Aid
+// https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/post-statuses-retweet-id
 func (s *StatusService) Retweet(id int64, params *StatusRetweetParams) (*Tweet, *http.Response, error) {
 	if params == nil {
 		params = &StatusRetweetParams{}
@@ -217,7 +217,7 @@ type StatusUnretweetParams struct {
 
 // Unretweet unretweets the Tweet with the given id and returns the original Tweet.
 // Requires a user auth context.
-// https://dev.twitter.com/rest/reference/post/statuses/unretweet/%3Aid
+// https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/post-statuses-unretweet-id
 func (s *StatusService) Unretweet(id int64, params *StatusUnretweetParams) (*Tweet, *http.Response, error) {
 	if params == nil {
 		params = &StatusUnretweetParams{}
@@ -239,7 +239,7 @@ type StatusRetweetsParams struct {
 }
 
 // Retweets returns the most recent retweets of the Tweet with the given id.
-// https://dev.twitter.com/rest/reference/get/statuses/retweets/%3Aid
+// https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-statuses-retweets-id
 func (s *StatusService) Retweets(id int64, params *StatusRetweetsParams) ([]Tweet, *http.Response, error) {
 	if params == nil {
 		params = &StatusRetweetsParams{}
@@ -261,7 +261,7 @@ type StatusDestroyParams struct {
 
 // Destroy deletes the Tweet with the given id and returns it if successful.
 // Requires a user auth context.
-// https://dev.twitter.com/rest/reference/post/statuses/destroy/%3Aid
+// https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/post-favorites-destroy
 func (s *StatusService) Destroy(id int64, params *StatusDestroyParams) (*Tweet, *http.Response, error) {
 	if params == nil {
 		params = &StatusDestroyParams{}
@@ -303,7 +303,7 @@ type StatusOEmbedParams struct {
 }
 
 // OEmbed returns the requested Tweet in oEmbed format.
-// https://dev.twitter.com/rest/reference/get/statuses/oembed
+// https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-statuses-oembed
 func (s *StatusService) OEmbed(params *StatusOEmbedParams) (*OEmbedTweet, *http.Response, error) {
 	oEmbedTweet := new(OEmbedTweet)
 	apiError := new(APIError)
