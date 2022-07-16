@@ -8,6 +8,7 @@ type Entities struct {
 	Urls         []URLEntity     `json:"urls"`
 	UserMentions []MentionEntity `json:"user_mentions"`
 	Symbols      []SymbolEntity  `json:"symbols"`
+	Polls        []PollEntity    `json:"polls"`
 }
 
 // HashtagEntity represents a hashtag which has been parsed from text.
@@ -52,6 +53,20 @@ type MentionEntity struct {
 type SymbolEntity struct {
 	Indices Indices `json:"indices"`
 	Text    string  `json:"text"`
+}
+
+// PollEntity represents a Twitter Poll from a Tweet.
+// https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/entities#polls
+type PollEntity struct {
+	Options         []PollOption `json:"options"`
+	EndDateTime     string       `json:"end_datetime"`
+	DurationMinutes string       `json:"duration_minutes"`
+}
+
+// PollOption represents a position option in a PollEntity.
+type PollOption struct {
+	Position int    `json:"position"`
+	Text     string `json:"text"`
 }
 
 // UserEntities contain Entities parsed from User url and description fields.
