@@ -20,6 +20,14 @@ var (
 			},
 			Data: &DirectMessageData{
 				Text: "example",
+				Entities: &Entities{
+					Hashtags:     []HashtagEntity{},
+					Urls:         []URLEntity{},
+					UserMentions: []MentionEntity{},
+					Symbols: []SymbolEntity{
+						{Indices: Indices{38, 43}, Text: "TWTR"},
+					},
+				},
 			},
 		},
 	}
@@ -38,7 +46,7 @@ var (
 			"text": "example",
 			"entities": {
 				"hashtags": [],
-				"symbols": [],
+				"symbols": [{"indices": [38,43], "text":"TWTR"}],
 				"user_mentions": [],
 				"urls": []
 			}

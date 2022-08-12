@@ -87,7 +87,7 @@ type ListsListParams struct {
 	Reverse    bool   `url:"reverse,omitempty"`
 }
 
-// List eturns all lists the authenticating or specified user subscribes to, including their own.
+// List returns all lists the authenticating or specified user subscribes to, including their own.
 // https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/get-lists-list
 func (s *ListsService) List(params *ListsListParams) ([]List, *http.Response, error) {
 	list := new([]List)
@@ -201,6 +201,7 @@ type ListsStatusesParams struct {
 	Count           int    `url:"count,omitempty"`
 	IncludeEntities *bool  `url:"include_entities,omitempty"`
 	IncludeRetweets *bool  `url:"include_rts,omitempty"`
+	TweetMode       string `url:"tweet_mode,omitempty"`
 }
 
 // Statuses returns a timeline of tweets authored by members of the specified list.

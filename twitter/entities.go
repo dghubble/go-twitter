@@ -2,12 +2,13 @@ package twitter
 
 // Entities represent metadata and context info parsed from Twitter components.
 // https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/entities-object
-// TODO: symbols
 type Entities struct {
 	Hashtags     []HashtagEntity `json:"hashtags"`
 	Media        []MediaEntity   `json:"media"`
 	Urls         []URLEntity     `json:"urls"`
 	UserMentions []MentionEntity `json:"user_mentions"`
+	Symbols      []SymbolEntity  `json:"symbols"`
+	Polls        []PollEntity    `json:"polls"`
 }
 
 // HashtagEntity represents a hashtag which has been parsed from text.
@@ -18,10 +19,20 @@ type HashtagEntity struct {
 
 // URLEntity represents a URL which has been parsed from text.
 type URLEntity struct {
-	Indices     Indices `json:"indices"`
-	DisplayURL  string  `json:"display_url"`
-	ExpandedURL string  `json:"expanded_url"`
-	URL         string  `json:"url"`
+	URL         string     `json:"url"`
+	DisplayURL  string     `json:"display_url"`
+	ExpandedURL string     `json:"expanded_url"`
+	Unwound     UnwoundURL `string:"unwound"`
+	Indices     Indices    `json:"indices"`
+}
+
+// UnwoundURL represents an enhanced URL
+// https://developer.twitter.com/en/docs/twitter-api/enterprise/enrichments/overview/expanded-and-enhanced-urls
+type UnwoundURL struct {
+	URL         string `json:"url"`
+	Status      int    `json:"status"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
 }
 
 // MediaEntity represents media elements associated with a Tweet.
@@ -45,6 +56,28 @@ type MentionEntity struct {
 	IDStr      string  `json:"id_str"`
 	Name       string  `json:"name"`
 	ScreenName string  `json:"screen_name"`
+}
+
+// SymbolEntity represents a symbol (e.g. $twtr) which has been parsed from text.
+// https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/entities#symbols
+type SymbolEntity struct {
+	Indices Indices `json:"indices"`
+	Text    string  `json:"text"`
+}
+
+// PollEntity represents a Twitter Poll from a Tweet.
+// Note that poll metadata is only available with enterprise.
+// https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/entities#polls
+type PollEntity struct {
+	Options         []PollOption `json:"options"`
+	EndDateTime     string       `json:"end_datetime"`
+	DurationMinutes string       `json:"duration_minutes"`
+}
+
+// PollOption represents a position option in a PollEntity.
+type PollOption struct {
+	Position int    `json:"position"`
+	Text     string `json:"text"`
 }
 
 // UserEntities contain Entities parsed from User url and description fields.
