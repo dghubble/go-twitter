@@ -1,8 +1,9 @@
 package twitter
 
 import (
-	"github.com/dghubble/sling"
 	"net/http"
+
+	"github.com/dghubble/sling"
 )
 
 // BlockService provides methods for blocking specific user.
@@ -21,11 +22,11 @@ func newBlockService(sling *sling.Sling) *BlockService {
 type BlockCreateParams struct {
 	ScreenName      string `url:"screen_name,omitempty,comma"`
 	UserID          int64  `url:"user_id,omitempty,comma"`
-	IncludeEntities *bool  `url:"include_entities,omitempty"` // whether 'status' should include entities
+	IncludeEntities *bool  `url:"include_entities,omitempty"`
 	SkipStatus      *bool  `url:"skip_status,omitempty"`
 }
 
-// Create a block for specific user, return the user blocked as Entity.
+// Create blocks a specific user and returns the blocked user.
 // https://developer.twitter.com/en/docs/accounts-and-users/mute-block-report-users/api-reference/post-blocks-create
 func (s *BlockService) Create(params *BlockCreateParams) (User, *http.Response, error) {
 	users := new(User)
@@ -38,11 +39,11 @@ func (s *BlockService) Create(params *BlockCreateParams) (User, *http.Response, 
 type BlockDestroyParams struct {
 	ScreenName      string `url:"screen_name,omitempty,comma"`
 	UserID          int64  `url:"user_id,omitempty,comma"`
-	IncludeEntities *bool  `url:"include_entities,omitempty"` // whether 'status' should include entities
+	IncludeEntities *bool  `url:"include_entities,omitempty"`
 	SkipStatus      *bool  `url:"skip_status,omitempty"`
 }
 
-// Destroy the block for specific user, return the user unblocked as Entity.
+// Destroy blocks a specific user and returns the unblocked user.
 // https://developer.twitter.com/en/docs/accounts-and-users/mute-block-report-users/api-reference/post-blocks-destroy
 func (s *BlockService) Destroy(params *BlockDestroyParams) (User, *http.Response, error) {
 	users := new(User)

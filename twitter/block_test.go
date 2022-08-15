@@ -2,9 +2,10 @@ package twitter
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBlockService_CreateService(t *testing.T) {
@@ -19,7 +20,7 @@ func TestBlockService_CreateService(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	users, _, err := client.Block.Create(&BlockCreateParams{ScreenName: "golang"})
+	users, _, err := client.Blocks.Create(&BlockCreateParams{ScreenName: "golang"})
 	expected := User{ScreenName: "golang"}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, users)
@@ -37,7 +38,7 @@ func TestBlockService_DestroyService(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	users, _, err := client.Block.Destroy(&BlockDestroyParams{ScreenName: "golang"})
+	users, _, err := client.Blocks.Destroy(&BlockDestroyParams{ScreenName: "golang"})
 	expected := User{ScreenName: "golang"}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, users)
