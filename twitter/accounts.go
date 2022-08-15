@@ -56,3 +56,20 @@ func (s *AccountService) UpdateProfile(params *AccountUpdateProfileParams) (*Use
 	resp, err := s.sling.New().Post("update_profile.json").QueryStruct(params).Receive(user, apiError)
 	return user, resp, relevantError(err, *apiError)
 }
+
+// AccountUpdateProfileImageParams are the params for AccountService.UpdateProfileImage.
+type AccountUpdateProfileImageParams struct {
+	Image           string `url:"image,omitempty"`
+	IncludeEntities *bool  `url:"include_entities,omitempty"`
+	SkipStatus      *bool  `url:"skip_status,omitempty"`
+}
+
+// UpdateProfileImage updates the account profile image and returns the User.
+// Requires a user auth context.
+// https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/manage-account-settings/api-reference/post-account-update_profile_image
+func (s *AccountService) UpdateProfileImage(params *AccountUpdateProfileImageParams) (*User, *http.Response, error) {
+	user := new(User)
+	apiError := new(APIError)
+	resp, err := s.sling.New().Post("update_profile_image.json").QueryStruct(params).Receive(user, apiError)
+	return user, resp, relevantError(err, *apiError)
+}
