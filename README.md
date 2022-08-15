@@ -1,4 +1,4 @@
-# go-twitter [![Build Status](https://github.com/dghubble/go-twitter/workflows/test/badge.svg)](https://github.com/dghubble/go-twitter/actions?query=workflow%3Atest+branch%3Amaster) [![GoDoc](https://godoc.org/github.com/dghubble/go-twitter?status.svg)](https://godoc.org/github.com/dghubble/go-twitter)
+# go-twitter [![GoDoc](https://pkg.go.dev/badge/github.com/dghubble/go-twitter.svg)](https://pkg.go.dev/github.com/dghubble/go-twitter) [![Workflow](https://github.com/dghubble/go-twitter/actions/workflows/test.yaml/badge.svg)](https://github.com/dghubble/go-twitter/actions/workflows/test.yaml?query=branch%3Amain) [![Sponsors](https://img.shields.io/github/sponsors/dghubble?logo=github)](https://github.com/sponsors/dghubble) [![Twitter](https://img.shields.io/badge/twitter-follow-1da1f2?logo=twitter)](https://twitter.com/dghubble)
 
 <img align="right" src="https://storage.googleapis.com/dghubble/gopher-on-bird.png">
 
