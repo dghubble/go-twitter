@@ -257,6 +257,31 @@ func (s *StatusService) Retweets(id int64, params *StatusRetweetsParams) ([]Twee
 	return *tweets, resp, relevantError(err, *apiError)
 }
 
+// StatusRetweeterParams are the parameters for StatusService.Retweeters.
+type StatusRetweeterParams struct {
+	ID     int64 `url:"id,omitempty"`
+	Count  int   `url:"count,omitempty"`
+	Cursor int64 `url:"cursor,omitempty"`
+}
+
+// RetweeterIDs is a cursored collection of User IDs that retweeted a Tweet.
+type RetweeterIDs struct {
+	IDs               []int64 `json:"ids"`
+	PreviousCursor    int64   `json:"previous_cursor"`
+	PreviousCursorStr string  `json:"previous_cursor_str"`
+	NextCursor        int64   `json:"next_cursor"`
+	NextCursorStr     string  `json:"next_cursor_str"`
+}
+
+// Retweeters return the retweeters of a specific tweet.
+// https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweeters-ids
+func (s *StatusService) Retweeters(params *StatusRetweeterParams) (*RetweeterIDs, *http.Response, error) {
+	retweeters := new(RetweeterIDs)
+	apiError := new(APIError)
+	resp, err := s.sling.Get("retweeters/ids.json").QueryStruct(params).Receive(retweeters, apiError)
+	return retweeters, resp, relevantError(err, *apiError)
+}
+
 // StatusDestroyParams are the parameters for StatusService.Destroy
 type StatusDestroyParams struct {
 	ID        int64  `url:"id,omitempty"`
@@ -314,30 +339,4 @@ func (s *StatusService) OEmbed(params *StatusOEmbedParams) (*OEmbedTweet, *http.
 	apiError := new(APIError)
 	resp, err := s.sling.New().Get("oembed.json").QueryStruct(params).Receive(oEmbedTweet, apiError)
 	return oEmbedTweet, resp, relevantError(err, *apiError)
-}
-
-// StatusRetweeterParams are the parameters for StatusService.Retweeters.
-type StatusRetweeterParams struct {
-	ID           int64  `url:"id,omitempty"`
-	Cursor       int64  `url:"cursor,omitempty"`
-	Count        int    `url:"count,omitempty"`
-	StringifyIDs string `url:"stringify_ids,omitempty"`
-}
-
-// Retweeter represents a Tweet in oEmbed format.
-type Retweeter struct {
-	PreviousCursor    int64    `json:"previous_cursor"`
-	PreviousCursorStr string   `json:"previous_cursor_str"`
-	IDs               []string `json:"ids"`
-	NextCursor        int64    `json:"next_cursor"`
-	NextCursorStr     string   `json:"next_cursor_str"`
-}
-
-// Retweeters return the retweeters of a specific tweet.
-// https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweeters-ids
-func (s *StatusService) Retweeters(params *StatusRetweeterParams) (*Retweeter, *http.Response, error) {
-	retweeters := new(Retweeter)
-	apiError := new(APIError)
-	resp, err := s.sling.Get("retweeter/ids.json").QueryStruct(params).Receive(retweeters, apiError)
-	return retweeters, resp, relevantError(err, *apiError)
 }
