@@ -76,7 +76,7 @@ func TestDirectMessageService_EventsNew(t *testing.T) {
 		assertMethod(t, "POST", r)
 		assertPostJSON(t, testDMEventNewInputJSON, r)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, testDMEventShowJSON)
+		fmt.Fprint(w, testDMEventShowJSON)
 	})
 
 	client := NewClient(httpClient)
@@ -105,7 +105,7 @@ func TestDirectMessageService_EventsShow(t *testing.T) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"id": testDMEventID}, r)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, testDMEventShowJSON)
+		fmt.Fprint(w, testDMEventShowJSON)
 	})
 
 	client := NewClient(httpClient)
@@ -122,7 +122,7 @@ func TestDirectMessageService_EventsList(t *testing.T) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"count": "10"}, r)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, testDMEventListJSON)
+		fmt.Fprint(w, testDMEventListJSON)
 	})
 	expected := &DirectMessageEvents{
 		Events:     []DirectMessageEvent{testDMEvent},
@@ -167,7 +167,7 @@ func TestDirectMessageService_EventsDestroyError(t *testing.T) {
 	})
 	expected := APIError{
 		Errors: []ErrorDetail{
-			ErrorDetail{Code: 34, Message: "Sorry, that page does not exist"},
+			{Code: 34, Message: "Sorry, that page does not exist"},
 		},
 	}
 
@@ -189,7 +189,7 @@ func TestDirectMessageService_Show(t *testing.T) {
 		assertMethod(t, "GET", r)
 		assertQuery(t, map[string]string{"id": testDMIDStr}, r)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, testDMJSON)
+		fmt.Fprint(w, testDMJSON)
 	})
 
 	client := NewClient(httpClient)
@@ -244,7 +244,7 @@ func TestDirectMessageService_New(t *testing.T) {
 		assertMethod(t, "POST", r)
 		assertPostForm(t, map[string]string{"screen_name": "theseancook", "text": "hello world"}, r)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, testDMJSON)
+		fmt.Fprint(w, testDMJSON)
 	})
 
 	client := NewClient(httpClient)
@@ -262,7 +262,7 @@ func TestDirectMessageService_Destroy(t *testing.T) {
 		assertMethod(t, "POST", r)
 		assertPostForm(t, map[string]string{"id": testDMIDStr}, r)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, testDMJSON)
+		fmt.Fprint(w, testDMJSON)
 	})
 
 	client := NewClient(httpClient)

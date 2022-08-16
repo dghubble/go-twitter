@@ -18,7 +18,7 @@ func TestTrendsService_Available(t *testing.T) {
 		fmt.Fprintf(w, `[{"country": "Sweden","countryCode": "SE","name": "Sweden","parentid": 1,"placeType": {"code": 12,"name": "Country"},"url": "http://where.yahooapis.com/v1/place/23424954","woeid": 23424954}]`)
 	})
 	expected := []Location{
-		Location{
+		{
 			Country:     "Sweden",
 			CountryCode: "SE",
 			Name:        "Sweden",
@@ -45,12 +45,18 @@ func TestTrendsService_Place(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `[{"trends":[{"name":"#gotwitter"}], "as_of": "2017-02-08T16:18:18Z", "created_at": "2017-02-08T16:10:33Z","locations":[{"name": "Worldwide","woeid": 1}]}]`)
 	})
-	expected := []TrendsList{TrendsList{
-		Trends:    []Trend{Trend{Name: "#gotwitter"}},
-		AsOf:      "2017-02-08T16:18:18Z",
-		CreatedAt: "2017-02-08T16:10:33Z",
-		Locations: []TrendsLocation{TrendsLocation{Name: "Worldwide", WOEID: 1}},
-	}}
+	expected := []TrendsList{
+		{
+			Trends: []Trend{
+				{Name: "#gotwitter"},
+			},
+			AsOf:      "2017-02-08T16:18:18Z",
+			CreatedAt: "2017-02-08T16:10:33Z",
+			Locations: []TrendsLocation{
+				{Name: "Worldwide", WOEID: 1},
+			},
+		},
+	}
 
 	client := NewClient(httpClient)
 	places, _, err := client.Trends.Place(123456, &TrendsPlaceParams{})
@@ -69,7 +75,7 @@ func TestTrendsService_Closest(t *testing.T) {
 		fmt.Fprintf(w, `[{"country": "Sweden","countryCode": "SE","name": "Sweden","parentid": 1,"placeType": {"code": 12,"name": "Country"},"url": "http://where.yahooapis.com/v1/place/23424954","woeid": 23424954}]`)
 	})
 	expected := []Location{
-		Location{
+		{
 			Country:     "Sweden",
 			CountryCode: "SE",
 			Name:        "Sweden",

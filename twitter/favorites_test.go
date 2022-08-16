@@ -21,7 +21,10 @@ func TestFavoriteService_List(t *testing.T) {
 
 	client := NewClient(httpClient)
 	tweets, _, err := client.Favorites.List(&FavoriteListParams{UserID: 113419064, SinceID: 101492475, IncludeEntities: Bool(false)})
-	expected := []Tweet{Tweet{Text: "Gophercon talks!"}, Tweet{Text: "Why gophers are so adorable"}}
+	expected := []Tweet{
+		{Text: "Gophercon talks!"},
+		{Text: "Why gophers are so adorable"},
+	}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, tweets)
 }

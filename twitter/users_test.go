@@ -39,7 +39,7 @@ func TestUserService_LookupWithIds(t *testing.T) {
 
 	client := NewClient(httpClient)
 	users, _, err := client.Users.Lookup(&UserLookupParams{UserID: []int64{113419064, 623265148}})
-	expected := []User{User{ScreenName: "golang"}, User{ScreenName: "dghubble"}}
+	expected := []User{{ScreenName: "golang"}, {ScreenName: "dghubble"}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, users)
 }
@@ -57,7 +57,7 @@ func TestUserService_LookupWithScreenNames(t *testing.T) {
 
 	client := NewClient(httpClient)
 	users, _, err := client.Users.Lookup(&UserLookupParams{ScreenName: []string{"foo", "bar"}})
-	expected := []User{User{Name: "Foo"}, User{Name: "Bar"}}
+	expected := []User{{Name: "Foo"}, {Name: "Bar"}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, users)
 }
@@ -75,7 +75,7 @@ func TestUserService_Search(t *testing.T) {
 
 	client := NewClient(httpClient)
 	users, _, err := client.Users.Search("news", &UserSearchParams{Query: "override me", Count: 11})
-	expected := []User{User{Name: "BBC"}, User{Name: "BBC Breaking News"}}
+	expected := []User{{Name: "BBC"}, {Name: "BBC Breaking News"}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, users)
 }
@@ -88,5 +88,6 @@ func TestUserService_SearchHandlesNilParams(t *testing.T) {
 		assertQuery(t, map[string]string{"q": "news"}, r)
 	})
 	client := NewClient(httpClient)
-	client.Users.Search("news", nil)
+	_, _, err := client.Users.Search("news", nil)
+	assert.Nil(t, err)
 }

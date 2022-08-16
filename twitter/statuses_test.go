@@ -36,7 +36,8 @@ func TestStatusService_ShowHandlesNilParams(t *testing.T) {
 		assertQuery(t, map[string]string{"id": "589488862814076930"}, r)
 	})
 	client := NewClient(httpClient)
-	client.Statuses.Show(589488862814076930, nil)
+	_, _, err := client.Statuses.Show(589488862814076930, nil)
+	assert.Nil(t, err)
 }
 
 func TestStatusService_Lookup(t *testing.T) {
@@ -53,7 +54,7 @@ func TestStatusService_Lookup(t *testing.T) {
 	client := NewClient(httpClient)
 	params := &StatusLookupParams{ID: []int64{20}, TrimUser: Bool(true)}
 	tweets, _, err := client.Statuses.Lookup([]int64{573893817000140800}, params)
-	expected := []Tweet{Tweet{ID: 20, Text: "just setting up my twttr"}, Tweet{ID: 573893817000140800, Text: "Don't get lost #PaxEast2015"}}
+	expected := []Tweet{{ID: 20, Text: "just setting up my twttr"}, {ID: 573893817000140800, Text: "Don't get lost #PaxEast2015"}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, tweets)
 }
@@ -65,7 +66,8 @@ func TestStatusService_LookupHandlesNilParams(t *testing.T) {
 		assertQuery(t, map[string]string{"id": "20,573893817000140800"}, r)
 	})
 	client := NewClient(httpClient)
-	client.Statuses.Lookup([]int64{20, 573893817000140800}, nil)
+	_, _, err := client.Statuses.Lookup([]int64{20, 573893817000140800}, nil)
+	assert.Nil(t, err)
 }
 
 func TestStatusService_Update(t *testing.T) {
@@ -95,7 +97,8 @@ func TestStatusService_UpdateHandlesNilParams(t *testing.T) {
 		assertPostForm(t, map[string]string{"status": "very informative tweet"}, r)
 	})
 	client := NewClient(httpClient)
-	client.Statuses.Update("very informative tweet", nil)
+	_, _, err := client.Statuses.Update("very informative tweet", nil)
+	assert.Nil(t, err)
 }
 
 func TestStatusService_APIError(t *testing.T) {
@@ -112,7 +115,7 @@ func TestStatusService_APIError(t *testing.T) {
 	_, _, err := client.Statuses.Update("very informative tweet", nil)
 	expected := APIError{
 		Errors: []ErrorDetail{
-			ErrorDetail{Message: "Status is a duplicate", Code: 187},
+			{Message: "Status is a duplicate", Code: 187},
 		},
 	}
 	if assert.Error(t, err) {
@@ -159,7 +162,8 @@ func TestStatusService_RetweetHandlesNilParams(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	client.Statuses.Retweet(20, nil)
+	_, _, err := client.Statuses.Retweet(20, nil)
+	assert.Nil(t, err)
 }
 
 func TestStatusService_Unretweet(t *testing.T) {
@@ -196,7 +200,7 @@ func TestStatusService_Retweets(t *testing.T) {
 	client := NewClient(httpClient)
 	params := &StatusRetweetsParams{Count: 2}
 	retweets, _, err := client.Statuses.Retweets(20, params)
-	expected := []Tweet{Tweet{Text: "RT @jack: just setting up my twttr"}, Tweet{Text: "RT @jack: just setting up my twttr"}}
+	expected := []Tweet{{Text: "RT @jack: just setting up my twttr"}, {Text: "RT @jack: just setting up my twttr"}}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, retweets)
 }
@@ -210,7 +214,8 @@ func TestStatusService_RetweetsHandlesNilParams(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	client.Statuses.Retweets(20, nil)
+	_, _, err := client.Statuses.Retweets(20, nil)
+	assert.Nil(t, err)
 }
 
 func TestStatusService_Retweeters(t *testing.T) {
@@ -277,7 +282,8 @@ func TestStatusService_DestroyHandlesNilParams(t *testing.T) {
 	})
 
 	client := NewClient(httpClient)
-	client.Statuses.Destroy(40, nil)
+	_, _, err := client.Statuses.Destroy(40, nil)
+	assert.Nil(t, err)
 }
 
 func TestStatusService_OEmbed(t *testing.T) {

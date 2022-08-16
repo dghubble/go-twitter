@@ -40,7 +40,7 @@ func TestPremiumSearchService_Tweets(t *testing.T) {
 	}
 	expected := &PremiumSearch{
 		Results: []Tweet{
-			Tweet{ID: 781760642139250689},
+			{ID: 781760642139250689},
 		},
 		Next: "NTcxODIyMDMyODMwMjU1MTA0",
 		RequestParameters: &RequestParameters{
@@ -102,11 +102,11 @@ func TestPremiumSearchService_Counts(t *testing.T) {
 	}
 	expected := &PremiumSearchCount{
 		Results: []TweetCount{
-			TweetCount{
+			{
 				TimePeriod: "201701010000",
 				Count:      32,
 			},
-			TweetCount{
+			{
 				TimePeriod: "201701020000",
 				Count:      45,
 			},

@@ -28,7 +28,7 @@ func TestSearchService_Tweets(t *testing.T) {
 		Filter:     "safe"})
 	expected := &Search{
 		Statuses: []Tweet{
-			Tweet{ID: 781760642139250689},
+			{ID: 781760642139250689},
 		},
 		Metadata: &SearchMetadata{
 			Count:       1,

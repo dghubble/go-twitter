@@ -22,7 +22,9 @@ func TestListsService_List(t *testing.T) {
 	client := NewClient(httpClient)
 	params := &ListsListParams{ScreenName: "twitterapi"}
 	lists, _, err := client.Lists.List(params)
-	expected := []List{List{Slug: "meetup-20100301", URI: "/twitterapi/meetup-20100301"}}
+	expected := []List{
+		{Slug: "meetup-20100301", URI: "/twitterapi/meetup-20100301"},
+	}
 	assert.Nil(t, err)
 	assert.Equal(t, expected, lists)
 }
@@ -42,7 +44,9 @@ func TestListsService_Members(t *testing.T) {
 	params := &ListsMembersParams{Slug: "team", OwnerScreenName: "twitterapi", Cursor: -1}
 	members, _, err := client.Lists.Members(params)
 	expected := &Members{
-		Users:             []User{User{ID: 14895163}},
+		Users: []User{
+			{ID: 14895163},
+		},
 		NextCursor:        1516837838944119498,
 		NextCursorStr:     "1516837838944119498",
 		PreviousCursor:    -1516924983503961435,
@@ -89,7 +93,9 @@ func TestListsService_Memberships(t *testing.T) {
 	params := &ListsMembershipsParams{ScreenName: "twitter", Cursor: -1}
 	memberships, _, err := client.Lists.Memberships(params)
 	expected := &Membership{
-		Lists:             []List{List{Slug: "digital-marketing", Name: "Digital Marketing"}},
+		Lists: []List{
+			{Slug: "digital-marketing", Name: "Digital Marketing"},
+		},
 		NextCursor:        1516837838944119498,
 		NextCursorStr:     "1516837838944119498",
 		PreviousCursor:    -1516924983503961435,
@@ -114,7 +120,9 @@ func TestListsService_Ownerships(t *testing.T) {
 	params := &ListsOwnershipsParams{ScreenName: "twitter", Count: 2}
 	ownerships, _, err := client.Lists.Ownerships(params)
 	expected := &Ownership{
-		Lists:             []List{List{Mode: "public", Name: "Official Twitter accts"}},
+		Lists: []List{
+			{Mode: "public", Name: "Official Twitter accts"},
+		},
 		NextCursor:        1516837838944119498,
 		NextCursorStr:     "1516837838944119498",
 		PreviousCursor:    -1516924983503961435,
@@ -162,7 +170,7 @@ func TestListsService_Statuses(t *testing.T) {
 	params := &ListsStatusesParams{Slug: "teams", OwnerScreenName: "MLS", Count: 1}
 	tweet, _, err := client.Lists.Statuses(params)
 	expected := []Tweet{
-		Tweet{
+		{
 			ID:   245160944223793152,
 			Text: "Create your own TFC ESQ by Movado Watch: http://t.co/W2tON3OK in support of @TeamUpFdn #TorontoFC #MLS",
 			User: &User{
@@ -189,7 +197,9 @@ func TestListsService_Subscribers(t *testing.T) {
 	params := &ListsSubscribersParams{Slug: "team", OwnerScreenName: "twitter", SkipStatus: Bool(true)}
 	subscribers, _, err := client.Lists.Subscribers(params)
 	expected := &Subscribers{
-		Users:             []User{User{Name: "Almissen665"}},
+		Users: []User{
+			{Name: "Almissen665"},
+		},
 		NextCursor:        1516837838944119498,
 		NextCursorStr:     "1516837838944119498",
 		PreviousCursor:    -1516924983503961435,
@@ -236,7 +246,9 @@ func TestListsService_Subscriptions(t *testing.T) {
 	params := &ListsSubscriptionsParams{Cursor: -1, ScreenName: "episod", Count: 5}
 	subscriptions, _, err := client.Lists.Subscriptions(params)
 	expected := &Subscribed{
-		Lists:             []List{List{Slug: "team", Name: "team", URI: "/TwitterEng/team"}},
+		Lists: []List{
+			{Slug: "team", Name: "team", URI: "/TwitterEng/team"},
+		},
 		NextCursor:        1516837838944119498,
 		NextCursorStr:     "1516837838944119498",
 		PreviousCursor:    -1516924983503961435,

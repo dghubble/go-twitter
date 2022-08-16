@@ -27,10 +27,7 @@ func (e APIError) Error() string {
 // Empty returns true if empty. Otherwise, at least 1 error message/code is
 // present and false is returned.
 func (e APIError) Empty() bool {
-	if len(e.Errors) == 0 {
-		return true
-	}
-	return false
+	return len(e.Errors) == 0
 }
 
 // relevantError returns any non-nil http-related error (creating the request,

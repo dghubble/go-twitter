@@ -48,7 +48,9 @@ func TestFollowerService_List(t *testing.T) {
 		fmt.Fprintf(w, `{"users": [{"id": 123}], "next_cursor":1516837838944119498,"next_cursor_str":"1516837838944119498","previous_cursor":-1516924983503961435,"previous_cursor_str":"-1516924983503961435"}`)
 	})
 	expected := &Followers{
-		Users:             []User{User{ID: 123}},
+		Users: []User{
+			{ID: 123},
+		},
 		NextCursor:        1516837838944119498,
 		NextCursorStr:     "1516837838944119498",
 		PreviousCursor:    -1516924983503961435,
