@@ -51,7 +51,7 @@ func TestAccountService_UpdateProfileImage(t *testing.T) {
 
 	mux.HandleFunc("/1.1/account/update_profile_image.json", func(w http.ResponseWriter, r *http.Request) {
 		assertMethod(t, "POST", r)
-		assertQuery(t, map[string]string{"image": base64PNG}, r)
+		assertPostForm(t, map[string]string{"image": base64PNG}, r)
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"image": "%s"}`, base64PNG)
 	})

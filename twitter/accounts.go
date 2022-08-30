@@ -70,6 +70,6 @@ type AccountUpdateProfileImageParams struct {
 func (s *AccountService) UpdateProfileImage(params *AccountUpdateProfileImageParams) (*User, *http.Response, error) {
 	user := new(User)
 	apiError := new(APIError)
-	resp, err := s.sling.New().Post("update_profile_image.json").QueryStruct(params).Receive(user, apiError)
+	resp, err := s.sling.New().Post("update_profile_image.json").BodyForm(params).Receive(user, apiError)
 	return user, resp, relevantError(err, *apiError)
 }
