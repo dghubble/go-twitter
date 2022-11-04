@@ -1,6 +1,8 @@
 /*
 Package twitter provides a Client for the Twitter API.
 
+Deprecated: This package will no longer be developed.
+
 The twitter package provides a Client for accessing the Twitter API. Here are
 some example requests.
 

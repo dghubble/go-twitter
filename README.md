@@ -1,5 +1,7 @@
 # go-twitter [![GoDoc](https://pkg.go.dev/badge/github.com/dghubble/go-twitter.svg)](https://pkg.go.dev/github.com/dghubble/go-twitter) [![Workflow](https://github.com/dghubble/go-twitter/actions/workflows/test.yaml/badge.svg)](https://github.com/dghubble/go-twitter/actions/workflows/test.yaml?query=branch%3Amain) [![Sponsors](https://img.shields.io/github/sponsors/dghubble?logo=github)](https://github.com/sponsors/dghubble) [![Twitter](https://img.shields.io/badge/twitter-follow-1da1f2?logo=twitter)](https://twitter.com/dghubble)
 
+**DEPRECATED** As of Nov 2022, the go-twitter API library is no longer being developed. If you fork this repo, please remove the logo since it is not covered by the license.
+
 <img align="right" src="https://storage.googleapis.com/dghubble/gopher-on-bird.png">
 
 go-twitter is a Go client library for the [Twitter API](https://dev.twitter.com/rest/public). Check the [usage](#usage) section or try the [examples](/examples) to see how to access the Twitter API.
